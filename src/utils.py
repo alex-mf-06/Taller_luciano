@@ -1,6 +1,6 @@
 from typing import List
 
-def validar_lista(lista: List) -> bool:
+def validar_iterable(lista: List) -> bool:
     """
     Pre:
         - lista: cualquier objeto.
