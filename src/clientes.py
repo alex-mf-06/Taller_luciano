@@ -1,8 +1,9 @@
 from datetime import datetime
-
+from typing import List
 import re 
 import json 
 import os
+import utils as ut
 def confirmar_dato(etiqueta: str, valor: str) -> bool:
     """
     Solicita al usuario que confirme si un dato ingresado es correcto.
@@ -80,6 +81,10 @@ def registrar_clientes() -> None:
             
         else:
             print("Email inválido.")
+    while True:
+        direccion = input("ingrese la direccion : ")
+        if confirmar_dato("direccion",direccion):
+            break 
 
     ruta_archivo ='clientes.json'
     if os.path.exists(ruta_archivo): # Verificar si el archivo existe
@@ -101,6 +106,7 @@ def registrar_clientes() -> None:
         "nombre": nombre,
         "telefono": telefono,
         "email": email,
+        "direccion": direccion,
         "fecha_registro":  datetime.now().strftime("%Y-%m-%d %H:%M:%S")   
     }
     clientes.append(cliente)
@@ -155,3 +161,29 @@ def obtener_cliente_por_dni(dni: str) -> dict | None:
         - Si no existe, devuelve None.
     """
     pass
+def mostrar_opciones (opciones:List) ->None: 
+    """
+    no retorna nada solo muestra un menu de opciones .
+    """
+    if ut.validar_lista(opciones):
+        for i , opcion in enumerate(opciones,start=1):
+            print(f"{i} - {opcion}")
+    else : 
+        print("las opciones no se pueden mostrar por que hubo un fallo")
+def menu_clientes() ->None:
+    while True:
+        opciones = ["Salir","Registrar cliente","Modificar datos del cliente","Eliminar cliente","Mostrar clientes ",]
+        mostrar_opciones(opciones)
+        opcion=input("Ingrese una opcion de las que se les muestran :")
+        if opcion == "1":
+            break
+        elif opcion == "2":
+            registrar_clientes()
+        elif opcion == "3":
+            pass
+        elif opcion == "4":
+            pass
+        elif opcion == "5":
+            pass
+        else : 
+            print("opcion invalida ingrese una de las que se les mostro ")

@@ -1,3 +1,8 @@
+import os 
+import json 
+import re 
+from datetime import datetime
+import clientes as cl 
 def agregar_empleado(dni: str, nombre: str, puesto: str, telefono: str, email: str = None) -> dict:
     """
     Pre: 
@@ -38,3 +43,22 @@ def listar_empleados() -> list[dict]:
         - Devuelve una lista con todos los empleados registrados.
     """
     pass
+
+def menu_empleados() -> None :
+    opciones = ["Salir","Agregar Empleado","Modificar empleado","Eliminar empleados","Mostrar empleados"]
+    cl.mostrar_opciones(opciones)
+    while True:
+        opcion = input("Ingrese una de las opciones que se les mostro : ")
+        if opcion == "1":
+            break
+        elif opcion == "2":
+            pass
+        elif opcion == "3":
+            pass
+        elif opcion == "4":
+            pass
+        elif opcion == "5":
+            pass
+        else : 
+            print("opcion invalida ingrese una de las que se les mostro ")
+menu_empleados()
