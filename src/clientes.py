@@ -4,6 +4,41 @@ import re
 import json 
 import os
 import utils as ut
+
+# --- CÁLCULO DE LA RUTA ABSOLUTA Y SEGURA ---
+# Obtiene la ruta del directorio donde está el script (la carpeta src)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Sube un nivel en el directorio para llegar a la raíz del proyecto (Taller_Luciano)
+project_root = os.path.dirname(script_dir)
+# Construye la ruta completa y correcta al archivo clientes.json
+RUTA_clientes = os.path.join(project_root, 'datos', 'clientes.json')
+
+
+def cargar_clientes(ruta_archivo: str = RUTA_clientes) -> list:
+    """
+    Carga los clientes desde un archivo JSON de forma segura.
+    - Si el archivo existe y es válido, devuelve la lista de clientes.
+    - Si el archivo NO existe, está vacío o corrupto, devuelve una lista vacía [].
+    """
+    # Si el archivo NO existe, entrega una lista vacía y termina.
+    if not os.path.exists(ruta_archivo):
+        return []
+
+    # Si el archivo SÍ existe, intenta leerlo.
+    with open(ruta_archivo, 'r', encoding='utf-8') as file:
+        try:
+            # Si tiene contenido JSON válido, lo devuelve.
+            return json.load(file)
+        except json.JSONDecodeError:
+            # Si está vacío o corrupto, entrega una lista vacía.
+            return []
+
+def guardar_clientes(clientes: dict, ruta_archivo: str = RUTA_clientes) -> None:
+    """Guarda la lista de clientes en un archivo JSON con formato legible."""
+    with open(ruta_archivo, 'w', encoding='utf-8') as file:
+        json.dump(clientes, file, indent=4, ensure_ascii=False)
+    print(f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
+
 def confirmar_dato(etiqueta: str, valor: str) -> bool:
     """
     Solicita al usuario que confirme si un dato ingresado es correcto.
@@ -86,16 +121,9 @@ def registrar_clientes() -> None:
         if confirmar_dato("direccion",direccion):
             break 
 
-    ruta_archivo ='clientes.json'
-    if os.path.exists(ruta_archivo): # Verificar si el archivo existe
-        with open(ruta_archivo, 'r') as file: # Abrir el archivo en modo lectura
-            try:
-                clientes = json.load(file)
-            except json.JSONDecodeError:
-                print("El archivo JSON está corrupto o vacío.")
-                clientes = []
-    else:
-        clientes = []
+    
+    clientes = cargar_clientes()
+
     for cliente in clientes:
         if cliente['dni'] == dni:
             print("El DNI ya está registrado.")
@@ -110,11 +138,8 @@ def registrar_clientes() -> None:
         "fecha_registro":  datetime.now().strftime("%Y-%m-%d %H:%M:%S")   
     }
     clientes.append(cliente)
-    with open(ruta_archivo, 'w', encoding='utf-8') as file: # Abrir el archivo en modo  escritura y con codificación UTF-8
-        json.dump(clientes, file, indent=4,ensure_ascii=False) # Guardar la lista actualizada en el archivo JSON
-    print(f"Cliente {nombre} registrado exitosamente en {os.path.abspath(ruta_archivo)}")
-
-
+    guardar_clientes(clientes)
+    print(f"Cliente {nombre} registrado exitosamente ")
 
 
 
@@ -160,7 +185,13 @@ def obtener_cliente_por_dni(dni: str) -> dict | None:
         - Devuelve el dict con los datos del cliente si existe.
         - Si no existe, devuelve None.
     """
-    pass
+    
+    clientes = cargar_clientes() # Usamos la función que carga el json 
+    for cliente in clientes:
+        if cliente['dni'] == dni:
+            return cliente # Devuelve el diccionario del cliente
+    return None # Si el bucle termina, no lo encontró
+
 def mostrar_opciones (opciones:List) ->None: 
     """
     no retorna nada solo muestra un menu de opciones .
@@ -180,10 +211,23 @@ def menu_clientes() ->None:
         elif opcion == "2":
             registrar_clientes()
         elif opcion == "3":
-            pass
+            regex_dni = re.compile(r'^\d{7,8}$')
+            while True: 
+                dni = input("Ingrese el Dni del Cliente : ")
+                if regex_dni.match(dni) and confirmar_dato("DNI",dni):
+                     break 
+                else : 
+                    print("Dni invalido ingrese nuevamente ")
+            encontrado = obtener_cliente_por_dni(dni)
+            if encontrado : 
+                print(f"Cliente encontrado: {encontrado['nombre']}")
+                
+            else : 
+                print("no se encontro el cliente")
         elif opcion == "4":
             pass
         elif opcion == "5":
             pass
         else : 
             print("opcion invalida ingrese una de las que se les mostro ")
+menu_clientes()
