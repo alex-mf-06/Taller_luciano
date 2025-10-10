@@ -55,7 +55,7 @@ def confirmar_dato(etiqueta: str, valor: str) -> bool:
             return confirmacion == 's'
         print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
 
-def registrar_clientes() -> None:
+def registrar_clientes(RUTA_ARCHIVO: str) -> None:
     
     """
     Permite registrar clientes validados con expresiones regulares y guardar los datos en un archivo JSON.
@@ -75,54 +75,23 @@ def registrar_clientes() -> None:
         - Los datos se almacenan en formato JSON con indentación y codificación UTF-8.
         - Se imprime un mensaje informando el resultado de la operación.
     """
-
-
     #Expreciones regulares para validar los campos
     regex_dni = re.compile(r'^\d{7,8}$')
     regex_telefono = re.compile(r'^\+?\d{7,15}$')
     regex_email = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
 
     #solicitud de datos
-    while True:
-        dni = input("Ingrese el DNI del cliente (7 u 8 dígitos): ").strip() # Eliminar espacios en blanco al inicio y final
-        if regex_dni.match(dni): # Validar el formato del DNI
-            if confirmar_dato("DNI", dni):
-                break # Si el usuario confirma el DNI, salir del bucle principal
-        else:
-            print("DNI inválido. Debe contener solo números y tener entre 7 y 8 dígitos.")
+    dni = ut.validar_dni()
 
-    while True:
-        nombre = input("Ingrese el nombre de la persona :  ")
-        if nombre.strip():
-            if confirmar_dato("nombre", nombre):
-                break # Si el usuario confirma el nombre, salir del bucle principal
-                
-        else:
-            print("Nombre inválido. No puede estar vacío.")
+    nombre = ut.confirmar_nombre()
 
-    while True:
-        telefono = input("Ingrese el teléfono de la persona (7 a 15 dígitos): ")
-        if regex_telefono.match(telefono):
-            if confirmar_dato("teléfono", telefono):
-                break # Si el usuario confirma el teléfono, salir del bucle principal
-        else:
-            print("Teléfono inválido. Debe contener solo números y tener entre 7 y 15 dígitos.")
+    telefono = ut.validar_numero()
 
-    while True:
-        email = input("Ingrese el email de la persona : ")
-        if not email or regex_email.match(email) :
-            if confirmar_dato("email", email if email else "sin email"): # llama la funcion para confirmar datos tanto si existe ek email o no 
-                break # Si el usuario confirma el email, salir del bucle principal
-            
-        else:
-            print("Email inválido.")
-    while True:
-        direccion = input("ingrese la direccion : ")
-        if confirmar_dato("direccion",direccion):
-            break 
+    email = ut.validar_email()
 
-    
-    clientes = cargar_clientes(RUTA_clientes)
+    direccion = ut.confirmar_direccion()
+
+    clientes = cargar_clientes(RUTA_ARCHIVO)
 
     for cliente in clientes:
         if cliente['dni'] == dni:
@@ -138,22 +107,40 @@ def registrar_clientes() -> None:
         "fecha_registro":  datetime.now().strftime("%Y-%m-%d %H:%M:%S")   
     }
     clientes.append(cliente)
-    guardar_clientes(clientes,RUTA_clientes)
-    print(f"Cliente {nombre} registrado exitosamente ")
+    guardar_clientes(clientes,RUTA_ARCHIVO)
+    print(f"la persona {nombre} esta registrado exitosamente ")
 
 
 
-def modificar_cliente(dni: str, nombre: str = None, telefono: str = None, email: str = None, direccion: str = None) -> dict | None:
+def modificar_datos(dni: str,RUTA_archivo) ->None:
     """
     Pre:
         - dni: str no vacío, representa el documento del cliente ya registrado.
-        - nombre, telefono, email, direccion: str o None. Si es None, ese campo no se modifica.
+        - debe tener la ruta de archivo que quiere nodificar 
     Post:
-        - Si el cliente existe, devuelve un dict con sus datos actualizados.
-        - Si no existe, devuelve None.
+        - guarda los datos modificado si se encuentra a la persona segun su dni 
+        retorna true si la persona si se encuentra y la modifican y false si no 
     """
-    pass
+    datos = cargar_clientes(RUTA_archivo)
+    encontrado = False
+    for dato in datos :
+        if dato.get("dni") == dni :
+           nuevo_nombre = ut.confirmar_nombre()
+           nuevo_telefono = ut.validar_numero()
+           nueva_direccion = ut.confirmar_direccion()
+           if nuevo_nombre:
+               dato["nombre"] = nuevo_nombre
+           if nuevo_telefono: 
+               dato["telefono"] = nuevo_telefono
+           if nueva_direccion:
+               dato["direccion"] = nueva_direccion
 
+           print("Datos actualizados.")
+           encontrado = True 
+           break 
+    if encontrado:
+        guardar_clientes(datos,RUTA_archivo)
+    
 
 def eliminar_cliente(dni: str,RUTA_archivos: str) -> bool:
     """
@@ -173,18 +160,19 @@ def eliminar_cliente(dni: str,RUTA_archivos: str) -> bool:
         return False # No se encontró el DNI, no se eliminó nada
 
 
-def listar_clientes() -> list:
+def listar_clientes(RUTA_ARCHIVO) -> list:
     """
     Pre:
-        - No recibe parámetros.
+        debe recibir un ruta para cargar los datos 
     Post:
         - Devuelve una lista de dicts, cada dict representa un cliente.
         - Si no hay clientes, devuelve lista vacía.
     """
-    pass
+    datos = cargar_clientes(RUTA_ARCHIVO)
+    return datos
 
 
-def obtener_cliente_por_dni(dni: str,RUTA_archivo:str) -> dict | None:
+def obtener_cliente_por_dni(dni: str,RUTA_archivo:str) -> bool:
     """
     Pre:
         - dni: str no vacío.
@@ -196,8 +184,9 @@ def obtener_cliente_por_dni(dni: str,RUTA_archivo:str) -> dict | None:
     clientes = cargar_clientes(RUTA_archivo) # Usamos la función que carga el json 
     for cliente in clientes:
         if cliente['dni'] == dni:
-            return cliente # Devuelve el diccionario del cliente
-    return None # Si el bucle termina, no lo encontró
+            return True # Devuelve el diccionario del cliente
+    return False # Si el bucle termina, no lo encontró
+
 
 def mostrar_opciones (opciones:tuple) ->None: 
     """
@@ -205,9 +194,10 @@ def mostrar_opciones (opciones:tuple) ->None:
     """
     if ut.validar_iterable(opciones):
         for i , opcion in enumerate(opciones,start=1):
-            print(f"{i} - {opcion}")
+            print(f"{i} - {opcion}\n")
     else : 
         print("las opciones no se pueden mostrar por que hubo un fallo")
+
 def menu_clientes() ->None:
     opciones = ("Salir","Registrar cliente","Modificar datos del cliente","Eliminar cliente","Mostrar clientes ",)
     regex_dni = re.compile(r'^\d{7,8}$')
@@ -218,36 +208,36 @@ def menu_clientes() ->None:
         if opcion == "1":
             break
         elif opcion == "2":
-            registrar_clientes()
+            registrar_clientes(RUTA_clientes)
+            
         elif opcion == "3":
             
-            while True: 
-                dni = input("Ingrese el Dni del Cliente : ")
-                if regex_dni.match(dni) and confirmar_dato("DNI",dni):
-                     break 
-                else : 
-                    print("Dni invalido ingrese nuevamente ")
-            encontrado = obtener_cliente_por_dni(dni)
+            dni = ut.validar_dni()
+            encontrado = obtener_cliente_por_dni(dni,RUTA_clientes)
             if encontrado : 
-                print(f"Cliente encontrado: {encontrado['nombre']}")
+                print(f"Cliente encontrado: \n")
+                modificar_datos(dni,RUTA_clientes)
                 
             else : 
-                print("no se encontro el cliente")
+                print("no se encontro el cliente\n")
+            
         elif opcion == "4":
-            while True: 
-                dni = input("Ingrese el Dni del Cliente : ")
-                if regex_dni.match(dni) and confirmar_dato("DNI",dni):
-                     break 
-                else : 
-                    print("Dni invalido ingrese nuevamente ")
+            dni = ut.validar_dni()
             eliminado = eliminar_cliente(dni,RUTA_clientes)
             if eliminado:
                 print("se ah eliminado la persona correctamente")
             else: 
                 print("no se escontro a la persona en nuestro registro")
+
         elif opcion == "5":
-            pass
+            listas = listar_clientes(RUTA_clientes)
+            
+            for cliente in listas:
+                for clave, valor in cliente.items():
+                    print(f"{clave.capitalize()}: {valor}")
+                print("-" * 30)
+
         else : 
-            print("opcion invalida ingrese una de las que se les mostro ")
+            print("opcion invalida ingrese una de las que se les mostro \n")
 if __name__ == "__main__":
     menu_clientes()
