@@ -59,7 +59,6 @@ def registrar_clientes(RUTA_ARCHIVO: str) -> None:
     
     """
     Permite registrar clientes validados con expresiones regulares y guardar los datos en un archivo JSON.
-
     Precondiciones:
         - El usuario debe ingresar correctamente los siguientes datos:
             * DNI: numérico, de 7 u 8 dígitos.
@@ -67,7 +66,6 @@ def registrar_clientes(RUTA_ARCHIVO: str) -> None:
             * Teléfono: de 7 a 15 dígitos (puede comenzar con '+').
             * Email: formato válido (opcional, puede dejarse vacío).
         - El archivo 'clientes.json' puede existir o no.
-    
     Postcondiciones:
         - Si el archivo no existe, se crea automáticamente.
         - Si el archivo existe, se actualiza agregando el nuevo cliente.
@@ -108,8 +106,7 @@ def registrar_clientes(RUTA_ARCHIVO: str) -> None:
     }
     clientes.append(cliente)
     guardar_clientes(clientes,RUTA_ARCHIVO)
-    print(f"la persona {nombre} esta registrado exitosamente ")
-
+    print(f"la persona {nombre} esta registrado exitosamente \n")
 
 
 def modificar_datos(dni: str,RUTA_archivo) ->None:
@@ -142,7 +139,7 @@ def modificar_datos(dni: str,RUTA_archivo) ->None:
         guardar_clientes(datos,RUTA_archivo)
     
 
-def eliminar_cliente(dni: str,RUTA_archivos: str) -> bool:
+def eliminar_datos(dni: str,RUTA_archivos: str) -> bool:
     """
     Pre:
         - dni: str no vacío, representa el documento del cliente.
@@ -209,7 +206,7 @@ def menu_clientes() ->None:
             break
         elif opcion == "2":
             registrar_clientes(RUTA_clientes)
-            
+
         elif opcion == "3":
             
             dni = ut.validar_dni()
@@ -223,7 +220,7 @@ def menu_clientes() ->None:
             
         elif opcion == "4":
             dni = ut.validar_dni()
-            eliminado = eliminar_cliente(dni,RUTA_clientes)
+            eliminado = eliminar_datos(dni,RUTA_clientes)
             if eliminado:
                 print("se ah eliminado la persona correctamente")
             else: 
