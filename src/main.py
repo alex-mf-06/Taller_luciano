@@ -1,9 +1,9 @@
 import sys
 
-import clientes
+import clientes as cl 
 import vehiculos
 import ordenes
-import empleados
+import empleados as emp
 import facturacion
 import stock
 import reportes
@@ -11,33 +11,36 @@ import stock
 
 
 
-def mostrar_menu():
-    print("\n=== SISTEMA DE GESTIÓN DEL TALLER ===")
-    print("1. Gestión de clientes")
-    print("2. Gestión de vehículos")
-    print("3. Órdenes de trabajo")
-    print("4. Empleados")
-    print("5. Facturación")
-    print("6. Stock")
-    print("7. Reportes")
-    print("8. Compras")
-    print("9. Pagos")
-    print("10. Gastos")
-    print("0. Salir")
 
 def main():
+    menu_principal = (
+    "=== SISTEMA DE GESTIÓN DEL TALLER ===",
+    "1. Gestión de clientes",
+    "2. Gestión de vehículos",
+    "3. Órdenes de trabajo",
+    "4. Empleados",
+    "5. Facturación",
+    "6. Stock",
+    "7. Reportes",
+    "8. Compras",
+    "9. Pagos",
+    "10. Gastos",
+    "0. Salir"
+)
     while True:
-        mostrar_menu()
+        
+        for opcion in menu_principal:
+            print(opcion)
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            clientes.menu_clientes()
+            cl.menu_clientes()
         elif opcion == "2":
             vehiculos.menu_vehiculos()
         elif opcion == "3":
             ordenes.menu_ordenes()
         elif opcion == "4":
-            empleados.menu_empleados()
+            emp.menu_empleados()
         elif opcion == "5":
             facturacion.menu_facturacion()
         elif opcion == "6":
@@ -45,11 +48,14 @@ def main():
         elif opcion == "7":
             reportes.menu_reportes()
         elif opcion == "8":
-            compras.menu_compras()
+            #compras.menu_compras()
+            pass
         elif opcion == "9":
-            pagos.menu_pagos()
+            #pagos.menu_pagos()
+            pass
         elif opcion == "10":
-            gastos.menu_gastos()
+            pass
+            #gastos.menu_gastos()
         elif opcion == "0":
             print("Saliendo del sistema...")
             sys.exit()

@@ -1,7 +1,6 @@
 import os 
 import json 
 import re 
-from datetime import datetime
 import clientes as cl 
 import utils as ut
 
@@ -14,25 +13,6 @@ RUTA_empleados = os.path.join(project_root, 'datos', 'empleados.json')
 
 
 
-def modificar_empleado(dni: str, nombre: str = None, puesto: str = None, telefono: str = None, email: str = None) -> bool:
-    """
-    Pre: 
-        - Recibe un dni que debe existir en la lista de empleados.
-        - Al menos un dato a modificar debe ser proporcionado.
-    Post:
-        - Devuelve True si se actualizaron los datos, False si no se encontró al empleado.
-    """
-    pass
-
-
-def listar_empleados() -> list[dict]:
-    """
-    Pre: 
-        - No recibe ningún parámetro.
-    Post:
-        - Devuelve una lista con todos los empleados registrados.
-    """
-    pass
 
 def menu_empleados() -> None :
     opciones = ["Salir","Agregar Empleado","Modificar empleado","Eliminar empleados","Mostrar empleados"]
