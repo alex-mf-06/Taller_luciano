@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import sys
 
 import clientes as cl 
@@ -9,8 +10,22 @@ import stock
 import reportes
 import stock
 
+=======
+import clientes as cl
+import vehiculos as vh
+import ordenes as ot
+import empleados as emp
+>>>>>>> a111963 (Agregado cargar json)
 
+menu = {
+    "1": {"descripcion": "Gestión de clientes", "funcion": cl},
+    "2": {"descripcion": "Gestión de vehículos", "funcion": vh},
+    "3": {"descripcion": "Órdenes de trabajo", "funcion": ot},
+    "4": {"descripcion": "Empleados", "funcion": emp},  
+    "0": {"descripcion": "Salir", "funcion": exit}
+}
 
+<<<<<<< HEAD
 
 def main():
     menu_principal = (
@@ -65,3 +80,13 @@ def main():
 
 if __name__ == "__main__":
     main()
+=======
+def mostrar_menu():
+    for key, valor in sorted(menu.items()):
+        print(f"{key}. {valor['descripcion']}")
+    opcion = input("Seleccione una opción: ")
+    if opcion in menu and menu[opcion]["funcion"]:
+        menu[opcion]["funcion"]()
+    else:
+        print("Opción inválida o no implementada")
+>>>>>>> a111963 (Agregado cargar json)
