@@ -74,8 +74,6 @@ def resumen_vehiculo():
     patente = input("\nIngrese la patente del vehículo para ver resumen: ")
     print(f"Mostrando resumen del vehículo {patente} (pendiente de implementar)")
 
-import os  
-import vehiculos
 
 def menu_vehiculos():
     while True:
@@ -102,26 +100,6 @@ def menu_vehiculos():
 # Funciones internas del módulo Vehículos
 # ---------------------------------------------
 
-def gestionar_vehiculo():
-    while True:
-        print("\n--- Gestionar Vehículo ---")
-        print("1. Agregar vehículo")
-        print("2. Modificar vehículo")
-        print("3. Eliminar vehículo")
-        print("0. Volver al menú anterior")
-
-        opcion = input("Seleccione una opción: ")
-
-        if opcion == "1":
-            print("Función para agregar vehículo (pendiente de implementar)")
-        elif opcion == "2":
-            print("Función para modificar vehículo (pendiente de implementar)")
-        elif opcion == "3":
-            print("Función para eliminar vehículo (pendiente de implementar)")
-        elif opcion == "0":
-            break
-        else:
-            print("Opción inválida, intente nuevamente.")
 
 def buscar_listar_vehiculos():
     while True:
