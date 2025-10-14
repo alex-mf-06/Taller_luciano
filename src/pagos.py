@@ -30,3 +30,4 @@ def listar_pagos(cliente_dni: str = None) -> list[dict]:
         - Devuelve una lista con todos los pagos registrados, filtrados por cliente si se indicó el dni.
     """
     pass
+
