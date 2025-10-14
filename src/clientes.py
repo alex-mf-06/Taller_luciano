@@ -238,3 +238,4 @@ def menu_clientes() ->None:
             print("opcion invalida ingrese una de las que se les mostro \n")
 if __name__ == "__main__":
     menu_clientes()
+    

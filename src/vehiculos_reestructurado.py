@@ -5,6 +5,7 @@ import json
 import os
 import vehiculos
 import re 
+import utils as ut
 
 RUTA_VEHICULOS = os.path.join("datos","vehiculos.json")
 
@@ -36,37 +37,22 @@ def guardar_vehiculos(lista_vehiculos):
 # Funciones CRUD
 
 def agregar_vehiculo(lista_vehiculos):
-    patron_patente = r"^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$" # expresiones regulares para validación de datos
-    patron_anio = r'^\d{4}$'
-    patron_dni = r'^\d{7,8}$'
+    #patron_patente = r"^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$" # expresiones regulares para validación de datos
+    #patron_anio = r'^\d{4}$'
+    #patron_dni = r'^\d{7,8}$'
 
-    while True:
-        patente = input("Ingrese la patente del vehículo")
-        patente = patente.upper()
-        if not re.match(patron_patente,patente):
-            print("Patente inválida. Debe ser ABC123 o 12ABC34")
-        else:
-            break
-    
-    marca = input("Ingrese la marca de su vehículo")
-    modelo = input("Ingrese el modelo de su vehículo")
-    while True:
-        anio = input("ingrese el año de su vehículo")
-        if not re.match(patron_anio,anio):
-            print("el año debe contener 4 digitos")
-        else:
-            break
+    patente = ut.Validar_patente()
+        
+    marca = ut.validar_marca()
 
-  
-    tipo = input("Ingrese el tipo de vehículo(auto, camioneta, camión)")
+    modelo = ut.validar_modelo()
     
-    while True:
-        dni = input("Ingrese su número de DNI")
-        if not re.match(patron_dni,dni):
-            print("DNI inválido")
-        else: 
-            dni = int(dni)
-            break
+    anio = ut.validar_año()
+
+    tipo = ut.validar_tipo()
+    
+    dni = ut.validar_dni()
+
     vehiculo = {
     "patente": patente,
     "marca": marca,
@@ -82,15 +68,8 @@ def agregar_vehiculo(lista_vehiculos):
 lista_vehiculos = cargar_vehiculos()
 
 def buscar_x_patente(lista_vehiculos):
-    patron_patente = r"^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$"
     try:
-        while True:
-            patente = input("Ingrese la patente del vehículo a buscar")
-            patente = patente.upper()
-            if not re.match(patron_patente,patente):
-                print("Patente invalida")
-            else:
-                break
+        patente = ut.Validar_patente()
 
         for vehiculo in lista_vehiculos:
             if vehiculo["patente"] == patente:
@@ -109,15 +88,11 @@ def buscar_x_dni(lista_vehiculos):
     Busca todos los vehículos de un cliente según su DNI.
     Muestra cada vehículo encontrado de manera legible.
     """
-    patron_dni = r'^\d{7,8}$'
+    
     try:
-        while True:
-            dni_input = input("Ingrese el DNI del cliente: ")
-            if not re.match(patron_dni, dni_input):
-                print("DNI inválido. Debe contener 7 u 8 dígitos.")
-            else:
-                dni = int(dni_input)
-                break
+       
+        dni = ut.validar_dni()
+            
 
         # Lista por comprensión para los vehículos asociados a un DNI   
         encontrados = [vehiculo for vehiculo in lista_vehiculos if vehiculo["dni_cliente"] == dni]
@@ -139,13 +114,8 @@ def buscar_x_dni(lista_vehiculos):
 def eliminar_vehiculo(lista_vehiculos):
     patron_patente = r"^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$"
     try:
-        while True:
-            patente = input("Ingrese la patente del vehículo a buscar")
-            patente = patente.upper()
-            if not re.match(patron_patente,patente):
-                print("Patente invalida")
-            else:
-                break
+        patente = ut.Validar_patente()
+
 
         for vehiculo in lista_vehiculos:
             if vehiculo["patente"] == patente:
@@ -163,13 +133,7 @@ def modificar_vehiculo(lista_vehiculos):
     patron_anio = r'^\d{4}$'
     patron_dni = r'^\d{7,8}$'
     try:
-        while True:
-            patente = input("Ingrese la patente del vehículo a buscar")
-            patente = patente.upper()
-            if not re.match(patron_patente,patente):
-                print("Patente invalida")
-            else:
-                break
+        patente = ut.Validar_patente()
     
         for vehiculo in lista_vehiculos:
             if vehiculos["patente"] == patente:
@@ -179,21 +143,18 @@ def modificar_vehiculo(lista_vehiculos):
 
         print("Ingrese ENTER para mantener el valor actual")
 
-        nuevo_marca = input(f"Marca actual: {vehiculos['marcas']}:").strip()
+        nuevo_marca = input(f"Marca actual: {vehiculos['marcas']}: ").strip()
         if nuevo_marca:
             vehiculos["modelo"] = nuevo_marca
         
         nuevo_modelo = input(f"Año (actual: {vehiculos['anio']}): ").strip()
         if nuevo_modelo:
             vehiculos["marca"] = nuevo_modelo
-        while True:
-            nuevo_anio = input(f"Año (actual: {vehiculo['anio']}): ").strip()
-            if not nuevo_anio:  
-                break
-            if re.match(patron_anio, nuevo_anio):
-                vehiculo['anio'] = nuevo_anio
-                break
-            print("Año inválido. Debe tener 4 dígitos.")
+        
+        nuevo_anio = ut.validar_año()
+        if nuevo_anio:
+            vehiculos["anio"] = nuevo_anio
+        
 
         nuevo_tipo = input(f"Tipo (actual: {vehiculo['tipo']}): ").strip()
         if nuevo_tipo:

@@ -5,11 +5,13 @@ import utils as ut
 
 def menu_vehiculos():
     while True:
-        print("\n=== Módulo Vehículos ===")
-        print("1. Gestionar vehículo (agregar, modificar, eliminar)")
-        print("2. Buscar / Listar vehículos")
-        print("3. Resumen del vehículo")
-        print("0. Volver al menú principal")
+        opciones= (
+        "\n=== Módulo Vehículos ===",
+        "1. Gestionar vehículo (agregar, modificar, eliminar)",
+        "2. Buscar / Listar vehículos",
+        "3. Resumen del vehículo",
+        "0. Volver al menú principal")
+        ut.mostrar_opciones(opciones)
         
         opcion = input("Seleccione una opción: ")
 
@@ -30,11 +32,11 @@ def menu_vehiculos():
 
 def gestionar_vehiculo():
     while True:
-        print("\n--- Gestionar Vehículo ---")
-        print("1. Agregar vehículo")
-        print("2. Modificar vehículo")
-        print("3. Eliminar vehículo")
-        print("0. Volver al menú anterior")
+        opciones = (
+        "\n--- Gestionar Vehículo ---",
+        "1. Agregar vehículo","2. Modificar vehículo",
+        "3. Eliminar vehículo","0. Volver al menú anterior")
+        ut.mostrar_opciones(opciones) 
 
         opcion = input("Seleccione una opción: ")
 
@@ -51,11 +53,11 @@ def gestionar_vehiculo():
 
 def buscar_listar_vehiculos():
     while True:
-        print("\n--- Buscar / Listar Vehículos ---")
-        print("1. Listar todos los vehículos activos")
-        print("2. Buscar vehículo por patente")
-        print("3. Buscar vehículo por cliente")
-        print("0. Volver al menú anterior")
+        opciones = (
+        "\n--- Buscar / Listar Vehículos ---",
+        "1. Listar todos los vehículos activos","2. Buscar vehículo por patente",
+        "3. Buscar vehículo por cliente", "0. Volver al menú anterior")
+        ut.mostrar_opciones(opciones)
 
         opcion = input("Seleccione una opción: ")
 
@@ -76,13 +78,13 @@ def resumen_vehiculo():
 
 
 def menu_vehiculos():
+    
     while True:
-        print("\n=== Módulo Vehículos ===")
-        print("1. Gestionar vehículo (agregar, modificar, eliminar)")
-        print("2. Buscar / Listar vehículos")
-        print("3. Resumen del vehículo")
-        print("0. Volver al menú principal")
-        
+        opciones = (
+        "\n=== Módulo Vehículos ===","1. Gestionar vehículo (agregar, modificar, eliminar)","2. Buscar / Listar vehículos",
+        "3. Resumen del vehículo","0. Volver al menú principal")
+        ut.mostrar_opciones(opciones)
+
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
@@ -103,11 +105,12 @@ def menu_vehiculos():
 
 def buscar_listar_vehiculos():
     while True:
-        print("\n--- Buscar / Listar Vehículos ---")
-        print("1. Listar todos los vehículos activos")
-        print("2. Buscar vehículo por patente")
-        print("3. Buscar vehículo por cliente")
-        print("0. Volver al menú anterior")
+        opciones =(
+        "\n--- Buscar / Listar Vehículos ---","1. Listar todos los vehículos activos",
+        "2. Buscar vehículo por patente","3. Buscar vehículo por cliente","0. Volver al menú anterior"
+        )
+        ut.mostrar_opciones(opciones)
+        
 
         opcion = input("Seleccione una opción: ")
 
@@ -131,3 +134,4 @@ def resumen_vehiculo():
     # total de órdenes realizadas
     # última fecha de trabajo
     # notas internas
+menu_vehiculos()
