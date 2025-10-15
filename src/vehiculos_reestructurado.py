@@ -9,6 +9,7 @@ import utils as ut
 
 RUTA_VEHICULOS = os.path.join("datos","vehiculos.json")
 
+
 def cargar_vehiculos():
     """Carga la lista de vehículos desde el archivo JSON."""
     if os.path.exists(RUTA_VEHICULOS):
@@ -155,7 +156,6 @@ def modificar_vehiculo(lista_vehiculos):
         if nuevo_anio:
             vehiculos["anio"] = nuevo_anio
         
-
         nuevo_tipo = input(f"Tipo (actual: {vehiculo['tipo']}): ").strip()
         if nuevo_tipo:
             vehiculo['tipo'] = nuevo_tipo
@@ -166,7 +166,7 @@ def modificar_vehiculo(lista_vehiculos):
                 break  
             if re.match(patron_dni, nuevo_dni):
                 try:
-                    vehiculo['dni_cliente'] = int(nuevo_dni)
+                    vehiculo['dni_cliente'] = nuevo_dni
                     break
                 except ValueError:
                     print("DNI debe ser numérico.")

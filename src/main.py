@@ -1,21 +1,13 @@
-<<<<<<< HEAD
-import sys
 
-import clientes as cl 
-import vehiculos
-import ordenes
-import empleados as emp
+import sys
 import facturacion
 import stock
 import reportes
-import stock
-
-=======
 import clientes as cl
 import vehiculos as vh
 import ordenes as ot
 import empleados as emp
->>>>>>> a111963 (Agregado cargar json)
+
 
 menu = {
     "1": {"descripcion": "Gestión de clientes", "funcion": cl},
@@ -25,7 +17,6 @@ menu = {
     "0": {"descripcion": "Salir", "funcion": exit}
 }
 
-<<<<<<< HEAD
 
 def main():
     menu_principal = (
@@ -51,9 +42,9 @@ def main():
         if opcion == "1":
             cl.menu_clientes()
         elif opcion == "2":
-            vehiculos.menu_vehiculos()
+            vh.menu_vehiculos()
         elif opcion == "3":
-            ordenes.menu_ordenes()
+            ot.menu_ordenes()
         elif opcion == "4":
             emp.menu_empleados()
         elif opcion == "5":
@@ -80,7 +71,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-=======
+
 def mostrar_menu():
     for key, valor in sorted(menu.items()):
         print(f"{key}. {valor['descripcion']}")
@@ -89,4 +80,4 @@ def mostrar_menu():
         menu[opcion]["funcion"]()
     else:
         print("Opción inválida o no implementada")
->>>>>>> a111963 (Agregado cargar json)
+
