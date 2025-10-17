@@ -197,11 +197,10 @@ def mostrar_opciones (opciones:tuple) ->None:
 
 def menu_clientes() ->None:
     opciones = ("Salir","Registrar cliente","Modificar datos del cliente","Eliminar cliente","Mostrar clientes ",)
-    regex_dni = re.compile(r'^\d{7,8}$')
     while True:
         
         mostrar_opciones(opciones)
-        opcion=input("Ingrese una opcion de las que se les muestran :")
+        opcion=input("Ingrese una de las opciones: ")
         if opcion == "1":
             break
         elif opcion == "2":
@@ -222,9 +221,9 @@ def menu_clientes() ->None:
             dni = ut.validar_dni()
             eliminado = eliminar_datos(dni,RUTA_clientes)
             if eliminado:
-                print("se ah eliminado la persona correctamente")
+                print("Se ha eliminado la persona correctamente")
             else: 
-                print("no se escontro a la persona en nuestro registro")
+                print("No se escontró a la persona en nuestro registro")
 
         elif opcion == "5":
             listas = listar_clientes(RUTA_clientes)
@@ -235,7 +234,7 @@ def menu_clientes() ->None:
                 print("-" * 30)
 
         else : 
-            print("opcion invalida ingrese una de las que se les mostro \n")
+            print("opción no válida, intente nuevamente \n")
 if __name__ == "__main__":
     menu_clientes()
     

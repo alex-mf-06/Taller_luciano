@@ -181,6 +181,73 @@ def validar_tipo() -> str :
             print("tipo invalido")
 
 
+def validar_n_factura():
+    patron_n_factura = r"^\d{4}-\d{8}$"
+    while True:
+        n_factura = input("Ingrese el número de factura (ej: 0001-00001234): ").strip()
+        if re.match(patron_n_factura, n_factura):
+            if confirmar_dato("número de factura", n_factura):
+                return n_factura
+        else:
+            print("Número de factura inválido. Formato correcto: 0001-00001234")
+
+def validar_tipo_factura():
+    patron_tipo_factura = r"^[ABC]$"
+    while True:
+        tipo = input("Ingrese tipo de factura (A/B/C): ").strip().upper()
+        if re.match(patron_tipo_factura, tipo):
+            if confirmar_dato("tipo de factura", tipo):
+                return tipo
+        else:
+            print("Tipo de factura inválido. Debe ser A, B o C")
+
+def validar_fecha():
+    patron_fecha = r"^\d{4}-\d{2}-\d{2}$"
+    while True:
+        fecha = input("Ingrese la fecha de emisión (YYYY-MM-DD): ").strip()
+        if re.match(patron_fecha, fecha):
+            if confirmar_dato("fecha de emisión", fecha):
+                return fecha
+        else:
+            print("Fecha inválida. Formato correcto: YYYY-MM-DD")
+
+def validar_items_factura():
+    patron_item = r"^\d+$"
+    items = [] #lista para guardar las cantidades de los productos incluidos en la factura
+    while True:
+        cantidad = input("Ingrese cantidad de un item (o ENTER para terminar): ").strip()
+        if cantidad == "":
+            break
+        if re.match(patron_item, cantidad):
+            if confirmar_dato("cantidad del item", cantidad):
+                items.append(int(cantidad))
+        else:
+            print("Cantidad inválida. Debe ser un número entero positivo")
+    return items
+
+def validar_forma_pago():
+    opciones_pago = ["Efectivo", "Transferencia", "Tarjeta"]
+    while True:
+        mostrar_opciones(opciones_pago)
+        pago = input("Seleccione forma de pago: ").strip().capitalize()
+        if pago in opciones_pago:
+            if confirmar_dato("forma de pago", pago):
+                return pago
+        else:
+            print("Opción inválida. Debe elegir una de las opciones mostradas")
+
+def validar_origen():
+    opciones_origen = ["manual", "Arca"]
+    while True:
+        mostrar_opciones(opciones_origen)
+        origen = input("Seleccione origen de la factura: ").strip().capitalize()
+        if origen.lower() in [o.lower() for o in opciones_origen]:
+            if confirmar_dato("origen", origen):
+                return origen
+        else:
+            print("Opción inválida. Debe elegir 'manual' o 'Arca'")
+
+
 if __name__  == "__main__" :
     nombre = confirmar_nombre()
     print(nombre)
