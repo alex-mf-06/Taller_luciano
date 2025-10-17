@@ -1,7 +1,6 @@
 
 import sys
 import facturacion
-import stock
 import reportes
 import clientes as cl
 import vehiculos as vh
@@ -49,19 +48,8 @@ def main():
             emp.menu_empleados()
         elif opcion == "5":
             facturacion.menu_facturacion()
-        elif opcion == "6":
-            stock.menu_stock()
         elif opcion == "7":
             reportes.menu_reportes()
-        elif opcion == "8":
-            #compras.menu_compras()
-            pass
-        elif opcion == "9":
-            #pagos.menu_pagos()
-            pass
-        elif opcion == "10":
-            pass
-            #gastos.menu_gastos()
         elif opcion == "0":
             print("Saliendo del sistema...")
             sys.exit()

@@ -53,6 +53,7 @@ def menu_empleados() -> None :
                 print("-" * 30)
         else : 
             print("opcion invalida ingrese una de las que se les mostro \n")
+            
 if __name__ == "__main__":
 
     menu_empleados()
