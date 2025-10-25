@@ -1,78 +1,115 @@
-# reportes.py
-# Módulo para gestionar reportes del taller
+import json 
+import os 
+import utils as ut
 
-def menu_reportes():
-    while True:
-        print("\n=== Módulo Reportes ===")
-        print("1. Reporte de sueldos de empleados")
-        print("2. Cantidad de paños de pintura pintados por mes")
-        print("3. Días de chapa por vehículo")
-        print("4. Productos más usados")
-        print("5. Vehículos atendidos por mes")
-        print("6. Consumo de materiales por orden")
-        print("0. Volver al menú principal")
+ruta_gastos = os.path.join("datos", "gastos.json")
+ruta_ordenes = os.path.join("datos", "ordenes.json")
+ruta_facturacion = os.path.join("datos", "facturacion.json")
+ruta_empleados = os.path.join("datos", "empleados.json")
 
-        opcion = input("Seleccione una opción: ")
+def cargar_datos(r_archivo: str) -> list:
+    """
+    Se encarga de cargar los datos de un archivo JSON
+    Devuelve una lista vacia [] si:
+        . El archivo no exite
+        . El archivo se encuentra vacio
+    """
 
-        if opcion == "1":
-            reporte_sueldos_empleados()
-        elif opcion == "2":
-            reporte_panos_pintura()
-        elif opcion == "3":
-            reporte_dias_chapa()
-        elif opcion == "4":
-            reporte_productos_mas_usados()
-        elif opcion == "5":
-            reporte_vehiculos_atendidos()
-        elif opcion == "6":
-            reporte_consumo_materiales()
-        elif opcion == "0":
-            break
-        else:
-            print("Opción inválida, intente nuevamente.")
+    if not os.path.exists(r_archivo): # verifica si existe el archivo
+        return []
+    
+    try:
+        with open(r_archivo, 'r', encoding= 'utf-8') as hoja:
+            datos = json.load(hoja)
+            if isinstance(datos, list):
+                return datos
+            else:
+                return []
+                
+    except json.JSONDecodeError: #rotos o invalidos
+        return []
+    except Exception: # cualquier otro error
+        return []
 
-# -------------------------------------------------
-# Funciones de cada reporte con pre y post cond.
-# -------------------------------------------------
 
-def reporte_sueldos_empleados():
+def gatos_x_categoria(ruta_gastos: str):
     """
-    Pre: Se tiene una lista de empleados y su información salarial.
-    Post: Muestra los sueldos de cada empleado filtrados por mes o período.
-    """
-    pass
+    Se encarga de hacer un reporte de gastos por categoria con el
+    monto y su categoria
+    
+    Pre: EL archivo JSON debe cumplir lo siguiente:
+        . Debe ser un archivo existente
+        . Debe contener 'monto' y 'categoria'
+    Post: Retorna un resumen de los gastos agrupados por categoria 
+    """ 
+    lista_gastos = cargar_datos(ruta_gastos)
 
-def reporte_panos_pintura():
-    """
-    Pre: Se tiene registro de las órdenes de pintura realizadas.
-    Post: Muestra la cantidad de paños de pintura pintados por mes, por vehículo o tipo de pintura.
-    """
-    pass
+    if not lista_gastos:
+        print("No hay datos cargados para generar el reporte")
+        return 
+    
+    resumen = {}
+    total = 0
 
-def reporte_dias_chapa():
-    """
-    Pre: Se tienen registros de ingreso y salida de vehículos en chapa.
-    Post: Calcula y muestra la cantidad de días que cada vehículo pasó en chapa.
-    """
-    pass
+    #El .get() Trabaja de la misma manera que if pero con un solo else
+    for gasto in lista_gastos:
+    #     if "categoria" in gasto:
+    #         categoria = gasto["categoria"]
+    #     else:
+    #         categoria = gasto["Sin categoria"]
+    
+    #     print(f"Gasto en: {categoria}")
+        try:
+            categoria = gasto.get("categoria", "Sin categoria")
+            monto = float(gasto.get("monto", 0))
+            if categoria in resumen:
+                resumen[categoria] += monto
+            else:
+                resumen[categoria] = monto
+        except ValueError:
+            print(f"El monto '{gasto.get('monto')}'no es un numero") 
 
-def reporte_productos_mas_usados():
-    """
-    Pre: Se tiene registro del consumo de productos por orden.
-    Post: Muestra los productos más utilizados por período.
-    """
-    pass
+    print("--- REPORTE: GASTOS POR CATEGORIA ---")
+    print("=====================================")
+    for categoria, total in sorted(resumen.items()):
+        print(f"{categoria:<25} | ${total:>10,.2f}")
+    print("--------------------------------")
+    print(f"{'SUMA TOTAL DE GASTOS':<25} | ${total:10,.2f}")
 
-def reporte_vehiculos_atendidos():
-    """
-    Pre: Se tienen registros de las órdenes completadas.
-    Post: Muestra la cantidad de vehículos atendidos por mes.
-    """
-    pass
 
-def reporte_consumo_materiales():
+def vehiculos_atendidos_x_mes(ruta_ordenes: str):
     """
-    Pre: Se tiene registro del uso de materiales por orden.
-    Post: Muestra la cantidad de productos usados por orden de trabajo.
+    Genera un reporte de los vehiculos que se atendieron por mes
+
+    Pre:El archivo JSON debe cumplir lo siguiente:
+        . Debe ser un archivo existente
+        . Debe contener 'estado' y 'fecha de finalizacion'
+    Post: Devuelve la cantidad de ordenes con estado 'finalizada agrupados por meso y año
     """
-    pass
+
+    lista_ordenes = cargar_datos(ruta_datos)
+
+    if not lista_ordenes:
+        print("No hay datos en ordenes para gener el reporte.")
+        return
+
+    resumen = {}
+    total = 0
+
+    for orden in lista_ordenes:
+        estado = orden.get("estado")
+        f_fin = orden.get("Fecha_finalizacion")
+        if estado == "Finalizada" and f_fin:
+            periodo = ut.obtener_mes_anio(f_fin)
+            if periodo in resumen:
+                resumen[periodo] += 1
+            else:
+                resumen[periodo] = 1
+            total += 1
+    print("--- REPORTE: GASTOS VEHICULOS ATENDIDOS POR MES/AÑO ---")
+    print("=======================================================")
+    for periodo, cantidad in sorted(resumen.items()):
+        print(f"{periodo:<25} | {cantidad:15} vehiculos")
+    
+    print(f"{'TOTAL GENERAL':<25} | {total:15} vehiculos")
+

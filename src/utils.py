@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 import re 
 
@@ -27,6 +28,8 @@ def validar_iterable(lista: List) -> bool:
         # Cualquier otro error inesperado
         print("Error al validar la lista:", e)
         return False
+
+        
 def confirmar_dato(etiqueta: str, valor: str) -> bool:
     """
     Solicita al usuario que confirme si un dato ingresado es correcto.
@@ -42,6 +45,7 @@ def confirmar_dato(etiqueta: str, valor: str) -> bool:
         if confirmacion in ['s', 'n']:
             return confirmacion == 's'
         print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
+
 
 def validar_dni () -> str :
     regex_dni = re.compile(r'^\d{7,8}$')
@@ -68,6 +72,7 @@ def validar_numero() -> str :
         else:
             print("Teléfono inválido. Debe contener solo números y tener entre 7 y 15 dígitos.")
 
+
 def validar_email() -> str : 
     """
     Solicita, valida y confirma un email. El email es opcional.
@@ -86,6 +91,7 @@ def validar_email() -> str :
         else:
             print("Email inválido.")
 
+
 def confirmar_nombre () -> str : 
     """solicita, valida y confirma un nombre de usuario.
     El nombre debe tener al menos 6 caracteres y  puede contener solo letras,
@@ -103,6 +109,27 @@ def confirmar_nombre () -> str :
             print("Nombre inválido. No puede estar vacío.")
 
 
+def obtener_mes_anio(fecha_str: str) -> str:
+    """
+    Recibe una fecha en formato string (YYYY-MM-DD) y devuelve 
+    un string con el mes y el año en español (ej: "Octubre 2025").
+    """
+    try:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
+
+        meses = {
+            1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril", 
+            5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto", 
+            9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
+        }
+
+        nombre_mes = meses.get(fecha.month, "Mes Desconocido")
+        return f"{nombre_mes} {fecha.year}"
+    
+    except ValueError:
+        return "Fecha Inválida"
+
+
 def confirmar_direccion() -> str :
     """
     esta funcion  se encarga de que el usuario ingrese la direccion de su  domicilio y que solo salga de la funcion si ingresa la direccion y confirma que si es correcta.
@@ -111,6 +138,8 @@ def confirmar_direccion() -> str :
         direccion = input("ingrese la direccion : ").strip()
         if confirmar_dato("direccion",direccion):
             return direccion 
+
+
 def mostrar_opciones (opciones:tuple) ->None: 
     """
     no retorna nada solo muestra un menu de opciones .
@@ -120,6 +149,7 @@ def mostrar_opciones (opciones:tuple) ->None:
             print(f"{i} - {opcion}\n")
     else : 
         print("las opciones no se pueden mostrar por que hubo un fallo")
+
 
 def Validar_patente() -> str : 
      """
@@ -134,6 +164,7 @@ def Validar_patente() -> str :
         else:
             print("Patente inválida. Debe ser ABC123 o 12ABC34")
 
+
 def validar_marca () -> str : 
     """
     valida que si ponga la marca de un auto y ademas que confirme su eleccion solo asi sale de la funcion . 
@@ -144,6 +175,7 @@ def validar_marca () -> str :
             return marca
         else:
             print("marca invalida")
+
 
 def validar_modelo () -> str : 
     """
@@ -156,6 +188,7 @@ def validar_modelo () -> str :
         else:
             print("modelo invalido")
     
+
 def validar_año() -> str : 
     """
     la funcion se encarga de de qie el usuario salga de la funcion si pone el año que sea valido y ademas que confirme la respuesta del usuario.
@@ -167,6 +200,7 @@ def validar_año() -> str :
             return anio
         else:
             print("año invalido")
+
 
 def validar_tipo() -> str : 
     """
@@ -191,6 +225,7 @@ def validar_n_factura():
         else:
             print("Número de factura inválido. Formato correcto: 0001-00001234")
 
+
 def validar_tipo_factura():
     patron_tipo_factura = r"^[ABC]$"
     while True:
@@ -201,6 +236,7 @@ def validar_tipo_factura():
         else:
             print("Tipo de factura inválido. Debe ser A, B o C")
 
+
 def validar_fecha():
     patron_fecha = r"^\d{4}-\d{2}-\d{2}$"
     while True:
@@ -210,6 +246,7 @@ def validar_fecha():
                 return fecha
         else:
             print("Fecha inválida. Formato correcto: YYYY-MM-DD")
+
 
 def validar_items_factura():
     patron_item = r"^\d+$"
@@ -225,6 +262,7 @@ def validar_items_factura():
             print("Cantidad inválida. Debe ser un número entero positivo")
     return items
 
+
 def validar_forma_pago():
     opciones_pago = ["Efectivo", "Transferencia", "Tarjeta"]
     while True:
@@ -235,6 +273,7 @@ def validar_forma_pago():
                 return pago
         else:
             print("Opción inválida. Debe elegir una de las opciones mostradas")
+
 
 def validar_origen():
     opciones_origen = ["manual", "Arca"]
