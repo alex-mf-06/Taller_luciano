@@ -1,42 +1,115 @@
 import json
 import os
-import facturacion
-import re
+import utils as ut
+from datetime import datetime
 
 RUTA_FACTURACION = os.path.join("datos", "facturacion.json")
+RUTA_CLIENTES = os.path.join("datos", "clientes.json")
+RUTA_VEHICULOS = os.path.join("datos","vehiculos.json")
+
+lista_clientes = ut.cargar_json(RUTA_CLIENTES)
+lista_vehiculos = ut.cargar_json(RUTA_VEHICULOS)
+lista_facturas = ut.cargar_json(RUTA_FACTURACION)
 
 
-def cargar_facturacion():
-    """carga la lita de facturas desde el archivo json"""
-    if os.path.exists(RUTA_FACTURACION):
-        with open(RUTA_FACTURACION,"r", encoding="UTF-8") as archivo:
-            try:
-                lista_facturas = json.load(archivo)
-            except json.JSONDecodeError:
-                lista_facturas = []
-    else: 
-        lista_facturas = []
+def agregar_factura(lista_facturas, lista_clientes, lista_vehiculos):
+    """Crea una nueva factura, validando datos y guardando en el JSON"""
+    n_factura = ut.validar_n_factura()
+    tipo_factura = ut.validar_tipo_factura()
+    fecha =  datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    forma_pago = ut.validar_forma_pago()
+    origen = ut.validar_origen()
+    dni = ut.validar_dni()
+    cliente_encontrado = ut.buscar_x_dni(lista_clientes,dni)
+    if not cliente_encontrado:
+        print("El cliente no está registrado. Debe cargarlo antes de facturar.")
+        return lista_facturas
 
+    vehiculo_cliente = None
+    for vehiculo in lista_vehiculos:
+        if vehiculo["dni_cliente"] == dni:
+            vehiculo_cliente = vehiculo
+            break
+
+    if not vehiculo_cliente:
+        print("No se encontró vehículo asociado al cliente.")
+        return lista_facturas
+
+    print("\nIngrese los ítems de la factura (ENTER para terminar):")
+    items = []
+    while True:
+        descripcion = input("Descripción del ítem (ENTER para terminar): ").strip()
+        if descripcion == "":
+            break
+
+        cantidad = input("Cantidad: ").strip()
+        precio = input("Precio unitario: ").strip()
+
+        try:
+            cantidad = int(cantidad)
+            precio = float(precio)
+        except ValueError:
+            print("Error: cantidad y precio deben ser números.")
+            continue
+
+        subtotal = cantidad * precio
+        items.append({
+            "descripcion": descripcion,
+            "cantidad": cantidad,
+            "precio_unitario": precio,
+            "subtotal": subtotal
+        })
+
+    total = sum(item["subtotal"] for item in items) #lista por comprension en caso de que haya mas de un item
+    factura = {
+        "numero": n_factura,
+        "tipo": tipo_factura,
+        "fecha": fecha,
+        "forma_pago": forma_pago,
+        "origen": origen,
+        "cliente": {
+            "dni": cliente_encontrado["dni"],
+            "nombre": cliente_encontrado["nombre"],
+            "apellido": cliente_encontrado.get("apellido", "")
+        },
+        "vehiculo": {
+            "patente": vehiculo_cliente["patente"],
+            "marca": vehiculo_cliente["marca"],
+            "modelo": vehiculo_cliente["modelo"],
+            "anio": vehiculo_cliente["anio"]
+        },
+        "items": items,
+        "total": total
+    }
+
+    lista_facturas.append(factura)
+    ut.guardar_json(lista_facturas,RUTA_FACTURACION)
+
+    print("\nFactura creada correctamente.")
     return lista_facturas
 
 
-
-def crear_factura():
+def eliminar_factura(lista_facturas):
     """
-    Crea una nueva factura a partir de una orden de trabajo finalizada.
-
-    Pre-condición:d
-        - Requiere el ID de una orden de trabajo.
-        - La orden debe estar completa y con el estado 'Finalizada'.
-
-    Post-condición:
-        - Se crea un nuevo registro de factura con un ID único.
-        - El registro contiene los datos del cliente, vehículo, ítems y el total.
-        - El estado de la orden de trabajo se actualiza a 'Facturada'.
+    Permite eliminar una factura por su número.
     """
-    
+    try:
+        numero_factura = input("Ingrese el número de factura a eliminar: (formato 0001-00001234)").strip()
 
-def buscar_factura():
+        for factura in lista_facturas:
+            if factura["numero"] == numero_factura:
+                lista_facturas.remove(factura)
+                print(f"La factura {numero_factura} fue eliminada correctamente.")
+                ut.guardar_json(lista_facturas, RUTA_FACTURACION)
+                break 
+        else:
+            print("No se encontró una factura con ese número.")
+
+    except ValueError:
+        print("Error al eliminar la factura.")
+
+
+def buscar_factura(lista_facturas):
     """
     Busca una factura por un criterio de búsqueda.
 
@@ -47,45 +120,49 @@ def buscar_factura():
         - Si se encuentra, muestra los detalles de la factura.
         - Si no se encuentra, notifica al usuario.
     """
-    pass
+    numero = input("Ingrese el número de factura a buscar: ").strip()
+    factura_encontrada = None
+    for factura in lista_facturas:
+        if factura["numero"] == numero:
+            factura_encontrada = factura
+            break
+    if factura_encontrada:
+        print("\nFactura encontrada:")
+        for clave, valor in factura_encontrada.items():
+            print(f"{clave}: {valor}")
+    else:
+        print("No se encontró ninguna factura con ese número.")
 
-def listar_facturas():
-    """
-    Muestra un listado de facturas según el criterio seleccionado.
 
-    Pre-condición:
-        - El archivo 'facturas.json' debe existir.
 
-    Post-condición:
-        - Se muestra una lista formateada de las facturas que coinciden con el criterio de búsqueda.
-        - Si no hay coincidencias, se notifica al usuario.
-    """
-    pass
+
 
 def menu_facturacion():
     """
     Muestra el menú principal del módulo de facturación.
     """
+    opciones = ("Agregar factura manualmente", "Buscar factura", "Listar facturas", "Eliminar factura")
     while True:
-        print("\n=== Módulo Facturación ===")
-        print("1. Crear factura a partir de una orden")
-        print("2. Buscar factura")
-        print("3. Listar facturas")
-        print("0. Volver al menú principal")
+        
+        ut.mostrar_opciones(opciones)
 
         try:
-            opcion = int(input("Seleccione una opción: "))
+            opcion = input("Seleccione una opción: ")
 
-            if opcion == 1:
-                crear_factura()
-            elif opcion == 2:
-                buscar_factura()
-            elif opcion == 3:
-                listar_facturas()
-            elif opcion == 0:
+            if opcion == "1":
+                agregar_factura(lista_facturas, lista_clientes, lista_vehiculos)
+            elif opcion == "2":
+                buscar_factura(lista_facturas)
+            elif opcion == "3":
+                ut.listar_datos(lista_facturas)
+            elif opcion == "4":
+                eliminar_factura(lista_facturas)
+            elif opcion == "0":
                 break
             else:
                 print("Opción inválida, intente nuevamente.")
         except ValueError:
             print("Valor invalido. Por favor, ingrese un numero.")
             continue
+
+

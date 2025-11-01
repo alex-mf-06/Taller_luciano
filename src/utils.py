@@ -1,5 +1,7 @@
 from typing import List
-import re 
+import json
+import os
+import re
 
 def validar_iterable(lista: List) -> bool:
     """
@@ -44,6 +46,8 @@ def confirmar_dato(etiqueta: str, valor: str) -> bool:
         print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
 
 def validar_dni () -> str :
+    """pre: Solicita al usuario que ingrese su DNI
+     post: Valida que el DNI contenga 7 u 8 digitos, en caso de no ser así vuelve a pedir el dato hasta que sea correcto"""
     regex_dni = re.compile(r'^\d{7,8}$')
     while True:
         dni = input("Ingrese el DNI del cliente (7 u 8 dígitos): ").strip() # Eliminar espacios en blanco al inicio y final
@@ -57,7 +61,7 @@ def validar_dni () -> str :
 def validar_numero() -> str : 
     """
     Solicita, valida y confirma un número de teléfono.
-    El número debe tener entre 7 y 15 dígitos y puede comenzar con '+'.
+    El número debe tener entre 7 y 15 dígitos y puede comenzar con '+'. En caso de no ser así vuelve a pedir el dato
     """
     regex_telefono = re.compile(r'^\+?\d{7,15}$')
     while True:
@@ -182,6 +186,8 @@ def validar_tipo() -> str :
 
 
 def validar_n_factura():
+    """pre: Solicita al usuario el número de factura a ingresar
+    post: En caso de ser válido se carga en el json, de no ser así vuelve a pedir el dato"""
     patron_n_factura = r"^\d{4}-\d{8}$"
     while True:
         n_factura = input("Ingrese el número de factura (ej: 0001-00001234): ").strip()
@@ -201,15 +207,6 @@ def validar_tipo_factura():
         else:
             print("Tipo de factura inválido. Debe ser A, B o C")
 
-def validar_fecha():
-    patron_fecha = r"^\d{4}-\d{2}-\d{2}$"
-    while True:
-        fecha = input("Ingrese la fecha de emisión (YYYY-MM-DD): ").strip()
-        if re.match(patron_fecha, fecha):
-            if confirmar_dato("fecha de emisión", fecha):
-                return fecha
-        else:
-            print("Fecha inválida. Formato correcto: YYYY-MM-DD")
 
 def validar_items_factura():
     patron_item = r"^\d+$"
@@ -246,6 +243,84 @@ def validar_origen():
                 return origen
         else:
             print("Opción inválida. Debe elegir 'manual' o 'Arca'")
+
+def buscar_x_dni(lista_datos, dni):
+    """Devuelve el primer elemento que coincide con el DNI, o None si no existe"""
+    for item in lista_datos:
+        if item["dni"] == dni:   
+            return item
+    return None
+
+
+def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
+    """
+    Busca elementos en una lista según una clave de DNI.
+    """
+    try:
+        dni = validar_dni() 
+        encontrados = [item for item in lista_datos if item[clave_dni] == dni]
+
+        if encontrados:
+            print(f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
+            for i, item in enumerate(encontrados, start=1):
+                print(f"\n{nombre_lista.capitalize()} {i}:")
+                for clave, valor in item.items():
+                    print(f"{clave.capitalize()}: {valor}")
+        else:
+            print(f"No se encontraron {nombre_lista} para ese DNI.")
+    except Exception as e:
+        print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
+
+def guardar_json(lista,ruta):
+    """pre: Guarda el archivo JSON.
+    post: Si ocurre un error durante la escritura, se muestra un mensaje."""
+    with open(ruta,"w", encoding="UTF-8") as archivo:
+        try:
+            json.dump(lista, archivo, indent=4)
+        except FileNotFoundError:
+            print("No se encontró la ruta del archivo")
+        except Exception as e:
+            print(f"Error al guardar el archivo:  {e}")
+
+def cargar_json(ruta: str) -> list:
+    """
+    Carga un archivo JSON de forma segura.
+    - Si el archivo existe y es válido, devuelve la lista cargada.
+    - Si el archivo NO existe, está vacío o corrupto, devuelve una lista vacía [].
+    """
+    # Si el archivo NO existe, entrega una lista vacía y termina.
+    if not os.path.exists(ruta):
+        return []
+
+    # Si el archivo SÍ existe, intenta leerlo.
+    with open(ruta, "r", encoding="utf-8") as file:
+        try:
+            # Si tiene contenido JSON válido, lo devuelve.
+            return json.load(file)
+        except json.JSONDecodeError:
+            # Si está vacío o corrupto, entrega una lista vacía.
+            return []
+            
+def listar_datos(lista_datos, nombre_tipo="dato"):
+    """
+    Lista cualquier tipo de datos cargados de manera legible.
+    - lista_datos: lista de diccionarios con los datos a mostrar
+    - nombre_tipo: string para mostrar el tipo de dato (ej: 'vehículo', 'cliente')
+    """
+    try:
+        if not lista_datos:
+            print(f"No hay {nombre_tipo}s cargados.")
+            return
+
+        print(f"\nListado de {len(lista_datos)} {nombre_tipo}(s):")
+        for i, item in enumerate(lista_datos, start=1):
+            print(f"\n{nombre_tipo.capitalize()} {i}:")
+            for clave, valor in item.items():
+                print(f"{clave.capitalize()}: {valor}")
+    except (TypeError, KeyError):
+        print(f"Error al listar los {nombre_tipo}s")
+    except Exception as e:
+        print(f"Ocurrió un error al listar los {nombre_tipo}s: {e}")
 
 
 if __name__  == "__main__" :
