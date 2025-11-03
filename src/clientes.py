@@ -1,7 +1,6 @@
-from datetime import datetime
+
 from typing import List
 import re 
-import json 
 import os
 import utils as ut
 
@@ -84,16 +83,14 @@ def menu_clientes() ->None:
                 print("No se escontró a la persona en nuestro registro")
 
         elif opcion == "5":
-            listas = listar_clientes(RUTA_clientes)
-            
+            listas = listar_clientes(RUTA_clientes)          
             for cliente in listas:
                 for clave, valor in cliente.items():
                     print(f"{clave.capitalize()}: {valor}")
                 print("-" * 30)
 
         else : 
-            print("opción no válida, intente nuevamente \n")
-            print("opcion invalida ingrese una de las que se les mostro \n")
+            print("Opción no válida, intente nuevamente.")           
 
 
 if __name__ == "__main__":
