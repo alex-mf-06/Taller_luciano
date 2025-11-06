@@ -3,12 +3,7 @@ import json
 import re
 import clientes as cl
 import utils as ut
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-# Sube un nivel en el directorio para llegar a la raíz del proyecto (Taller_Luciano)
-project_root = os.path.dirname(script_dir)
-# Construye la ruta completa y correcta al archivo .json
-RUTA_empleados = os.path.join(project_root, "datos", "empleados.json")
+from config import RUTA_EMPLEADOS
 
 
 def menu_empleados() -> None:
@@ -27,29 +22,29 @@ def menu_empleados() -> None:
         if opcion == "1":
             break
         elif opcion == "2":
-            ut.registrar_clientes(RUTA_empleados)
+            ut.registrar_clientes(RUTA_EMPLEADOS)
             
         elif opcion == "3":
 
             dni = ut.validar_dni()
-            encontrado = ut.obtener_cliente_por_dni(dni,RUTA_empleados)
+            encontrado = ut.obtener_cliente_por_dni(dni,RUTA_EMPLEADOS)
             if encontrado : 
                 print(f"Cliente encontrado: \n")
-                ut.modificar_datos(dni,RUTA_empleados)
+                ut.modificar_datos(dni,RUTA_EMPLEADOS)
                 
             else : 
                 print("no se encontro el cliente\n")
 
         elif opcion == "4":
             dni = ut.validar_dni()
-            eliminado = ut.eliminar_datos(dni,RUTA_empleados)
+            eliminado = ut.eliminar_datos(dni,RUTA_EMPLEADOS)
             if eliminado:
                 print("se ah eliminado la persona correctamente")
             else:
                 print("no se escontro a la persona en nuestro registro")
 
         elif opcion == "5":
-            listas = ut.listar_datos(RUTA_empleados)
+            listas = ut.listar_datos(RUTA_EMPLEADOS)
             
             for cliente in listas:
                 for clave, valor in cliente.items():
