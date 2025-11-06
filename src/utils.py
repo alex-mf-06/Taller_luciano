@@ -488,7 +488,7 @@ def Validar_patente() -> str:
     retorna el str que seria la patente
     """
     patron_patente = re.compile(
-        "^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$"
+        r"^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$"
     )  # expresiones regulares para validación de datos
     while True:
         patente = input("Ingrese la patente del vehículo :").upper()
@@ -776,7 +776,6 @@ def listar_datos(lista_datos, nombre_tipo="dato"):
 # MENU ----------------------------------------------------------------------------------------------------------
 
 def opciones_menu(titulo: str, opciones: list) -> None:
-
     print(f"\n--- MENÚ: {titulo.upper()} ---")
 
     for i, opcion in enumerate(opciones, start=1):
