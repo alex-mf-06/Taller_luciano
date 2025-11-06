@@ -27,30 +27,30 @@ def menu_empleados() -> None:
         if opcion == "1":
             break
         elif opcion == "2":
-            cl.registrar_clientes(RUTA_empleados)
-
+            ut.registrar_clientes(RUTA_empleados)
+            
         elif opcion == "3":
 
             dni = ut.validar_dni()
-            encontrado = ut.buscar_x_dni(dni, RUTA_empleados)
-            if encontrado:
-                print("Cliente encontrado: \n")
-                cl.modificar_datos(dni, RUTA_empleados)
-
-            else:
+            encontrado = ut.obtener_cliente_por_dni(dni,RUTA_empleados)
+            if encontrado : 
+                print(f"Cliente encontrado: \n")
+                ut.modificar_datos(dni,RUTA_empleados)
+                
+            else : 
                 print("no se encontro el cliente\n")
 
         elif opcion == "4":
             dni = ut.validar_dni()
-            eliminado = cl.eliminar_datos(dni, RUTA_empleados)
+            eliminado = ut.eliminar_datos(dni,RUTA_empleados)
             if eliminado:
                 print("se ah eliminado la persona correctamente")
             else:
                 print("no se escontro a la persona en nuestro registro")
 
         elif opcion == "5":
-            listas = cl.listar_clientes(RUTA_empleados)
-
+            listas = ut.listar_datos(RUTA_empleados)
+            
             for cliente in listas:
                 for clave, valor in cliente.items():
                     print(f"{clave.capitalize()}: {valor}")

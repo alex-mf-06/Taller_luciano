@@ -1,7 +1,6 @@
-from datetime import datetime
+
 from typing import List
-import re
-import json
+import re 
 import os
 import utils as ut
 
@@ -15,136 +14,6 @@ RUTA_clientes = os.path.join(project_root, "datos", "clientes.json")
 
 
 
-lista_clientes = ut.cargar_json(RUTA_clientes) 
-
-
-def guardar_clientes(clientes: List, ruta_archivo: str) -> None:
-    """Guarda la lista de clientes en un archivo JSON con formato legible."""
-    with open(ruta_archivo, "w", encoding="utf-8") as file:
-        json.dump(clientes, file, indent=4, ensure_ascii=False)
-    print(f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
-
-
-def confirmar_dato(etiqueta: str, valor: str) -> bool:
-    """
-    Solicita al usuario que confirme si un dato ingresado es correcto.
-    Precondiciones:
-        - etiqueta: str, la etiqueta del dato (por ejemplo, "DNI", "nombre").
-        - valor: str, el valor del dato a confirmar.
-    Postcondiciones:
-        - Devuelve True si el usuario confirma que el dato es correcto ('s') y False si no lo confirma.
-    """
-
-    while True:
-        confirmacion = (
-            input(f"¿Confirma que el {etiqueta} '{valor}' es correcto? (s/n): ")
-            .strip()
-            .lower()
-        )
-        if confirmacion in ["s", "n"]:
-            return confirmacion == "s"
-        print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
-
-
-def registrar_clientes(RUTA_ARCHIVO: str) -> None:
-    """
-    Permite registrar clientes validados con expresiones regulares y guardar los datos en un archivo JSON.
-    Precondiciones:
-        - El usuario debe ingresar correctamente los siguientes datos:
-            * DNI: numérico, de 7 u 8 dígitos.
-            * Nombre: no vacío.
-            * Teléfono: de 7 a 15 dígitos (puede comenzar con '+').
-            * Email: formato válido (opcional, puede dejarse vacío).
-        - El archivo 'clientes.json' puede existir o no.
-    Postcondiciones:
-        - Si el archivo no existe, se crea automáticamente.
-        - Si el archivo existe, se actualiza agregando el nuevo cliente.
-        - Si el DNI ya está registrado, no se agrega un nuevo cliente.
-        - Los datos se almacenan en formato JSON con indentación y codificación UTF-8.
-        - Se imprime un mensaje informando el resultado de la operación.
-    """
-
-    # solicitud de datos
-    dni = ut.validar_dni()
-
-    nombre = ut.confirmar_nombre()
-
-    telefono = ut.validar_numero()
-
-    email = ut.validar_email()
-
-    direccion = ut.confirmar_direccion()
-
-    clientes = lista_clientes(RUTA_clientes)
-
-    for cliente in clientes:
-        if cliente["dni"] == dni:
-            print("El DNI ya está registrado.")
-            return
-
-    cliente = {
-        "dni": dni,
-        "nombre": nombre,
-        "telefono": telefono,
-        "email": email,
-        "direccion": direccion,
-        "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-    clientes.append(cliente)
-    ut.guardar_json(clientes, RUTA_ARCHIVO)
-    print(f"la persona {nombre} esta registrado exitosamente \n")
-
-
-def modificar_datos(dni: str, RUTA_archivo) -> None:
-    """
-    Pre:
-        - dni: str no vacío, representa el documento del cliente ya registrado.
-        - debe tener la ruta de archivo que quiere nodificar
-    Post:
-        - guarda los datos modificado si se encuentra a la persona segun su dni
-        retorna true si la persona si se encuentra y la modifican y false si no
-    """
-    datos = ut.cargar_json(RUTA_archivo)
-    encontrado = False
-    for dato in datos:
-        if dato.get("dni") == dni:
-            nuevo_nombre = ut.confirmar_nombre()
-            nuevo_telefono = ut.validar_numero()
-            nueva_direccion = ut.confirmar_direccion()
-            if nuevo_nombre:
-                dato["nombre"] = nuevo_nombre
-            if nuevo_telefono:
-                dato["telefono"] = nuevo_telefono
-            if nueva_direccion:
-                dato["direccion"] = nueva_direccion
-
-            print("Datos actualizados.")
-            encontrado = True
-            break
-    if encontrado:
-        guardar_clientes(datos, RUTA_archivo)
-
-
-def eliminar_datos(dni: str, RUTA_archivos: str) -> bool:
-    """
-    Pre:
-        - dni: str no vacío, representa el documento del cliente.
-    Post:
-        - Elimina al cliente si está en la base de datos.
-        - Retorna True si se eliminó, False si no se encontró.
-    """
-    datos = ut.cargar_json(RUTA_archivos)
-    datos_actualizados = [dato for dato in datos if dato.get("dni") != dni]
-    if len(datos) > len(datos_actualizados):
-        #  Si hubo un cambio, guardar la lista actualizada
-        guardar_clientes(
-            datos_actualizados, RUTA_archivos
-        )  # Asumo una función genérica guardar_datos
-        return True  # Eliminación exitosa
-    else:
-        return False  # No se encontró el DNI, no se eliminó nada
-
-
 def listar_clientes(RUTA_ARCHIVO) -> list:
     """
     Pre:
@@ -154,6 +23,7 @@ def listar_clientes(RUTA_ARCHIVO) -> list:
         - Si no hay clientes, devuelve lista vacía.
     """
     datos = ut.cargar_json(RUTA_ARCHIVO)
+    datos = ut.cargar_datos(RUTA_ARCHIVO)
     return datos
 
 
@@ -162,6 +32,11 @@ def buscar_cliente_por_dni(lista_clientes):
     Usa la función genérica de utils para buscar clientes por DNI.
     """
     ut.buscar_x_dni(lista_clientes, "dni", "clientes")
+    
+    clientes = ut.cargar_dni_(RUTA_archivo) # Usamos la función que carga el json pero solo los dni 
+    if dni in clientes:
+        return True 
+    return False 
 
 def mostrar_opciones(opciones: tuple) -> None:
     """
@@ -182,6 +57,8 @@ def menu_clientes() -> None:
         "Eliminar cliente",
         "Mostrar clientes ",
     )
+def menu_clientes() ->None:
+    opciones = ("Salir","Registrar cliente","Modificar datos del cliente","Eliminar cliente","Mostrar clientes ",)
     while True:
 
         mostrar_opciones(opciones)
@@ -189,7 +66,7 @@ def menu_clientes() -> None:
         if opcion == "1":
             break
         elif opcion == "2":
-            registrar_clientes(RUTA_clientes)
+            ut.registrar_datos(RUTA_clientes)
 
         elif opcion == "3":
 
@@ -197,24 +74,28 @@ def menu_clientes() -> None:
             encontrado = ut.buscar_x_dni(dni, RUTA_clientes)
             if encontrado:
                 print(f"Cliente encontrado: \n")
-                modificar_datos(dni, RUTA_clientes)
-
-            else:
+                ut.modificar_datos(dni,RUTA_clientes)
+                
+            else : 
                 print("no se encontro el cliente\n")
 
         elif opcion == "4":
             dni = ut.validar_dni()
-            eliminado = eliminar_datos(dni, RUTA_clientes)
+            eliminado = ut.eliminar_datos(dni,RUTA_clientes)
             if eliminado:
                 print("Se ha eliminado la persona correctamente")
             else:
                 print("No se escontró a la persona en nuestro registro")
 
         elif opcion == "5":
-            ut.listar_datos(lista_clientes,"cliente")
+            listas = listar_clientes(RUTA_clientes)          
+            for cliente in listas:
+                for clave, valor in cliente.items():
+                    print(f"{clave.capitalize()}: {valor}")
+                print("-" * 30)
 
-        else:
-            print("opción no válida, intente nuevamente \n")
+        else : 
+            print("Opción no válida, intente nuevamente.")           
 
 
 if __name__ == "__main__":
