@@ -550,7 +550,7 @@ def validar_modelo() -> str:
             print("modelo invalido")
 
 
-def validar_monto() -> float: # Funcion agregada para gastos.py
+def validar_monto() -> float:  # Funcion agregada para gastos.py
     """
     La funcion solicita y valida un nomnto positivo para gastos
     """
@@ -566,7 +566,7 @@ def validar_monto() -> float: # Funcion agregada para gastos.py
             print("ERROR. Ingrese un valor valido (ej: 1500.50)")
 
 
-def validar_categoria() -> str: #Funcion agregada para gastos.py
+def validar_categoria() -> str:  # Funcion agregada para gastos.py
     """
         -La funcion muestra una tupla fija de categorias disponibles
         -Valida que la opcion seleccionada sea un numero en el rango de la tupla
@@ -576,11 +576,12 @@ def validar_categoria() -> str: #Funcion agregada para gastos.py
 
     while True:
         print("---- SELECCIONE LA CATEGORIA DE GASTO DESEADA ----")
-        mostrar_opciones(categorias) # se muestra las opciones con mediante una funcion
+        # se muestra las opciones con mediante una funcion
+        mostrar_opciones(categorias)
         opcion = int(input("Ingrese la opcion deseada: "))
-        dato = opcion -1
+        dato = opcion - 1
         try:
-            if 0 <= opcion -1 < len(categorias):
+            if 0 <= opcion - 1 < len(categorias):
                 elegido = categorias[dato]
                 if confirmar_dato("Categoria:", elegido):
                     return f"Se seleccionó: {elegido}"
@@ -694,10 +695,11 @@ def validar_origen():
         else:
             print("Opción inválida. Debe elegir 'manual' o 'Arca'")
 
+
 def buscar_x_dni(lista_datos, dni):
     """Devuelve el primer elemento que coincide con el DNI, o None si no existe"""
     for item in lista_datos:
-        if item["dni"] == dni:   
+        if item["dni"] == dni:
             return item
     return None
 
@@ -707,11 +709,12 @@ def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
     Busca elementos en una lista según una clave de DNI.
     """
     try:
-        dni = validar_dni() 
+        dni = validar_dni()
         encontrados = [item for item in lista_datos if item[clave_dni] == dni]
 
         if encontrados:
-            print(f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
+            print(
+                f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
             for i, item in enumerate(encontrados, start=1):
                 print(f"\n{nombre_lista.capitalize()} {i}:")
                 for clave, valor in item.items():
@@ -721,16 +724,18 @@ def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
     except Exception as e:
         print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
 
-def guardar_json(lista,ruta):
+
+def guardar_json(lista, ruta):
     """pre: Guarda el archivo JSON.
     post: Si ocurre un error durante la escritura, se muestra un mensaje."""
-    with open(ruta,"w", encoding="UTF-8") as archivo:
+    with open(ruta, "w", encoding="UTF-8") as archivo:
         try:
             json.dump(lista, archivo, indent=4)
         except FileNotFoundError:
             print("No se encontró la ruta del archivo")
         except Exception as e:
             print(f"Error al guardar el archivo:  {e}")
+
 
 def cargar_json(ruta: str) -> list:
     """
@@ -750,7 +755,8 @@ def cargar_json(ruta: str) -> list:
         except json.JSONDecodeError:
             # Si está vacío o corrupto, entrega una lista vacía.
             return []
-            
+
+
 def listar_datos(lista_datos, nombre_tipo="dato"):
     """
     Lista cualquier tipo de datos cargados de manera legible.
@@ -759,7 +765,7 @@ def listar_datos(lista_datos, nombre_tipo="dato"):
     """
     try:
         if not lista_datos:
-            print(f"No hay {nombre_tipo} cargados.")#revisar
+            print(f"No hay {nombre_tipo} cargados.")  # revisar
             return
 
         print(f"\nListado de {len(lista_datos)} {nombre_tipo}(s):")
