@@ -825,7 +825,19 @@ def opciones_menu(titulo: str, opciones: list) -> None:
         print(f"{i}. {opcion}")
     print("-" * 60)
 
-
+def mostrar_info_diccionario(diccionario: List[dict]) -> None:
+    """
+    Muestra la información de una lista de diccionarios de manera legible.
+    - diccionario: dict con los datos a mostrar
+    """
+    try:
+        for item in diccionario:
+            print("-" * 30)
+            for clave, valor in item.items():
+                print(f"{clave.capitalize()}: {valor}")
+            print("-" * 30)
+    except Exception as e:
+        print(f"Ocurrió un error al mostrar la información: {e}")
 if __name__ == "__main__":
     nombre = confirmar_nombre()
     print(nombre)

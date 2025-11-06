@@ -45,10 +45,7 @@ def menu_clientes() ->None:
 
         elif opcion == "5":
             listas = ut.cargar_datos(RUTA_CLIENTES)
-            for cliente in listas:
-                for clave, valor in cliente.items():
-                    print(f"{clave.capitalize()}: {valor}")
-                print("-" * 30)
+            ut.mostrar_info_diccionario(listas)
 
         else : 
             print("Opción no válida, intente nuevamente.")           
