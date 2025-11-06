@@ -1,7 +1,7 @@
 import sys
 import facturacion
 import reportes
-#import stock
+# import stock
 
 import clientes as cl
 import vehiculos_reestructurado as vh
@@ -16,25 +16,25 @@ menu = {
     "3": ("Órdenes de trabajo", ot.menu_ordenes),
     "4": ("Empleados", emp.menu_empleados),
     "5": ("Facturación", fa.menu_facturacion),
-    "6": ("Reportes", rep.menu_reportes),###revisar
+    "6": ("Reportes", rep.menu_reportes),
     "0": ("Salir", lambda: sys.exit())
 }
 
 
 def main():
     menu_principal = (
-    "=== SISTEMA DE GESTIÓN DEL TALLER ===",
-    "1. Gestión de clientes",
-    "2. Gestión de vehículos",
-    "3. Órdenes de trabajo",
-    "4. Empleados",
-    "5. Facturación",
-    "6. Stock",
-    "7. Reportes",
-    "8. Compras",
-    "9. Pagos",
-    "10. Gastos",
-    "0. Salir"
+        "=== SISTEMA DE GESTIÓN DEL TALLER ===",
+        "1. Gestión de clientes",
+        "2. Gestión de vehículos",
+        "3. Órdenes de trabajo",
+        "4. Empleados",
+        "5. Facturación",
+        "6. Stock",
+        "7. Reportes",
+        "8. Compras",
+        "9. Pagos",
+        "10. Gastos",
+        "0. Salir"
     )
     while True:
         print("\n=== SISTEMA DE GESTIÓN DEL TALLER ===")
@@ -69,6 +69,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 def mostrar_menu():
     for key, valor in sorted(menu.items()):
