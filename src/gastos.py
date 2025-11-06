@@ -87,11 +87,59 @@ def mostrar_gasto(gasto):
 
 
 def listar_gasto():
-    pass
+    """
+    Lista todos los gastos registrados de manera legibile.
+    """
+
+    gastos = cargar_gastos()
+    if not gastos:
+        print("No hay registro de gastos disponibles")
+        return[]
+    print("\n--- LISTA DE GASTOS ---\n")
+    for gasto in gastos:
+        id_gasto = gasto.get("id", 0)
+        fecha = gasto.get("fecha", "N/A")
+        categoria = gasto.get("categoria", "N/A")
+        monto = gasto.get("monto", 0.0)
+        descripcion = gasto.get("descripcion", "N/A")
+        
+        print(f"{id_gasto} | {fecha} | {categoria} | ${monto:,.2f} | {descripcion}")
+
 
 def menu_gastos():
-    pass
+    opciones = ("Registrar gasto", "Listar gasto", "Volver al menú principal")
+    
+    while True:
+        print("\n--- MENU DE GASTOS ---")
+        ut.mostrar_opciones(opciones)
+        try:
+            opcion = int(input("Ingrese la opcion deseada (1-3): "))
+
+            if opcion not in [1,2,3]:
+                raise ValueError("Opcion fuera de rango")
+
+            print(f"Elegiste la opcion {opcion}")
+            info = {"opcion elegida": opciones[(opcion)-1]}
+            if ut.comfirmar_imformacion(info):
+                if opcion == 1:
+                    registrar_gasto()
+                elif opcion == 2:
+                    listar_gasto()
+                elif opcion == 3:
+                    print("Volviendo al menu principal")
+                    break
+                else:
+                    print("Opcion no disponible")
+        except ValueError:
+            print("Caracter no valido")
+        except TypeError:
+            print("Tipo de dato no compatible. Vuelva a intentarlo")
+        except KeyboardInterrupt:
+            print("Comando no valido")
+        except Exception as e:
+            print(f"Ocurrio un error inesperado: {e}")
+
+
 
 if __name__ == "__main__":
-    gasto = registrar_gasto()
-    mostrar_gasto(gasto)
+    menu_gastos()
