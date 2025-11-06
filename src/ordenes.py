@@ -2,9 +2,10 @@ import json
 import os
 from datetime import datetime
 import utils as ut
-from config import RUTA_ORDENES
+from config import RUTA_ORDENES, RUTA_EMPLEADOS, RUTA_VEHICULOS
 
-# Preguntar -------------------------------------------------------------------------------------------------------------------------------------
+# Pregunta si resgistro anteriormente vehiculo o empleado -------------------------------------------------------------------------------------------------------------------------------------
+
 
 def preguntar(tipo_de_dato: str):
     while True:
@@ -23,24 +24,6 @@ def preguntar(tipo_de_dato: str):
             print("La respuesta ingresada no es valida, intente denuevo")
 
 
-# CARGA DE DATOS A LA MEMORIA RAM ----------------------------------------------------------------------------------------------------------------
-
-def cargar_archivo(archivo_json):
-    """
-    Trae el archivo json ingresado como parametro
-    """
-
-    if os.path.exists(archivo_json):  # verifica si el archivo existe
-        with open(archivo_json, "r", encoding="utf-8") as file:  # abrir el archivo
-            try:
-                return json.load(file)
-
-            except json.JSONDecodeError:  # Si el archivo esta vacio o da error, retorna una lista vacia
-                return []
-    else:
-        return []
-
-
 # VALIDACIÓN DE EXISTENCIA DEL DATO -------------------------------------------------------------------------------------------------------------------
 
 def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> bool:
@@ -49,7 +32,7 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
 
     """
 
-    archivo = cargar_archivo(archivo_json)
+    archivo = ut.cargar_json(archivo_json)
 
     for dato in archivo:
         if dato.get(tipo_dato) == dato_a_buscar:
@@ -74,8 +57,7 @@ def guardar_ordenes(ordenes: list, ruta: str):
         with open(ruta, "w", encoding="utf-8") as file:
             json.dump(ordenes, file, indent=4)
 
-        print(
-            f"Se ha guardado con existo {len(ordenes)} ordenes en el registro de ordenes.")
+        print(f"Se ha guardado con existo en el registro de ordenes de trabajo.")
         return True
 
     except IOError as ioe:
@@ -126,7 +108,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
 
     # Solicita la descripción del problema del vehiculo a reparar
     descripcion = input(
-        "Ingrese la descripción del problema que presenta el vehiculo").strip()
+        "Ingrese la descripción del problema que presenta el vehiculo: ").strip()
 
     # Crea el diccionario con todos los datos ingresados para la generar la orden
     nueva_orden = {
@@ -169,14 +151,14 @@ def mostrar_ordenes(ordenes: list):
 
     # Caso: Si existen ordenes
     else:
-        print("\n" + "="*80)
+        print("\n" + "="*100)
         print("RESUMEN DE ÓRDENES DE TRABAJO")
-        print("="*80)
+        print("="*100)
 
-        encabezado = "{:<5} {:<19} {:<10} {:<20} {:<12} {:<10}".format(
+        encabezado = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
             "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO")
         print(encabezado)
-        print("-" * 80)
+        print("-" * 100)
 
         for orden in ordenes:
 
@@ -184,7 +166,7 @@ def mostrar_ordenes(ordenes: list):
             costo_str = f"${orden.get('costo_estimado', 0):.2f}" if orden.get(
                 'costo_estimado') is not None else "N/A"
 
-            linea_orden = "{:<5} {:<19} {:<10} {:<20} {:<12} {:<10}".format(
+            linea_orden = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
                 orden.get('id', ''),
                 orden.get('fecha_de_creacion', 'N/D'),
                 orden.get('patente', 'N/D'),
@@ -192,8 +174,9 @@ def mostrar_ordenes(ordenes: list):
                 orden.get('estado', 'N/D'),
                 costo_str
             )
+
             print(linea_orden)
-        print("=" * 80)
+        print("=" * 100)
 
 
 def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
@@ -238,7 +221,6 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
             print("Error - Ingrese un ID numérico válido.")
 
     # Seleccionar y validar el nuevo estado de la orden -----
-
     estados_validos = ["PENDIENTE", "EN PROCESO", "FINALIZADA"]
 
     print(
@@ -271,48 +253,127 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
     return ordenes
 
 
+def mostrar_ordenes_filtradas(ordenes: list) -> None:
+    """
+    Muestra las órdenes filtradas por estado (PENDIENTE, EN PROCESO o FINALIZADA).
+
+    Pre:
+        - Recibe la lista 'ordenes'.
+    Post:
+        - Muestra las órdenes según el estado seleccionado.
+    """
+
+    # Caso: lista vacía
+    if not ordenes:
+        print(f"{'-'*20} No hay órdenes registradas para filtrar {'-'*20}")
+        return
+
+    # Estados válidos
+    estados_validos = ["PENDIENTE", "EN PROCESO", "FINALIZADA"]
+
+    # Menú de selección
+    print("\n" + "="*80)
+    print("FILTRAR ÓRDENES POR ESTADO")
+    print("="*80)
+    print("1. PENDIENTE \n2. EN PROCESO \n3. FINALIZADA")
+    print("0. Volver al menú anterior")
+    print("-"*80)
+
+    # Leer opción del usuario
+    while True:
+        opcion = input("Seleccione una opción (0-3): ").strip()
+        if opcion == "0":
+            print("Volviendo al menú anterior...")
+            return
+        elif opcion in ["1", "2", "3"]:
+            estado_seleccionado = estados_validos[int(opcion) - 1]
+            break
+        else:
+            print("Error - Opción inválida. Ingrese 0, 1, 2 o 3.")
+
+    # Filtrar las órdenes
+    ordenes_filtradas = [o for o in ordenes if o.get(
+        "estado") == estado_seleccionado]
+
+    # Mostrar resultado
+    print("\n" + "="*100)
+    print(f"ÓRDENES EN ESTADO: {estado_seleccionado}")
+    print("="*100)
+
+    if not ordenes_filtradas:
+        print(f"No se encontraron órdenes con estado '{estado_seleccionado}'.")
+        return
+
+    # Encabezado con formato igual al de mostrar_ordenes()
+    encabezado = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
+        "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO"
+    )
+    print(encabezado)
+    print("-" * 100)
+
+    # Filas de las órdenes filtradas
+    for orden in ordenes_filtradas:
+        costo_str = f"${orden.get('costo_estimado', 0):.2f}" if orden.get(
+            'costo_estimado') is not None else "N/A"
+
+        linea_orden = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
+            orden.get('id', ''),
+            orden.get('fecha_de_creacion', 'N/D'),
+            orden.get('patente', 'N/D'),
+            orden.get('empleado', 'N/D'),
+            orden.get('estado', 'N/D'),
+            costo_str
+        )
+        print(linea_orden)
+
+    print("=" * 100)
+
+
 # MENÚ   -----------------------------------------------------------------------
 
 
 def menu_ordenes() -> None:
-
-    ARCHIVO_VEHICULOS = "datos/vehiculos.json"
-    ARCHIVO_EMPLEADOS = "datos/empleados.json"
-    ARCHIVO_ORDENES = "datos/ordenes.json"
-    ordenes = cargar_archivo(ARCHIVO_ORDENES)
+    ordenes = ut.cargar_json(RUTA_ORDENES)
 
     opciones = [
+        "Salir del sistema",
         "Crear nueva orden de trabajo",
         "Mostrar todas las órdenes",
-        "Modificar estado de una orden",
-        "Salir del sistema"
+        "Mostrar ordenes filtradas por estado",
+        "Modificar estado de una orden"
     ]
 
     while True:
         ut.opciones_menu("ORDENES DE TRABAJO", opciones)
 
-        opcion = input("Ingrese la opción (1-4): ").strip()
+        opcion = input("Ingrese la opción (1-5): ").strip()
 
         if opcion == "1":
-            # Llama a crear_orden, que maneja el guardado interno.
-            ordenes_actualizadas = crear_orden(
-                ordenes, ARCHIVO_VEHICULOS, ARCHIVO_EMPLEADOS, ARCHIVO_ORDENES)
-            if ordenes_actualizadas is not None:
-                ordenes = ordenes_actualizadas  # Actualiza la lista principal en RAM
+            print("\nCerrando el sistema. ¡Hasta pronto!")
+            break
 
         elif opcion == "2":
-            mostrar_ordenes(ordenes)
+            ordenes_actualizadas = crear_orden(
+                ordenes, RUTA_VEHICULOS, RUTA_EMPLEADOS, RUTA_ORDENES)
+            if ordenes_actualizadas is not None:
+                ordenes = ordenes_actualizadas   # Actualiza la lista principal en RAM
 
         elif opcion == "3":
-            # Llama a modificar_estado_de_orden, que maneja el guardado interno.
+            mostrar_ordenes(ordenes)
+
+        elif opcion == "4":
+            mostrar_ordenes_filtradas(ordenes)
+
+        elif opcion == "5":
             ordenes_actualizadas = modificar_estado_de_orden(
-                ordenes, ARCHIVO_ORDENES)
+                ordenes, RUTA_ORDENES)
+
             if ordenes_actualizadas is not None:
                 ordenes = ordenes_actualizadas  # Actualiza la lista principal en RAM
 
-        elif opcion == "4":
-            print("\nCerrando el sistema. ¡Hasta pronto!")
-            break  # Sale del bucle while True, finalizando el programa
-
         else:
-            print("\nERROR: Opción no válida. Por favor, ingrese un número del 1 al 4.")
+            print("\nERROR: Opción no válida. Por favor, ingrese un número del 1 al 5.")
+
+
+if __name__ == "__main__":
+    menu_ordenes()

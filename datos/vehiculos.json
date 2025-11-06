@@ -2,8 +2,8 @@
     {
         "patente": "ABC122",
         "marca": "Ford",
-        "modelo": "2022",
-        "anio": "0900",
+        "modelo": "Fiesta",
+        "anio": "2022",
         "tipo": "auto",
         "dni_cliente": "47683255"
     }

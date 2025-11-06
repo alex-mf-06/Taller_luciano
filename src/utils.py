@@ -126,7 +126,8 @@ def eliminar_datos(dni: str, RUTA_archivos: str) -> bool:
 
         if len(datos) > len(datos_actualizados):
             with open(RUTA_archivos, "w", encoding="utf-8") as file:
-                json.dump(datos_actualizados, file, indent=4, ensure_ascii=False)
+                json.dump(datos_actualizados, file,
+                          indent=4, ensure_ascii=False)
             return True  # Eliminación exitosa
         else:
             return False  # No se encontró el DNI, no se eliminó nada
@@ -154,13 +155,14 @@ def modificar_datos(dni: str, RUTA_archivo) -> None:
         - guarda los datos modificado si se encuentra a la persona segun su dni
         retorna true si la persona si se encuentra y la modifican y false si no
     """
-    try: 
+    try:
         datos = cargar_datos(RUTA_archivo)
         encontrado = False
         for dato in datos:
             if dato.get("dni") == dni:
                 while True:
-                    print("Ingrese los nuevos datos del cliente. Deje vacío para no modificar.")
+                    print(
+                        "Ingrese los nuevos datos del cliente. Deje vacío para no modificar.")
                     nuevo_nombre = confirmar_nombre()
                     nuevo_telefono = validar_numero()
                     nuevo_email = validar_email()
@@ -174,8 +176,8 @@ def modificar_datos(dni: str, RUTA_archivo) -> None:
                     }
                     if confirmar_informacion(info_actualizada):
                         break
-                dato.update(info_actualizada) #estamos actualizando los datos del diccionario original
-                    
+                # estamos actualizando los datos del diccionario original
+                dato.update(info_actualizada)
 
                 print("Datos actualizados.")
                 encontrado = True
@@ -183,11 +185,11 @@ def modificar_datos(dni: str, RUTA_archivo) -> None:
         if encontrado:
             actualizar_datos(datos, RUTA_archivo)
         else:
-            print("No se encontró el cliente con el DNI proporcionado.")    
+            print("No se encontró el cliente con el DNI proporcionado.")
     except FileNotFoundError:
         print(f"Error: El archivo no se encontró en {RUTA_archivo}")
         return False
-    
+
     except json.JSONDecodeError:
         print(f"Error: El archivo {RUTA_archivo} está corrupto o vacío.")
         return False
@@ -195,11 +197,10 @@ def modificar_datos(dni: str, RUTA_archivo) -> None:
     except IOError as e:
         print(f"Error de E/S (lectura/escritura) al {RUTA_archivo}: {e}")
         return False
-        
+
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
-        return False 
-    
+        return False
 
 
 def validar_numero() -> str:
@@ -277,7 +278,7 @@ def actualizar_datos(datos: List[dict], ruta_archivo: str) -> None:
     informacion
 
     """
-    ruta_archivo 
+    ruta_archivo
     try:
         # Asegura que el directorio de destino exista
         directorio = os.path.dirname(ruta_archivo)
@@ -288,13 +289,13 @@ def actualizar_datos(datos: List[dict], ruta_archivo: str) -> None:
             json.dump(datos, file, indent=4, ensure_ascii=False)
         print(
             f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
-        return 
+        return
 
     except (TypeError, OSError) as e:
         # Si ocurre cualquier error de tipo de dato o del sistema de archivos...
         print(f"Ocurrió un error al guardar el archivo: {e}")
 
-        return 
+        return
 
 
 def validar_email() -> str:
@@ -328,7 +329,8 @@ def confirmar_nombre() -> str:
     regex_nombre = re.compile(r"^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{6,}$")
 
     while True:
-        nombre = input("Ingrese el nombre y apellido de la persona :  ").strip()
+        nombre = input(
+            "Ingrese el nombre y apellido de la persona :  ").strip()
 
         if nombre.strip() and regex_nombre.match(nombre):
             if confirmar_dato("nombre", nombre):
@@ -567,7 +569,7 @@ def validar_modelo() -> str:
             print("modelo invalido")
 
 
-def validar_monto() -> float: # Funcion agregada para gastos.py
+def validar_monto() -> float:  # Funcion agregada para gastos.py
     """
     La funcion solicita y valida un nomnto positivo para gastos
     """
@@ -583,7 +585,7 @@ def validar_monto() -> float: # Funcion agregada para gastos.py
             print("ERROR. Ingrese un valor valido (ej: 1500.50)")
 
 
-def validar_categoria() -> str: #Funcion agregada para gastos.py
+def validar_categoria() -> str:  # Funcion agregada para gastos.py
     """
         -La funcion muestra una tupla fija de categorias disponibles
         -Valida que la opcion seleccionada sea un numero en el rango de la tupla
@@ -593,11 +595,12 @@ def validar_categoria() -> str: #Funcion agregada para gastos.py
 
     while True:
         print("---- SELECCIONE LA CATEGORIA DE GASTO DESEADA ----")
-        mostrar_opciones(categorias) # se muestra las opciones con mediante una funcion
+        # se muestra las opciones con mediante una funcion
+        mostrar_opciones(categorias)
         opcion = int(input("Ingrese la opcion deseada: "))
-        dato = opcion -1
+        dato = opcion - 1
         try:
-            if 0 <= opcion -1 < len(categorias):
+            if 0 <= opcion - 1 < len(categorias):
                 elegido = categorias[dato]
                 if confirmar_dato("Categoria:", elegido):
                     return f"Se seleccionó: {elegido}"
@@ -711,23 +714,25 @@ def validar_origen():
         else:
             print("Opción inválida. Debe elegir 'manual' o 'Arca'")
 
+
 def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
     """Devuelve el primer elemento que coincide con el DNI, o None si no existe
     precondiciones: dni es un str no vacío, ruta_archivo es la ruta del archivo JSON
     postcondiciones: devuelve True si el DNI existe en los datos, False si no
-    
+
     """
-    try: 
+    try:
         lista_datos = cargar_datos(ruta_archivo)
         for item in lista_datos:
-            if item["dni"] == dni:   
+            if item["dni"] == dni:
                 return True
         return False
     except FileNotFoundError:
         print(f"Error: El archivo no se encontró en {ruta_archivo}")
         return False
     except TypeError:
-        print(f"Error: Los datos en {ruta_archivo} no tienen el formato esperado.")
+        print(
+            f"Error: Los datos en {ruta_archivo} no tienen el formato esperado.")
         return False
     except ValueError:
         print(f"Error: El valor proporcionado es inválido.")
@@ -739,7 +744,7 @@ def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
     except IOError as e:
         print(f"Error de E/S (lectura/escritura) al {ruta_archivo}: {e}")
         return False
-        
+
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
         return False
@@ -750,11 +755,12 @@ def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
     Busca elementos en una lista según una clave de DNI.
     """
     try:
-        dni = validar_dni() 
+        dni = validar_dni()
         encontrados = [item for item in lista_datos if item[clave_dni] == dni]
 
         if encontrados:
-            print(f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
+            print(
+                f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
             for i, item in enumerate(encontrados, start=1):
                 print(f"\n{nombre_lista.capitalize()} {i}:")
                 for clave, valor in item.items():
@@ -764,16 +770,18 @@ def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
     except Exception as e:
         print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
 
-def guardar_json(lista,ruta):
+
+def guardar_json(lista, ruta):
     """pre: Guarda el archivo JSON.
     post: Si ocurre un error durante la escritura, se muestra un mensaje."""
-    with open(ruta,"w", encoding="UTF-8") as archivo:
+    with open(ruta, "w", encoding="UTF-8") as archivo:
         try:
             json.dump(lista, archivo, indent=4)
         except FileNotFoundError:
             print("No se encontró la ruta del archivo")
         except Exception as e:
             print(f"Error al guardar el archivo:  {e}")
+
 
 def cargar_json(ruta: str) -> list:
     """
@@ -793,7 +801,8 @@ def cargar_json(ruta: str) -> list:
         except json.JSONDecodeError:
             # Si está vacío o corrupto, entrega una lista vacía.
             return []
-            
+
+
 def listar_datos(lista_datos, nombre_tipo="dato"):
     """
     Lista cualquier tipo de datos cargados de manera legible.
@@ -802,7 +811,7 @@ def listar_datos(lista_datos, nombre_tipo="dato"):
     """
     try:
         if not lista_datos:
-            print(f"No hay {nombre_tipo} cargados.")#revisar
+            print(f"No hay {nombre_tipo} cargados.")  # revisar
             return
 
         print(f"\nListado de {len(lista_datos)} {nombre_tipo}(s):")
