@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import utils as ut
 from config import RUTA_ORDENES, RUTA_EMPLEADOS, RUTA_VEHICULOS
+from typing import List, Dict
 
 # Pregunta si resgistro anteriormente vehiculo o empleado -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -35,7 +36,7 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
     archivo = ut.cargar_json(archivo_json)
 
     for dato in archivo:
-        if dato.get(tipo_dato) == dato_a_buscar:
+        if dato.get(tipo_dato) == dato_a_buscar: # Verifica si el dato existe en el archivo
             return True
 
     return False

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import re
 import json
 import os
@@ -69,10 +69,17 @@ def validar_dni() -> str:
             )
 
 
-def agregar_dato(dato: dict, ruta_archivo: str) -> bool:
+def agregar_dato(dato: Dict, ruta_archivo: str) -> bool:
     """
     Guarda una lista de datos en un archivo JSON de forma segura.
     Devuelve True si se guardó con éxito, False si hubo un error.
+    precondiciones:
+        - dato: debe ser un diccionario que represente un único registro.
+        - ruta_archivo: debe ser una ruta válida donde se pueda escribir un archivo.
+    postcondiciones:
+        - Si la operación es exitosa, el dato se agrega al archivo JSON especificado.
+        - Si ocurre un error, se informa al usuario y no se modifica el archivo 
+        retorna True si se guardo exitosamente y False si hubo un error.
     """
     try:
         # --- PREVENCIÓN DE ERRORES ---
@@ -771,7 +778,7 @@ def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
         print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
 
 
-def guardar_json(lista, ruta):
+def guardar_json(lista: List[Dict], ruta: str) -> None:
     """pre: Guarda el archivo JSON.
     post: Si ocurre un error durante la escritura, se muestra un mensaje."""
     with open(ruta, "w", encoding="UTF-8") as archivo:
@@ -783,7 +790,7 @@ def guardar_json(lista, ruta):
             print(f"Error al guardar el archivo:  {e}")
 
 
-def cargar_json(ruta: str) -> list:
+def cargar_json(ruta: str) -> List[Dict]:
     """
     Carga un archivo JSON de forma segura.
     - Si el archivo existe y es válido, devuelve la lista cargada.
@@ -803,7 +810,7 @@ def cargar_json(ruta: str) -> list:
             return []
 
 
-def listar_datos(lista_datos, nombre_tipo="dato"):
+def listar_datos(lista_datos, nombre_tipo="dato")-> None:
     """
     Lista cualquier tipo de datos cargados de manera legible.
     - lista_datos: lista de diccionarios con los datos a mostrar
