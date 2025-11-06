@@ -201,3 +201,5 @@ def menu_facturacion() -> None:
         except ValueError:
             print("Error: valor inválido. Ingrese un número de opción válido.")
             continue
+if __name__ == "__main__":
+    menu_facturacion()

@@ -8,26 +8,27 @@ from config import RUTA_EMPLEADOS
 
 def menu_empleados() -> None:
     """Muestra el menú de opciones del módulo de empleados"""
-    opciones = [
+    opciones = (
         "Salir",
-        "Agregar Empleado",
+        "Registrar empleado",
         "Modificar empleado",
-        "Eliminar empleados",
+        "Eliminar empleado",
         "Mostrar empleados",
-    ]
+    )
+
 
     while True:
-        cl.mostrar_opciones(opciones)
+        ut.mostrar_opciones(opciones)
         opcion = input("Ingrese una de las opciones que se les mostro :  \n")
         if opcion == "1":
             break
         elif opcion == "2":
-            ut.registrar_clientes(RUTA_EMPLEADOS)
+            ut.registrar_datos(RUTA_EMPLEADOS)
             
         elif opcion == "3":
 
             dni = ut.validar_dni()
-            encontrado = ut.obtener_cliente_por_dni(dni,RUTA_EMPLEADOS)
+            encontrado = ut.buscar_x_dni(dni,RUTA_EMPLEADOS)
             if encontrado : 
                 print(f"Cliente encontrado: \n")
                 ut.modificar_datos(dni,RUTA_EMPLEADOS)
@@ -44,10 +45,11 @@ def menu_empleados() -> None:
                 print("no se escontro a la persona en nuestro registro")
 
         elif opcion == "5":
-            listas = ut.listar_datos(RUTA_EMPLEADOS)
+            listas = ut.cargar_datos(RUTA_EMPLEADOS)
             
             for cliente in listas:
                 for clave, valor in cliente.items():
+                    print("-" * 30)
                     print(f"{clave.capitalize()}: {valor}")
                 print("-" * 30)
         else:

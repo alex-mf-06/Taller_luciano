@@ -1,7 +1,6 @@
 import sys
 import facturacion
 import reportes
-#import stock
 
 import clientes as cl
 import vehiculos_reestructurado as vh
