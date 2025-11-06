@@ -187,7 +187,47 @@ def validar_modelo () -> str :
             return modelo
         else:
             print("modelo invalido")
-    
+
+
+def validar_monto() -> float: # Funcion agregada para gastos.py
+    """
+    La funcion solicita y valida un nomnto positivo para gastos
+    """
+    while True:
+        monto = float(input("Ingresa el nuevo monto: "))
+        try:
+            if monto > 0:
+                if confirmar_dato("monto", f"${monto:,.2f}"):
+                    return monto
+            else:
+                print(f"El monto {monto} debe ser mayor a 0")
+        except ValueError:
+            print("ERROR. Ingrese un valor valido (ej: 1500.50)")
+
+
+def validar_categoria() -> str: #Funcion agregada para gastos.py
+    """
+        -La funcion muestra una tupla fija de categorias disponibles
+        -Valida que la opcion seleccionada sea un numero en el rango de la tupla
+    """
+
+    categorias = ("Repuestos", "Salarios", "Servicios", "Insumos", "Otros")
+
+    while True:
+        print("---- SELECCIONE LA CATEGORIA DE GASTO DESEADA ----")
+        mostrar_opciones(categorias) # se muestra las opciones con mediante una funcion
+        opcion = int(input("Ingrese la opcion deseada: "))
+        dato = opcion -1
+        try:
+            if 0 <= opcion -1 < len(categorias):
+                elegido = categorias[dato]
+                if confirmar_dato("Categoria:", elegido):
+                    return f"Se seleccionó: {elegido}"
+            else:
+                print("Numero fuera del rango de opciones, vuelva a intentarlo")
+        except ValueError:
+            print("Ingrese un numero correspondiente.")
+        
 
 def validar_año() -> str : 
     """
