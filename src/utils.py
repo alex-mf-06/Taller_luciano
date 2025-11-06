@@ -44,7 +44,8 @@ def confirmar_dato(etiqueta: str, valor: str) -> bool:
 
     while True:
         confirmacion = (
-            input(f"¿Confirma que el {etiqueta} '{valor}' es correcto? (s/n): ")
+            input(
+                f"¿Confirma que el {etiqueta} '{valor}' es correcto? (s/n): ")
             .strip()
             .lower()
         )
@@ -86,7 +87,8 @@ def agregar_dato(dato: dict, ruta_archivo: str) -> bool:
             # 3. Esta línea puede lanzar un TypeError si los datos no son serializables.
             json.dump(lista, file, indent=4, ensure_ascii=False)
 
-        print(f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
+        print(
+            f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
         return True  # La operación fue exitosa
 
     # --- MANEJO DE EXCEPCIONES ---
@@ -132,17 +134,18 @@ def eliminar_datos(dni: str, RUTA_archivos: str) -> bool:
 
     except FileNotFoundError:
         # Error específico si 'cargar_datos' no encuentra el archivo.
-        print(f"Error: No se pudo encontrar el archivo en la ruta '{RUTA_archivos}'.")
+        print(
+            f"Error: No se pudo encontrar el archivo en la ruta '{RUTA_archivos}'.")
         return False
 
     except Exception as e:
         # Se captura cualquier otro error inesperado durante la carga o el guardado.
-        print(f"Ocurrió un error inesperado durante la operación de eliminación: {e}")
+        print(
+            f"Ocurrió un error inesperado durante la operación de eliminación: {e}")
         return False
 
 
 def modificar_datos(dni: str, RUTA_archivo) -> None:
-
     """
     Esta funcion se encarga de modificar los datos de un cliente segun su dni.
     Pre:
@@ -229,7 +232,8 @@ def cargar_datos(ruta_archivo: str) -> List[dict] | List[None]:
 
     except json.JSONDecodeError:
         # Se ejecuta si el archivo existe pero está vacío o corrupto.
-        print(f"Advertencia: El archivo '{ruta_archivo}' tiene un formato inválido.")
+        print(
+            f"Advertencia: El archivo '{ruta_archivo}' tiene un formato inválido.")
         return []
 
     except Exception as e:
@@ -261,7 +265,8 @@ def actualizar_datos(datos: List[dict], ruta_archivo: str) -> bool:
         #    Esta operación es atómica y segura.
         os.rename(ruta_temporal, ruta_archivo)
 
-        print(f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
+        print(
+            f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
         return True
 
     except (TypeError, OSError) as e:
@@ -283,7 +288,8 @@ def validar_email() -> str:
         - Devuelve un string (str) con el email válido si se ingresó uno.
         - Devuelve None si el usuario no ingresó un email y lo confirmó.
     """
-    regex_email = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+    regex_email = re.compile(
+        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
     while True:
         email = input("Ingrese el email de la persona : ").strip()
         if not email or regex_email.match(email):
@@ -414,10 +420,12 @@ def registrar_datos(RUTA_ARCHIVO: str) -> None:
     if validar_Ruta_archivo(RUTA_ARCHIVO):
         agregar_dato(cliente, RUTA_ARCHIVO)
         print(f"la persona {nombre} esta registrado exitosamente \n")
-    else: 
+    else:
         crear_ruta_carpeta(os.path.dirname(RUTA_ARCHIVO))
         agregar_dato(cliente, RUTA_ARCHIVO)
-def crear_ruta_carpeta(ruta: str) -> None: 
+
+
+def crear_ruta_carpeta(ruta: str) -> None:
     """
     Esta funcion se encarga de crear la ruta de una carpeta si no exite o si una persona lo elimino intencionalmente.
     debe crear el archivo si no exite en formato json . 
@@ -425,7 +433,7 @@ def crear_ruta_carpeta(ruta: str) -> None:
     postcondiciones : no devuelve nada solo crea la ruta de la carpeta si no existe.
 
     """
-    try :
+    try:
         if not os.path.exists(ruta):
             os.makedirs(ruta)
             print(f"La carpeta '{ruta}' ha sido creada.")
@@ -434,14 +442,16 @@ def crear_ruta_carpeta(ruta: str) -> None:
             print(f"La carpeta '{ruta}' ya existe.")
     except TypeError:
         print("La ruta proporcionada no es válida.")
+
+
 def validar_Ruta_archivo(ruta: str) -> bool:
     """
     Esta funcion se encarga de validar que la ruta donde se enviaba los datos exista .
     precondiciones : se debe mandar una ruta en str
     postcondiciones : devuelve True si la ruta existe y False si no es asi.
     """
-    try :
-        ruta+= ""
+    try:
+        ruta += ""
         if not os.path.exists(os.path.dirname(ruta)):
             print("La ruta no existe.")
             return False
@@ -449,6 +459,8 @@ def validar_Ruta_archivo(ruta: str) -> bool:
     except TypeError:
         print("La ruta proporcionada no es válida.")
         return False
+
+
 def confirmar_direccion() -> str:
     """
     esta funcion  se encarga de que el usuario ingrese la direccion de su  domicilio y que solo salga de la funcion si ingresa la direccion y confirma que si es correcta.
@@ -509,7 +521,8 @@ def cargar_dni_(RUTA_archivo: str) -> tuple:
 
     except FileNotFoundError:
         # Se ejecuta si la función cargar_datos no encuentra el archivo
-        print(f"Error: El archivo en la ruta '{RUTA_archivo}' no fue encontrado.")
+        print(
+            f"Error: El archivo en la ruta '{RUTA_archivo}' no fue encontrado.")
         return ()  # Devuelve una tupla vacía
 
 
@@ -556,7 +569,8 @@ def validar_tipo() -> str:
     respuesta del usuario.
     """
     while True:
-        tipo = input("Ingrese el tipo del vehículo (auto, camioneta, camión): ").strip()
+        tipo = input(
+            "Ingrese el tipo del vehículo (auto, camioneta, camión): ").strip()
         if confirmar_dato("tipo", tipo):
             return tipo
         else:
@@ -566,7 +580,8 @@ def validar_tipo() -> str:
 def validar_n_factura():
     patron_n_factura = r"^\d{4}-\d{8}$"
     while True:
-        n_factura = input("Ingrese el número de factura (ej: 0001-00001234): ").strip()
+        n_factura = input(
+            "Ingrese el número de factura (ej: 0001-00001234): ").strip()
         if re.match(patron_n_factura, n_factura):
             if confirmar_dato("número de factura", n_factura):
                 return n_factura
@@ -629,12 +644,24 @@ def validar_origen():
     opciones_origen = ["manual", "Arca"]
     while True:
         mostrar_opciones(opciones_origen)
-        origen = input("Seleccione origen de la factura: ").strip().capitalize()
+        origen = input(
+            "Seleccione origen de la factura: ").strip().capitalize()
         if origen.lower() in [o.lower() for o in opciones_origen]:
             if confirmar_dato("origen", origen):
                 return origen
         else:
             print("Opción inválida. Debe elegir 'manual' o 'Arca'")
+
+
+# MENU ----------------------------------------------------------------------------------------------------------
+
+def opciones_menu(titulo: str, opciones: list) -> None:
+
+    print(f"\n--- MENÚ: {titulo.upper()} ---")
+
+    for i, opcion in enumerate(opciones, start=1):
+        print(f"{i}. {opcion}")
+    print("-" * 60)
 
 
 if __name__ == "__main__":
