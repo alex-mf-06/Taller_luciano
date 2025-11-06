@@ -85,10 +85,13 @@ def mostrar_gasto(gasto):
     for clave, valor in gasto.items():
         print(f"{clave.capitalize()}: {valor}")
 
-mostrar_gasto(n_gasto)
 
 def listar_gasto():
     pass
 
 def menu_gastos():
     pass
+
+if __name__ == "__main__":
+    gasto = registrar_gasto()
+    mostrar_gasto(gasto)
