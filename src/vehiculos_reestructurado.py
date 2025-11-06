@@ -1,58 +1,29 @@
-import json
+from typing import List, Dict
 import os
-import vehiculos
-import re 
 import utils as ut
+
+
 
 RUTA_VEHICULOS = os.path.join("datos","vehiculos.json")
 RUTA_CLIENTES = os.path.join("datos","clientes.json")
 
 
-def cargar_vehiculos():
-    """Carga la lista de vehículos desde el archivo JSON."""
-    if os.path.exists(RUTA_VEHICULOS):
-        with open(RUTA_VEHICULOS, "r", encoding="UTF-8") as archivo:
-            try:
-                lista_vehiculos = json.load(archivo)
-            except json.JSONDecodeError:
-                lista_vehiculos = []
-    else:
-        lista_vehiculos = []
-    
-    return lista_vehiculos
-
-def cargar_clientes():
-    """carga la lista de vehículos desde el archvio JSON."""
-    if os.path.exists(RUTA_CLIENTES):
-        with open(RUTA_CLIENTES, "r", encoding="UTF-8") as archivo_clientes:
-            try:
-                lista_clientes = json.load(archivo_clientes)
-            except json.JSONDecodeError:
-                lista_clientes = []
-    else:
-        lista_clientes = []
-    
-    return lista_clientes
-    
-
-lista_vehiculos = cargar_vehiculos()
-lista_clientes = cargar_clientes()
-
-def guardar_vehiculos(lista_vehiculos):
-    """pre: Guarda la lista de vehículos en el archivo JSON definido por RUTA_VEHICULOS.
-    post: Si ocurre un error durante la escritura, se muestra un mensaje."""
-    with open(RUTA_VEHICULOS,"w", encoding="UTF-8") as archivo:
-        try:
-            json.dump(lista_vehiculos, archivo, indent=4)
-        except FileNotFoundError:
-            print("No se encontró la ruta del archivo")
-        except Exception as e:
-            print(f"Error al guardar vehículos:  {e}")
+lista_vehiculos = ut.cargar_json(RUTA_VEHICULOS)
+lista_clientes = ut.cargar_json(RUTA_CLIENTES)
 
 
 # Funciones CRUD
 
-def agregar_vehiculo(lista_vehiculos):
+def agregar_vehiculo(lista_vehiculos: List[Dict])-> List[Dict]:
+    """Agrega un nuevo vehículo al sistema y lo guarda en 'vehículos.Json'
+    
+    Pre: - Deben existir clientes cargados en 'clientes.Json'
+         - Las funciones de validación deben devolver valores válidos
+    
+    Post: - Se agrega un nuevo diccionario conteniendo los datos del vehiculo a la lista
+          - Se actualiza el archivo Json de vehículos
+          - Retorna la lista actualizada """
+    
     patente = ut.Validar_patente()
     marca = ut.validar_marca()
     modelo = ut.validar_modelo()
@@ -63,7 +34,7 @@ def agregar_vehiculo(lista_vehiculos):
     while True:
         dni = ut.validar_dni()
         dni_clientes = [c["dni"] for c in lista_clientes] #lista por comprensión de todos los dni cargados en el json de clientes
-        if dni in lista_clientes: #si encuentra el DNI
+        if dni in dni_clientes: 
             break
         else:
             print("El DNI no está registrado. Debe registrar primero el cliente")
@@ -76,12 +47,19 @@ def agregar_vehiculo(lista_vehiculos):
     "dni_cliente": dni
     }
     lista_vehiculos.append(vehiculo)
-    guardar_vehiculos(lista_vehiculos)  
+    ut.guardar_json(lista_vehiculos,RUTA_VEHICULOS) 
     return lista_vehiculos
 
 
 
-def buscar_x_patente(lista_vehiculos):
+def buscar_x_patente(lista_vehiculos: List[Dict])-> None:
+    """ Busca e imprime la información de un vehículo según su patente.
+
+    Pre: - La lista de vehículos debe estar cargada previamente
+         - El usuario debe ingresar una patente válida
+
+    Post: - Muestra en consola los datos del vehículo si existe
+          - Maneja excepciones en casos de error """
     try:
         patente = ut.Validar_patente()
 
@@ -97,33 +75,25 @@ def buscar_x_patente(lista_vehiculos):
     except Exception as e:
         print(f"ocurrió un error al buscar el vehículo: {e}")
 
-def buscar_x_dni(lista_vehiculos):
-    """
-    Busca todos los vehículos de un cliente según su DNI.
-    Muestra cada vehículo encontrado de manera legible.
-    """
-    
-    try:
-       
-        dni = ut.validar_dni()
-        # Lista por comprensión para los vehículos asociados a un DNI   
-        encontrados = [vehiculo for vehiculo in lista_vehiculos if vehiculo["dni_cliente"] == dni]
-        
-        if encontrados:
-            print(f"\nSe encontraron {len(encontrados)} vehículo(s) para el DNI {dni}:")
-            for i, vehiculo in enumerate(encontrados, start=1):
-                print(f"\nVehículo {i}:")
-                for clave, valor in vehiculo.items():
-                    print(f"{clave.capitalize()}: {valor}")
-        else:
-            print("No se encontraron vehículos para ese DNI.")
-            
-    except Exception as e:
-        print(f"Ocurrió un error al buscar vehículos por DNI: {e}")
+
+def buscar_vehiculos_por_dni(lista_vehiculos: List[Dict])-> None:
+    """ Usa la función genérica de utils para buscar vehículos por DNI.
+    Pre:
+        - La lista de vehículos debe estar cargada y tener la clave 'dni_cliente'.
+    Post:
+        - Imprime los vehículos coincidentes en consola.
+        - No altera archivos ni estructuras."""
+    ut.mostrar_x_dni(lista_vehiculos, "dni_cliente", "vehículos")
 
 
-
-def eliminar_vehiculo(lista_vehiculos):
+def eliminar_vehiculo(lista_vehiculos: List[Dict])-> None:
+    """Elimina un vehículo de la lista según su patente.
+        Pre:
+        - El usuario debe ingresar una patente existente
+        - La lista de vehículos debe estar cargada
+    Post:
+        - El vehículo es eliminado de la lista y del archivo JSON
+        - Muestra un mensaje indicando el resultado"""
     try:
         patente = ut.Validar_patente()
 
@@ -132,7 +102,7 @@ def eliminar_vehiculo(lista_vehiculos):
             if vehiculo["patente"] == patente:
                 lista_vehiculos.remove(vehiculo)
                 print(f"El vehículo con patente {patente} fue eliminado correctamente")
-                guardar_vehiculos(lista_vehiculos)  
+                ut.guardar_json(lista_vehiculos,RUTA_VEHICULOS)  
         else:
             print("No se encontró un vehículo con esa patente")
     
@@ -141,76 +111,71 @@ def eliminar_vehiculo(lista_vehiculos):
     
 
 
-def modificar_vehiculo(lista_vehiculos):
+
+def modificar_vehiculo(lista_vehiculos: List[Dict])-> None:
+    """
+    Modifica los datos de un vehículo identificado por su patente.
+
+    Pre:
+        - La lista debe contener al menos un vehículo.
+        - El usuario debe ingresar una patente válida y existir en el JSON.
+    Post:
+        - Los campos modificados se actualizan en la lista y en el archivo JSON.
+        - Si no se encuentra el vehículo, se notifica al usuario.
+    """
     try:
-        patente = ut.Validar_patente()
-    
-        for vehiculo in lista_vehiculos:
-            if vehiculos["patente"] == patente:
+        patente = ut.Validar_patente()  
+        vehiculo = None
+
+        for v in lista_vehiculos:
+            if v["patente"] == patente:
+                vehiculo = v
                 break
-        else:
-            print("vehículo no encontrado")
 
-        print("Ingrese ENTER para mantener el valor actual")
+        if not vehiculo:
+            print("Vehículo no encontrado.")
+            return
 
-        nuevo_marca = input(f"Marca actual: {vehiculos['marcas']}: ").strip()
-        if nuevo_marca:
-            vehiculos["modelo"] = nuevo_marca
-        
-        nuevo_modelo = input(f"Año (actual: {vehiculos['anio']}): ").strip()
+        print("Presione ENTER para mantener el valor actual.\n")
+
+        nueva_marca = input(f"Marca (actual: {vehiculo['marca']}): ").strip()
+        if nueva_marca:
+            vehiculo["marca"] = nueva_marca
+
+        nuevo_modelo = input(f"Modelo (actual: {vehiculo['modelo']}): ").strip()
         if nuevo_modelo:
-            vehiculos["marca"] = nuevo_modelo
-        
-        nuevo_anio = ut.validar_año()
+            vehiculo["modelo"] = nuevo_modelo
+
+        nuevo_anio = input(f"Año (actual: {vehiculo['anio']}): ").strip()
         if nuevo_anio:
-            vehiculos["anio"] = nuevo_anio
-        
+            try:
+                vehiculo["anio"] = int(nuevo_anio)
+            except ValueError:
+                print("El año debe ser numérico. Se mantiene el valor anterior.")
 
         nuevo_tipo = input(f"Tipo (actual: {vehiculo['tipo']}): ").strip()
         if nuevo_tipo:
-            vehiculo['tipo'] = nuevo_tipo
+            vehiculo["tipo"] = nuevo_tipo
 
         while True:
-            nuevo_dni = input(f"DNI (actual: {vehiculo['dni_cliente']}): ").strip()
+            nuevo_dni = input(f"DNI del cliente (actual: {vehiculo['dni_cliente']}): ").strip()
             if not nuevo_dni:
-                break  
-            if re.match(ut.validar_dni, nuevo_dni):
-                try:
-                    vehiculo['dni_cliente'] = int(nuevo_dni)
-                    break
-                except ValueError:
-                    print("DNI debe ser numérico.")
+                break
+            if ut.validar_dni(nuevo_dni):
+                vehiculo["dni_cliente"] = int(nuevo_dni)
+                break
             else:
                 print("DNI inválido. Debe tener 7 u 8 dígitos.")
 
-        guardar_vehiculos(lista_vehiculos)
+        ut.guardar_json(lista_vehiculos, RUTA_VEHICULOS)
         print("Vehículo modificado correctamente.")
 
     except KeyError:
         print("Estructura de datos inesperada: falta alguna clave.")
         
 
-def listar_vehiculos(lista_vehiculos):
-    """
-    Lista todos los vehículos cargados en el taller de manera legible.
-    """
-    try:
-        if not lista_vehiculos:
-            print("No hay vehículos cargados en el taller.")
-            return
-
-        print(f"\nListado de {len(lista_vehiculos)} vehículo(s):")
-        for i, vehiculo in enumerate(lista_vehiculos, start=1):
-            print(f"\nVehículo {i}:")
-            for clave, valor in vehiculo.items():
-                print(f"{clave.capitalize()}: {valor}")
-    except (TypeError, KeyError):
-        print("Error al listar los vehículos")
-    except Exception as e:
-        print(f"Ocurrió un error al listar los vehículos: {e}")
-
-
 def menu_vehiculos():
+    """ Muestra el menú del módulo de vehículos."""
     opciones = ("Salir", "Agregar vehículo", "Buscar vehículo por patente", "Buscar vehículo por DNI", "Eliminar vehículo","Modificar vehículo", "Listar vehículos")
     while True:
         
@@ -224,13 +189,13 @@ def menu_vehiculos():
         elif opcion == "3":
             buscar_x_patente(lista_vehiculos)
         elif opcion == "4":
-            buscar_x_dni(lista_vehiculos)
+            buscar_vehiculos_por_dni(lista_vehiculos)
         elif opcion == "5":
             eliminar_vehiculo(lista_vehiculos)
         elif opcion == "6":
             modificar_vehiculo(lista_vehiculos)
         elif opcion == "7":
-            listar_vehiculos(lista_vehiculos)
+            ut.listar_datos(lista_vehiculos,"vehiculos")
         else:
             print("opción no válida, intente nuevamente \n")
 

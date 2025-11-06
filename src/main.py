@@ -4,16 +4,20 @@ import reportes
 #import stock
 
 import clientes as cl
-import vehiculos as vh
+import vehiculos_reestructurado as vh
 import ordenes as ot
 import empleados as emp
+import facturacion as fa
+import reportes as rep
 
 menu = {
-    "1": {"descripcion": "Gestión de clientes", "funcion": cl},
-    "2": {"descripcion": "Gestión de vehículos", "funcion": vh},
-    "3": {"descripcion": "Órdenes de trabajo", "funcion": ot},
-    "4": {"descripcion": "Empleados", "funcion": emp},  
-    "0": {"descripcion": "Salir", "funcion": exit}
+    "1": ("Gestión de clientes", cl.menu_clientes),
+    "2": ("Gestión de vehículos", vh.menu_vehiculos),
+    "3": ("Órdenes de trabajo", ot.menu_ordenes),
+    "4": ("Empleados", emp.menu_empleados),
+    "5": ("Facturación", fa.menu_facturacion),
+    "6": ("Reportes", rep.menu_reportes),###revisar
+    "0": ("Salir", lambda: sys.exit())
 }
 
 
@@ -31,11 +35,17 @@ def main():
     "9. Pagos",
     "10. Gastos",
     "0. Salir"
-)
+    )
     while True:
-        
+        print("\n=== SISTEMA DE GESTIÓN DEL TALLER ===")
+
         for opcion in menu_principal:
             print(opcion)
+
+        # Mostrar todas las opciones del diccionario
+        # for key, (descripcion, _) in sorted(menu.items()):
+        #     print(f"{key}. {descripcion}")
+
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
@@ -47,9 +57,9 @@ def main():
         elif opcion == "4":
             emp.menu_empleados()
         elif opcion == "5":
-            facturacion.menu_facturacion()
+            fa.menu_facturacion()
         elif opcion == "7":
-            reportes.menu_reportes()
+            rep.menu_reportes()
         elif opcion == "0":
             print("Saliendo del sistema...")
             sys.exit()
