@@ -125,9 +125,9 @@ def eliminar_datos(dni: str, RUTA_archivos: str) -> bool:
         datos_actualizados = [dato for dato in datos if dato.get("dni") != dni]
 
         if len(datos) > len(datos_actualizados):
-            # Se intenta guardar los datos. Esta operación podría fallar
-            # por falta de permisos (PermissionError) o datos inválidos (TypeError).
-            actualizar_datos(datos_actualizados, RUTA_archivos)
+            with open(RUTA_archivos, "w", encoding="utf-8") as file:
+                json.dump(datos_actualizados, file,
+                          indent=4, ensure_ascii=False)
             return True  # Eliminación exitosa
         else:
             return False  # No se encontró el DNI, no se eliminó nada
@@ -155,25 +155,52 @@ def modificar_datos(dni: str, RUTA_archivo) -> None:
         - guarda los datos modificado si se encuentra a la persona segun su dni
         retorna true si la persona si se encuentra y la modifican y false si no
     """
-    datos = cargar_datos(RUTA_archivo)
-    encontrado = False
-    for dato in datos:
-        if dato.get("dni") == dni:
-            nuevo_nombre = confirmar_nombre()
-            nuevo_telefono = validar_numero()
-            nueva_direccion = confirmar_direccion()
-            if nuevo_nombre:
-                dato["nombre"] = nuevo_nombre
-            if nuevo_telefono:
-                dato["telefono"] = nuevo_telefono
-            if nueva_direccion:
-                dato["direccion"] = nueva_direccion
+    try:
+        datos = cargar_datos(RUTA_archivo)
+        encontrado = False
+        for dato in datos:
+            if dato.get("dni") == dni:
+                while True:
+                    print(
+                        "Ingrese los nuevos datos del cliente. Deje vacío para no modificar.")
+                    nuevo_nombre = confirmar_nombre()
+                    nuevo_telefono = validar_numero()
+                    nuevo_email = validar_email()
+                    nueva_direccion = confirmar_direccion()
+                    info_actualizada = {
+                        "nombre": nuevo_nombre if nuevo_nombre else dato["nombre"],
+                        "telefono": nuevo_telefono if nuevo_telefono else dato["telefono"],
+                        "email": nuevo_email if nuevo_email else dato["email"],
+                        "direccion": nueva_direccion if nueva_direccion else dato["direccion"],
+                        "fecha_registro": dato["fecha_registro"],
+                    }
+                    if confirmar_informacion(info_actualizada):
+                        break
+                # estamos actualizando los datos del diccionario original
+                dato.update(info_actualizada)
 
-            print("Datos actualizados.")
-            encontrado = True
-            break
-    if encontrado:
-        actualizar_datos(datos, RUTA_archivo)
+                print("Datos actualizados.")
+                encontrado = True
+                break
+        if encontrado:
+            actualizar_datos(datos, RUTA_archivo)
+        else:
+            print("No se encontró el cliente con el DNI proporcionado.")
+    except FileNotFoundError:
+        print(f"Error: El archivo no se encontró en {RUTA_archivo}")
+        return False
+
+    except json.JSONDecodeError:
+        print(f"Error: El archivo {RUTA_archivo} está corrupto o vacío.")
+        return False
+
+    except IOError as e:
+        print(f"Error de E/S (lectura/escritura) al {RUTA_archivo}: {e}")
+        return False
+
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return False
 
 
 def validar_numero() -> str:
@@ -242,7 +269,7 @@ def cargar_datos(ruta_archivo: str) -> List[dict] | List[None]:
         return []
 
 
-def actualizar_datos(datos: List[dict], ruta_archivo: str) -> bool:
+def actualizar_datos(datos: List[dict], ruta_archivo: str) -> None:
     """
     Esta funcion se va a encargar de que se se actulice los datos que le envien y
     se sobrescriba en un archivo JSON .
@@ -251,33 +278,24 @@ def actualizar_datos(datos: List[dict], ruta_archivo: str) -> bool:
     informacion
 
     """
-    ruta_temporal = ruta_archivo + ".tmp"
+    ruta_archivo
     try:
         # Asegura que el directorio de destino exista
         directorio = os.path.dirname(ruta_archivo)
         os.makedirs(directorio, exist_ok=True)
 
         # 1. Escribe toda la información en el archivo temporal
-        with open(ruta_temporal, "w", encoding="utf-8") as file:
+        with open(ruta_archivo, "w", encoding="utf-8") as file:
             json.dump(datos, file, indent=4, ensure_ascii=False)
-
-        # 2. Si la escritura fue exitosa, renombra el temporal al nombre final.
-        #    Esta operación es atómica y segura.
-        os.rename(ruta_temporal, ruta_archivo)
-
         print(
             f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
-        return True
+        return
 
     except (TypeError, OSError) as e:
         # Si ocurre cualquier error de tipo de dato o del sistema de archivos...
         print(f"Ocurrió un error al guardar el archivo: {e}")
 
-        # ...intenta eliminar el archivo temporal si es que se creó.
-        if os.path.exists(ruta_temporal):
-            os.remove(ruta_temporal)
-
-        return False
+        return
 
 
 def validar_email() -> str:
@@ -311,7 +329,8 @@ def confirmar_nombre() -> str:
     regex_nombre = re.compile(r"^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{6,}$")
 
     while True:
-        nombre = input("Ingrese el nombre de la persona :  ").strip()
+        nombre = input(
+            "Ingrese el nombre y apellido de la persona :  ").strip()
 
         if nombre.strip() and regex_nombre.match(nombre):
             if confirmar_dato("nombre", nombre):
@@ -351,7 +370,7 @@ def obtener_mes_anio(fecha_str: str) -> str:
         return "Fecha Inválida"
 
 
-def comfirmar_imformacion(informacion: dict) -> bool:
+def confirmar_informacion(informacion: dict) -> bool:
     """
     Esta funcion se encarga de que la persona vea la imformacion que paso
     como parametro para que la persona verifique si esta bien su ingormacion
@@ -415,7 +434,7 @@ def registrar_datos(RUTA_ARCHIVO: str) -> None:
             "direccion": direccion,
             "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
-        if comfirmar_imformacion(cliente):
+        if confirmar_informacion(cliente):
             break
     if validar_Ruta_archivo(RUTA_ARCHIVO):
         agregar_dato(cliente, RUTA_ARCHIVO)
@@ -696,12 +715,39 @@ def validar_origen():
             print("Opción inválida. Debe elegir 'manual' o 'Arca'")
 
 
-def buscar_x_dni(lista_datos, dni):
-    """Devuelve el primer elemento que coincide con el DNI, o None si no existe"""
-    for item in lista_datos:
-        if item["dni"] == dni:
-            return item
-    return None
+def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
+    """Devuelve el primer elemento que coincide con el DNI, o None si no existe
+    precondiciones: dni es un str no vacío, ruta_archivo es la ruta del archivo JSON
+    postcondiciones: devuelve True si el DNI existe en los datos, False si no
+
+    """
+    try:
+        lista_datos = cargar_datos(ruta_archivo)
+        for item in lista_datos:
+            if item["dni"] == dni:
+                return True
+        return False
+    except FileNotFoundError:
+        print(f"Error: El archivo no se encontró en {ruta_archivo}")
+        return False
+    except TypeError:
+        print(
+            f"Error: Los datos en {ruta_archivo} no tienen el formato esperado.")
+        return False
+    except ValueError:
+        print(f"Error: El valor proporcionado es inválido.")
+        return False
+    except json.JSONDecodeError:
+        print(f"Error: El archivo {ruta_archivo} está corrupto o vacío.")
+        return False
+
+    except IOError as e:
+        print(f"Error de E/S (lectura/escritura) al {ruta_archivo}: {e}")
+        return False
+
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return False
 
 
 def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
