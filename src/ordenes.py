@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+import utils as ut
 
 
 # Preguntar -------------------------------------------------------------------------------------------------------------------------------------
@@ -270,22 +271,25 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
     return ordenes
 
 
-# Opciones del menu y como invocarlas en el menu principal.
+# MENÚ   -----------------------------------------------------------------------
 
-def menu_principal():
+
+def menu_ordenes() -> None:
 
     ARCHIVO_VEHICULOS = "datos/vehiculos.json"
     ARCHIVO_EMPLEADOS = "datos/empleados.json"
     ARCHIVO_ORDENES = "datos/ordenes.json"
     ordenes = cargar_archivo(ARCHIVO_ORDENES)
 
+    opciones = [
+        "Crear nueva orden de trabajo",
+        "Mostrar todas las órdenes",
+        "Modificar estado de una orden",
+        "Salir del sistema"
+    ]
+
     while True:
-        print("\n--- MENÚ ---")
-        print("1. Crear nueva orden de trabajo")
-        print("2. Mostrar todas las órdenes")
-        print("3. Modificar estado de una orden")
-        print("4. Salir del sistema")
-        print("-" * 30)
+        ut.opciones_menu("ORDENES DE TRABAJO", opciones)
 
         opcion = input("Ingrese la opción (1-4): ").strip()
 
