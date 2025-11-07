@@ -201,7 +201,7 @@ def modificar_vehiculo(lista_vehiculos: List[Dict])-> None:
         print(f"DNI del cliente (actual: {vehiculo['dni_cliente']}) [no modificable]")
 
 
-        ut.guardar_json(lista_vehiculos, RUTA_VEHICULOS)
+        ut.actualizar_datos(lista_vehiculos, RUTA_VEHICULOS)
         print("Vehículo modificado correctamente.")
 
     except KeyError:

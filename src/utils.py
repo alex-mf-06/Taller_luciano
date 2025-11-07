@@ -826,7 +826,42 @@ def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
         print(f"Ocurrió un error inesperado: {e}")
         return False
     
-    
+
+def buscar_x_dni_ruta_vehiculos(dni: str, ruta_archivo: str) -> Dict[str]|Dict[None]:
+    """Devuelve el primer elemento que coincide con el DNI, o None si no existe
+    precondiciones: dni es un str no vacío, ruta_archivo es la ruta del archivo JSON
+    postcondiciones: devuelve True si el DNI existe en los datos, False si no
+
+    """
+    try:
+        lista_datos = cargar_datos(ruta_archivo)
+        for item in lista_datos:
+            if item.get("dni_cliente") == dni:
+                return item
+        return {}
+    except FileNotFoundError:
+        print(f"Error: El archivo no se encontró en {ruta_archivo}")
+        return {}
+    except TypeError:
+        print(
+            f"Error: Los datos en {ruta_archivo} no tienen el formato esperado.")
+        return {}
+    except ValueError:
+        print(f"Error: El valor proporcionado es inválido.")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error: El archivo {ruta_archivo} está corrupto o vacío.")
+        return {}
+
+    except IOError as e:
+        print(f"Error de E/S (lectura/escritura) al {ruta_archivo}: {e}")
+        return {}
+
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return {}
+
+
 def cargar_dni_(RUTA_archivo: str) -> tuple:
     """
 

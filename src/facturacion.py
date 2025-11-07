@@ -30,14 +30,16 @@ def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], list
             forma_pago = ut.validar_forma_pago()
             origen = ut.validar_origen()
             dni = ut.validar_dni()
-            cliente_encontrado = ut.buscar_x_dni(dni,RUTA_CLIENTES)
-            if not cliente_encontrado:
+            cliente_encontrado_vehiculo = ut.buscar_x_dni_ruta_vehiculos(dni,RUTA_VEHICULOS)
+            cliente_encontrado=ut.buscar_x_dni(dni,RUTA_CLIENTES)
+            
+            if not cliente_encontrado_vehiculo:
                 print("El cliente no está registrado. Debe cargarlo antes de facturar.")
                 return lista_facturas
 
             vehiculo_cliente = None
             for vehiculo in lista_vehiculos:
-                if vehiculo["dni_cliente"] == dni:
+                if vehiculo.get("dni_cliente") == dni:
                     vehiculo_cliente = vehiculo
                     break
 
@@ -84,7 +86,7 @@ def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], list
                 "cliente": {
                     "dni": cliente_encontrado["dni"],
                     "nombre": cliente_encontrado["nombre"],
-                    "apellido": cliente_encontrado.get("apellido", ""),
+                    
                 },
                 "vehiculo": {
                     "patente": vehiculo_cliente["patente"],
@@ -124,7 +126,7 @@ def eliminar_factura(lista_facturas):
             if factura["numero"] == numero_factura:
                 lista_facturas.remove(factura)
                 print(f"La factura {numero_factura} fue eliminada correctamente.")
-                ut.guardar_json(lista_facturas, RUTA_FACTURACION)
+                ut.actualizar_datos(lista_facturas, RUTA_FACTURACION)
                 break
         else:
             print("No se encontró una factura con ese número.")
@@ -181,9 +183,6 @@ def menu_facturacion() -> None:
                 print("\n--- Agregar factura ---")
                 agregar_factura(lista_facturas, lista_clientes, lista_vehiculos, lista_ordenes)
 
-                if opcion == "2":
-                    print("\n--- Agregar factura ---")
-                    agregar_factura(lista_facturas, lista_clientes, lista_vehiculos, lista_ordenes) # esto esta mal? 
 
             elif opcion == "3":
                 print("\n--- Buscar factura ---")

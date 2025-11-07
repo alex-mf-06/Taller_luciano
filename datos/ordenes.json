@@ -52,5 +52,14 @@
         "descripcion": "bujias y problemas del motor",
         "estado": "PENDIENTE",
         "costo_estimado": 450000.0
+    },
+    {
+        "id": 7,
+        "fecha_de_creacion": "2025-11-07 11:44:46",
+        "patente": "LA765LA",
+        "empleado": "pepe gonzalez",
+        "descripcion": "fuga de aceite y problema en la bateria",
+        "estado": "PENDIENTE",
+        "costo_estimado": 250000.0
     }
 ]

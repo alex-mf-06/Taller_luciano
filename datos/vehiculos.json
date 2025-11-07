@@ -49,9 +49,9 @@
     },
     {
         "patente": "LA765LA",
-        "marca": "nose",
-        "modelo": "sksk",
-        "anio": "2032",
+        "marca": "toyota",
+        "modelo": "corola",
+        "anio": 2000,
         "tipo": "auto",
         "dni_cliente": "50123698"
     }
