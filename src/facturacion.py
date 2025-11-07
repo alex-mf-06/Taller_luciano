@@ -4,10 +4,10 @@ from datetime import datetime
 from typing import List, Dict
 from config import RUTA_FACTURACION, RUTA_CLIENTES, RUTA_VEHICULOS , RUTA_ORDENES
 
-lista_clientes = ut.cargar_json(RUTA_CLIENTES)  
-lista_vehiculos = ut.cargar_json(RUTA_VEHICULOS)
-lista_facturas = ut.cargar_json(RUTA_FACTURACION)
-lista_ordenes = ut.cargar_json(RUTA_ORDENES)
+lista_clientes = ut.cargar_datos(RUTA_CLIENTES)  
+lista_vehiculos = ut.cargar_datos(RUTA_VEHICULOS)
+lista_facturas = ut.cargar_datos(RUTA_FACTURACION)
+lista_ordenes = ut.cargar_datos(RUTA_ORDENES)
 
 
 def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], lista_vehiculos: List[Dict], lista_ordenes: List[Dict]) -> List[Dict]:
@@ -22,85 +22,94 @@ def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], list
         - Se calcula automáticamente el total.
         - Devuelve la lista de facturas actualizada.
     """
+    try:
+        if lista_ordenes:
+            n_factura = ut.encontrar_n_factura(RUTA_ORDENES)
+            tipo_factura = ut.validar_tipo_factura()
+            fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            forma_pago = ut.validar_forma_pago()
+            origen = ut.validar_origen()
+            dni = ut.validar_dni()
+            cliente_encontrado = ut.buscar_x_dni(dni,RUTA_CLIENTES)
+            if not cliente_encontrado:
+                print("El cliente no está registrado. Debe cargarlo antes de facturar.")
+                return lista_facturas
 
-    n_factura = ut.validar_n_factura()
-    tipo_factura = ut.validar_tipo_factura()
-    fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    forma_pago = ut.validar_forma_pago()
-    origen = ut.validar_origen()
-    dni = ut.validar_dni()
-    cliente_encontrado = ut.buscar_x_dni(lista_clientes, dni)
-    if not cliente_encontrado:
-        print("El cliente no está registrado. Debe cargarlo antes de facturar.")
-        return lista_facturas
+            vehiculo_cliente = None
+            for vehiculo in lista_vehiculos:
+                if vehiculo["dni_cliente"] == dni:
+                    vehiculo_cliente = vehiculo
+                    break
 
-    vehiculo_cliente = None
-    for vehiculo in lista_vehiculos:
-        if vehiculo["dni_cliente"] == dni:
-            vehiculo_cliente = vehiculo
-            break
+            if not vehiculo_cliente:
+                print("No se encontró vehículo asociado al cliente.")
+                return lista_facturas
 
-    if not vehiculo_cliente:
-        print("No se encontró vehículo asociado al cliente.")
-        return lista_facturas
+            print("\nIngrese los ítems de la factura (ENTER para terminar):")
+            items = []
+            while True:
+                descripcion = input("Descripción del ítem (ENTER para terminar): ").strip()
+                if descripcion == "":
+                    break
 
-    print("\nIngrese los ítems de la factura (ENTER para terminar):")
-    items = []
-    while True:
-        descripcion = input("Descripción del ítem (ENTER para terminar): ").strip()
-        if descripcion == "":
-            break
+                cantidad = input("Cantidad: ").strip()
+                precio = input("Precio unitario: ").strip()
 
-        cantidad = input("Cantidad: ").strip()
-        precio = input("Precio unitario: ").strip()
+                try:
+                    cantidad = int(cantidad)
+                    precio = float(precio)
+                except ValueError:
+                    print("Error: cantidad y precio deben ser números.")
+                    continue
 
-        try:
-            cantidad = int(cantidad)
-            precio = float(precio)
-        except ValueError:
-            print("Error: cantidad y precio deben ser números.")
-            continue
+                subtotal = cantidad * precio
+                items.append(
+                    {
+                        "descripcion": descripcion,
+                        "cantidad": cantidad,
+                        "precio_unitario": precio,
+                        "subtotal": subtotal,
+                    }
+                )
 
-        subtotal = cantidad * precio
-        items.append(
-            {
-                "descripcion": descripcion,
-                "cantidad": cantidad,
-                "precio_unitario": precio,
-                "subtotal": subtotal,
+            total = sum(
+                item["subtotal"] for item in items
+            )  # lista por comprension en caso de que haya mas de un item
+            factura = {
+                "numero": n_factura,
+                "tipo": tipo_factura,
+                "fecha": fecha,
+                "forma_pago": forma_pago,
+                "origen": origen,
+                "cliente": {
+                    "dni": cliente_encontrado["dni"],
+                    "nombre": cliente_encontrado["nombre"],
+                    "apellido": cliente_encontrado.get("apellido", ""),
+                },
+                "vehiculo": {
+                    "patente": vehiculo_cliente["patente"],
+                    "marca": vehiculo_cliente["marca"],
+                    "modelo": vehiculo_cliente["modelo"],
+                    "anio": vehiculo_cliente["anio"],
+                },
+                "items": items,
+                "total": total,
             }
-        )
 
-    total = sum(
-        item["subtotal"] for item in items
-    )  # lista por comprension en caso de que haya mas de un item
-    factura = {
-        "numero": n_factura,
-        "tipo": tipo_factura,
-        "fecha": fecha,
-        "forma_pago": forma_pago,
-        "origen": origen,
-        "cliente": {
-            "dni": cliente_encontrado["dni"],
-            "nombre": cliente_encontrado["nombre"],
-            "apellido": cliente_encontrado.get("apellido", ""),
-        },
-        "vehiculo": {
-            "patente": vehiculo_cliente["patente"],
-            "marca": vehiculo_cliente["marca"],
-            "modelo": vehiculo_cliente["modelo"],
-            "anio": vehiculo_cliente["anio"],
-        },
-        "items": items,
-        "total": total,
-    }
+            
+            ut.agregar_dato(factura, RUTA_FACTURACION)
 
-    lista_facturas.append(factura)
-    ut.guardar_json(lista_facturas, RUTA_FACTURACION)
-
-    print("\nFactura creada correctamente.")
-    return lista_facturas
-
+            print("\nFactura creada correctamente.")
+            return lista_facturas
+    except TypeError:
+        print("Error al crear la factura.")
+        return lista_facturas
+    except ValueError:
+        print("Error en los datos ingresados.")
+        return lista_facturas
+    except KeyboardInterrupt:
+        print("\nOperación cancelada por el usuario.")
+        return lista_facturas
 
 def eliminar_factura(lista_facturas):
     """
@@ -178,7 +187,7 @@ def menu_facturacion() -> None:
 
             if opcion == "1":
                 print("\n--- Agregar factura ---")
-                agregar_factura(lista_facturas, lista_clientes, lista_vehiculos)
+                agregar_factura(lista_facturas, lista_clientes, lista_vehiculos,lista_ordenes)
 
             elif opcion == "2":
                 print("\n--- Buscar factura ---")

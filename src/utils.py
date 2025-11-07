@@ -387,7 +387,6 @@ def validar_origen():
 #---Termino las funciones de validaciones--- De linea 10 a 387
     
     
-    
 #empiezan las funciones CRUD de ---LINEA 391 a 679 ---.        
 def agregar_dato(dato: Dict, ruta_archivo: str) -> bool:
     """
@@ -841,7 +840,32 @@ def mostrar_opciones(opciones: Tuple[str]|List[str]) -> None:
                 print(f"{i} - {opcion}\n")
     else:
         print("las opciones no se pueden mostrar por que hubo un fallo")
+def encontrar_n_factura(ruta_archivo:str) -> int|None:
+    """
     
+    Esta funcion se encarga de encontrar la orden de factura segun la cantidad de facturas que este en el archivo json.
+    retorna la orden de factura en int.
+    precondiciones : se debe mandar una ruta de archivo que exista.
+    postcondiciones : devuelve un int que seria la orden de factura.
+    
+    """
+    try:
+        datos = cargar_datos(ruta_archivo)
+        if datos:
+            while True:
+                orden= int(input("ingrese el numero de orden de factura : "))
+                if orden > 0 and orden <= len(datos):
+                    return orden
+                else:
+                    print("numero de orden invalido")
+        else:
+            print("no hay facturas registradas")
+            return None
+    except ValueError:
+        print("error, ingrese un numero valido")
+        return None
+
+
 def obtener_mes_anio(fecha_str: str) -> str:
     """
     Recibe una fecha en formato string (YYYY-MM-DD) y devuelve

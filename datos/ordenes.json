@@ -7,5 +7,23 @@
         "descripcion": "tiene una mancha en el vidrio",
         "estado": "PENDIENTE",
         "costo_estimado": 13000.0
+    },
+    {
+        "id": 2,
+        "fecha_de_creacion": "2025-11-06 23:30:38",
+        "patente": "ABC122",
+        "empleado": "pepe gonzalez",
+        "descripcion": "cambio de aceite",
+        "estado": "PENDIENTE",
+        "costo_estimado": 209122.12
+    },
+    {
+        "id": 2,
+        "fecha_de_creacion": "2025-11-06 23:30:38",
+        "patente": "ABC122",
+        "empleado": "pepe gonzalez",
+        "descripcion": "cambio de aceite",
+        "estado": "EN PROCESO",
+        "costo_estimado": 209122.12
     }
 ]

@@ -33,7 +33,7 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
 
     """
     try:
-        archivo = ut.cargar_json(archivo_json)
+        archivo = ut.cargar_datos(archivo_json)
 
         for dato in archivo:
             # Verifica si el dato existe en el archivo
@@ -109,12 +109,11 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
         "costo_estimado": costo_estimado
     }
 
-    # Se agrega la nueva orden al final de la lista Ordenes
-    ordenes.append(nueva_orden)
+    
     print(f"{"-"*20} La orden N°{nuevo_id} a sido creado con exito {"-"*20} ")
 
     # Se trata de guardar la orden creada en el archivo ordenes.json
-    if ut.guardar_json(ordenes, ruta_ordenes):
+    if ut.agregar_dato(nueva_orden, ruta_ordenes):
         return ordenes
 
     else:
@@ -232,7 +231,7 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
     print(
         f"\nEstado de la Orden N°{orden_encontrada['id']} actualizado a: {nuevo_estado}")
 
-    if ut.guardar_json(ordenes, ruta_ordenes):
+    if ut.agregar_dato(orden_encontrada, ruta_ordenes):
         pass
 
     else:

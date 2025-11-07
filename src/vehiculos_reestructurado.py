@@ -8,8 +8,8 @@ RUTA_VEHICULOS = os.path.join("datos","vehiculos.json")
 RUTA_CLIENTES = os.path.join("datos","clientes.json")
 
 
-lista_vehiculos = ut.cargar_json(RUTA_VEHICULOS)
-lista_clientes = ut.cargar_json(RUTA_CLIENTES)
+lista_vehiculos = ut.cargar_datos(RUTA_VEHICULOS)
+lista_clientes = ut.cargar_datos(RUTA_CLIENTES)
 
 
 # Funciones CRUD
