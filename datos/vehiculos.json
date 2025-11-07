@@ -6,5 +6,37 @@
         "anio": "2022",
         "tipo": "auto",
         "dni_cliente": "47683255"
+    },
+    {
+        "patente": "ACD453",
+        "marca": "Chevrolet",
+        "modelo": "Onix",
+        "anio": "2021",
+        "tipo": "auto",
+        "dni_cliente": "93865822"
+    },
+    {
+        "patente": "BBF231",
+        "marca": "Toyota",
+        "modelo": "Hilux",
+        "anio": "2020",
+        "tipo": "camioneta",
+        "dni_cliente": "41832940"
+    },
+    {
+        "patente": "ZTR908",
+        "marca": "Volkswagen",
+        "modelo": "Gol Trend",
+        "anio": "2019",
+        "tipo": "auto",
+        "dni_cliente": "45928431"
+    },
+    {
+        "patente": "GHT775",
+        "marca": "Renault",
+        "modelo": "Kangoo",
+        "anio": "2023",
+        "tipo": "furgon",
+        "dni_cliente": "40215896"
     }
 ]
