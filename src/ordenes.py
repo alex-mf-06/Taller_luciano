@@ -36,7 +36,8 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
         archivo = ut.cargar_json(archivo_json)
 
         for dato in archivo:
-            if dato.get(tipo_dato) == dato_a_buscar: # Verifica si el dato existe en el archivo
+            # Verifica si el dato existe en el archivo
+            if dato.get(tipo_dato) == dato_a_buscar:
                 return True
 
         return False
@@ -49,8 +50,6 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
         return False
-
-
 
 
 # Sección ORDENES -------------------------------------------------------------------------------------------------------------------------------------
@@ -85,7 +84,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
 
     # Genera un id automaticamente a la orden
     if ordenes:
-        nuevo_id = ordenes[-1]["id"] + 1 # Toma el ultimo id y le suma 1
+        nuevo_id = ordenes[-1]["id"] + 1  # Toma el ultimo id y le suma 1
     else:
         nuevo_id = 1
 
@@ -343,15 +342,14 @@ def mostrar_ordenes_filtradas(ordenes: list) -> None:
 
 # MENÚ   -----------------------------------------------------------------------
 
-
 def menu_ordenes() -> None:
     """
     Muestra el menú principal del módulo de órdenes de trabajo.
     """
     ordenes = ut.cargar_json(RUTA_ORDENES)
 
-    opciones =(
-        "Salir del sistema",
+    opciones = (
+        "Volver al menu anterior",
         "Crear nueva orden de trabajo",
         "Mostrar todas las órdenes",
         "Mostrar ordenes filtradas por estado",
