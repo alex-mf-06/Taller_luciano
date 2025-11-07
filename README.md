@@ -50,7 +50,88 @@ Clientes activos
 Vehículos por cliente
 Los reportes pueden imprimirse por pantalla o exportarse a archivos
 
------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+#Estructura de los archivos Json:
+
+Clientes.Json
+    {
+        "dni": "93865822",
+        "nombre": "pepe gonzales",
+        "telefono": "1231231231",
+        "email": "",
+        "direccion": "sdasafd",
+        "fecha_registro": "2025-11-01 21:29:35"
+    }
+
+
+Vehículos.Json
+
+    [
+    {
+        "patente": "ABC122",
+        "marca": "Ford",
+        "modelo": "Fiesta",
+        "anio": "2022",
+        "tipo": "auto",
+        "dni_cliente": "47683255"
+    }
+      ]
+Facturación.Json
+
+[
+  {
+    "numero": "0001-00001234",
+    "tipo": "B",
+    "fecha": "2025-05-01 14:23:00",
+    "forma_pago": "Efectivo",
+    "origen": "Manual",
+    "cliente": {
+      "dni": 45892761,
+      "nombre": "Juan",
+      "apellido": "Pérez"
+    },
+    "vehiculo": {
+      "patente": "AB123CD",
+      "marca": "Ford",
+      "modelo": "Focus",
+      "anio": 2018
+    },
+    "items": [
+      {
+        "descripcion": "Cambio de parabrisas",
+        "cantidad": 1,
+        "precio_unitario": 30000,
+        "subtotal": 30000
+      }
+    ],
+    "total": 30000
+  }
+]
+
+Empleados
+
+  [ 
+  {
+        "dni": "45145974",
+        "nombre": "pepe gonzalez",
+        "telefono": "2254923745",
+        "email": "elpepe123@gamil.com",
+        "direccion": "Shaw 65, entre Constitución y Jason",
+        "fecha_registro": "2025-10-09 14:46:33"
+    } 
+      ]    
+
+Gastos
+
+  [
+    {
+        "id": 1,
+        "fecha": "2025-11-06",
+        "monto": 5000.0,
+        "categoria": "Se seleccionó: Repuestos"
+    }
+      ]
+
 
 #Tecnologías utilizadas
 
