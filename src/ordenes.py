@@ -54,30 +54,7 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
 
 # Sección ORDENES -------------------------------------------------------------------------------------------------------------------------------------
 
-def guardar_ordenes(ordenes: list, ruta: str):
-    """
-    Esta función se encarga de guardar la orden creada en ordenes.json (Disco duro)
 
-    Pre: 
-        - Recibe la lista Ordenes
-        - Recibe la ruta donde se encuentra el archivo ordenes.json donde sera guardado con los nuevos datos
-
-    Post: Sobreescribe el archivo ordenes.json con los datos nuevos.
-    """
-    try:
-        with open(ruta, "w", encoding="utf-8") as file:
-            json.dump(ordenes, file, indent=4)
-
-        print(f"Se ha guardado con existo en el registro de ordenes de trabajo.")
-        return True
-
-    except IOError as ioe:
-        print(f"{"-"*70} \nERROR - Ha ocurrido un error en el sistema y no se pudieron guardar los datos \nDetalle del error: {ioe}")
-        return False
-
-    except Exception as e:
-        print(
-            "ERROR - Ha ocurrido un fallo desconocido al intentar guardar los datos. \nDetalle del error: {e}")
 
 
 def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_ordenes: str) -> list:
