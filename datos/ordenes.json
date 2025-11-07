@@ -3,7 +3,7 @@
         "id": 1,
         "fecha_de_creacion": "2025-11-06 17:49:54",
         "patente": "ABC122",
-        "empleado": "pepe gonzalez",
+        "empleado": "Pepe Gonzalez",
         "descripcion": "tiene una mancha en el vidrio",
         "estado": "PENDIENTE",
         "costo_estimado": 13000.0
@@ -12,18 +12,27 @@
         "id": 2,
         "fecha_de_creacion": "2025-11-06 23:30:38",
         "patente": "ABC122",
-        "empleado": "pepe gonzalez",
+        "empleado": "Pepito El Mago",
         "descripcion": "cambio de aceite",
         "estado": "PENDIENTE",
         "costo_estimado": 209122.12
     },
     {
-        "id": 2,
-        "fecha_de_creacion": "2025-11-06 23:30:38",
-        "patente": "ABC122",
-        "empleado": "pepe gonzalez",
-        "descripcion": "cambio de aceite",
+        "id": 3,
+        "fecha_de_creacion": "2025-11-07 09:15:10",
+        "patente": "ACD453",
+        "empleado": "Martin Acosta",
+        "descripcion": "revisión del sistema de frenos y pastillas",
         "estado": "EN PROCESO",
-        "costo_estimado": 209122.12
+        "costo_estimado": 58000.0
+    },
+    {
+        "id": 4,
+        "fecha_de_creacion": "2025-11-07 10:42:33",
+        "patente": "BBF231",
+        "empleado": "Santiago Perez",
+        "descripcion": "cambio de cubiertas delanteras",
+        "estado": "FINALIZADA",
+        "costo_estimado": 145000.0
     }
 ]
