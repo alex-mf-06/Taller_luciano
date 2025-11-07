@@ -55,8 +55,6 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
 # Sección ORDENES -------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-
 def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_ordenes: str) -> list:
 
     # Genera un id automaticamente a la orden
@@ -86,7 +84,8 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
                 return ordenes
 
     while True:
-        costo_est = input("Ingrese el costo estimado para dicha reparación: ").strip()
+        costo_est = input(
+            "Ingrese el costo estimado para dicha reparación: ").strip()
         try:
             costo_estimado = float(costo_est)
             break
@@ -109,7 +108,6 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
         "costo_estimado": costo_estimado
     }
 
-    
     print(f"{"-"*20} La orden N°{nuevo_id} a sido creado con exito {"-"*20} ")
 
     # Se trata de guardar la orden creada en el archivo ordenes.json
@@ -332,33 +330,36 @@ def menu_ordenes() -> None:
     )
 
     while True:
-        opcion = ut.opciones_menu("ORDENES DE TRABAJO", opciones)
-        
+        ut.opciones_menu("ORDENES DE TRABAJO", opciones)
 
-        if opcion == "0":
+        opcion = input("Ingrese una opción del menú (del 1 al 5): ")
+
+        if opcion == "1":
             print("Volviendo al menú principal...")
             break
 
-        elif opcion == "1":
+        elif opcion == "2":
             ordenes_actualizadas = crear_orden(
                 ordenes, RUTA_VEHICULOS, RUTA_EMPLEADOS, RUTA_ORDENES)
             if ordenes_actualizadas is not None:
                 ordenes = ordenes_actualizadas  # Actualiza la lista principal en memoria
 
-        elif opcion == "2":
+        elif opcion == "3":
             mostrar_ordenes(ordenes)
 
-        elif opcion == "3":
+        elif opcion == "4":
             mostrar_ordenes_filtradas(ordenes)
 
-        elif opcion == "4":
+        elif opcion == "5":
             ordenes_actualizadas = modificar_estado_de_orden(
                 ordenes, RUTA_ORDENES)
             if ordenes_actualizadas is not None:
                 ordenes = ordenes_actualizadas
 
         else:
-            print("Opción no válida. Intente nuevamente.\n")
+            print(
+                "Opción no válida. Intente nuevamente con un valor que este entre 1 y 5.\n")
+
 
 if __name__ == "__main__":
     menu_ordenes()
