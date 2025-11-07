@@ -1,35 +1,12 @@
 import json 
 import os 
 import utils as ut
+from config import RUTA_GASTOS, RUTA_CLIENTES, RUTA_ORDENES, RUTA_FACTURACION, RUTA_EMPLEADOS
 
-ruta_gastos = os.path.join("datos", "gastos.json")
-ruta_ordenes = os.path.join("datos", "ordenes.json")
-ruta_facturacion = os.path.join("datos", "facturacion.json")
-ruta_empleados = os.path.join("datos", "empleados.json")
-
-def cargar_datos(r_archivo: str) -> list:
-    """
-    Se encarga de cargar los datos de un archivo JSON
-    Devuelve una lista vacia [] si:
-        . El archivo no exite
-        . El archivo se encuentra vacio
-    """
-
-    if not os.path.exists(r_archivo): # verifica si existe el archivo
-        return []
-    
-    try:
-        with open(r_archivo, 'r', encoding= 'utf-8') as hoja:
-            datos = json.load(hoja)
-            if isinstance(datos, list):
-                return datos
-            else:
-                return []
-                
-    except json.JSONDecodeError: #rotos o invalidos
-        return []
-    except Exception: # cualquier otro error
-        return []
+ruta_gastos = RUTA_GASTOS
+ruta_ordenes = RUTA_ORDENES
+ruta_facturacion = RUTA_FACTURACION
+ruta_empleados = RUTA_EMPLEADOS
 
 
 def gastos_x_categoria(ruta_gastos: str):
@@ -42,7 +19,7 @@ def gastos_x_categoria(ruta_gastos: str):
         . Debe contener 'monto' y 'categoria'
     Post: Retorna un resumen de los gastos agrupados por categoria 
     """ 
-    lista_gastos = cargar_datos(ruta_gastos)
+    lista_gastos = ut.cargar_datos(ruta_gastos)
 
     if not lista_gastos:
         print("No hay datos cargados para generar el reporte")
@@ -88,7 +65,7 @@ def vehiculos_atendidos_x_mes(ruta_ordenes: str):
     Post: Devuelve la cantidad de ordenes con estado 'finalizada agrupados por meso y año
     """
 
-    lista_ordenes = cargar_datos(ruta_ordenes)
+    lista_ordenes = ut.cargar_datos(ruta_ordenes)
 
     if not lista_ordenes:
         print("No hay datos en ordenes para gener el reporte.")
@@ -99,7 +76,7 @@ def vehiculos_atendidos_x_mes(ruta_ordenes: str):
 
     for orden in lista_ordenes:
         estado = orden.get("estado")
-        f_fin = orden.get("Fecha_finalizacion")
+        f_fin = orden.get("fecha_finalizacion")
         if estado == "Finalizada" and f_fin:
             periodo = ut.obtener_mes_anio(f_fin)
             if periodo in resumen:
@@ -124,10 +101,10 @@ def facturacion_mensual(ruta_facturacion: str):
         . Debe contener 'monto_total' y 'fecha_emision'
     Post: Muestra la suma total de dinero facturado, agrupada por mes/año.
     """
-    lista = cargar_datos(ruta_facturacion)
+    lista = ut.cargar_datos(ruta_facturacion)
 
     if not lista:
-        print("No hay datos cargados para lograr generar el reporte")
+        print("No hay datos cargados para generar el reporte")
         return
 
     r_x_mes = {}
@@ -167,7 +144,7 @@ def productos_mas_usados(ruta_ordenes: str):
     Post: Muestra un listado de total de productos utilizados 
     """
 
-    lista_ordenes = cargar_datos(ruta_ordenes)
+    lista_ordenes = ut.cargar_datos(ruta_ordenes)
     if not lista_ordenes:
         print("No hay datos cargados para logar generar el reporte")
         return
@@ -191,7 +168,7 @@ def productos_mas_usados(ruta_ordenes: str):
 
     print("=== REPORTE: PRODUCTOS MAS USADOR ===")
     print("=====================================")
-    ordenados = sorted(resumen.items, key= lambda valor: valor[1], reverse= True)
+    ordenados = sorted(resumen.items(), key= lambda valor: valor[1], reverse= True)
     if not ordenados:
         print("No se encontro productos en las ordenes")
         return
