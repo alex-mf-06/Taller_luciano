@@ -53,6 +53,7 @@ Los reportes pueden imprimirse por pantalla o exportarse a archivos
 -------------------------------------------------------------------------------------
 #Estructura de los archivos Json:
 
+```
 Clientes.Json
     {
         "dni": "93865822",
@@ -62,7 +63,6 @@ Clientes.Json
         "direccion": "sdasafd",
         "fecha_registro": "2025-11-01 21:29:35"
     }
-
 
 Vehículos.Json
 
@@ -76,6 +76,7 @@ Vehículos.Json
         "dni_cliente": "47683255"
     }
       ]
+
 Facturación.Json
 
 [
@@ -119,7 +120,7 @@ Empleados
         "direccion": "Shaw 65, entre Constitución y Jason",
         "fecha_registro": "2025-10-09 14:46:33"
     } 
-      ]    
+      ]
 
 Gastos
 
@@ -131,7 +132,7 @@ Gastos
         "categoria": "Se seleccionó: Repuestos"
     }
       ]
-
+```
 
 #Tecnologías utilizadas
 
