@@ -182,7 +182,8 @@ def validar_Ruta_archivo(ruta: str) -> bool:
 
 def confirmar_direccion() -> str:
     """
-    esta funcion  se encarga de que el usuario ingrese la direccion de su  domicilio y que solo salga de la funcion si ingresa la direccion y confirma que si es correcta.
+    esta funcion  se encarga de que el usuario ingrese la direccion de su  domicilio 
+    y que solo salga de la funcion si ingresa la direccion y confirma que si es correcta.
     """
     while True:
         try:
@@ -346,6 +347,7 @@ def validar_fecha():
 
 
 def validar_items_factura():
+    
     """
     Esta función se encarga de que el usuario ingrese las cantidades de los items
     y confirme su elección.

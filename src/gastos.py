@@ -120,7 +120,7 @@ def menu_gastos():
 
             print(f"Elegiste la opcion {opcion}")
             info = {"opcion elegida": opciones[(opcion)-1]}
-            if ut.comfirmar_imformacion(info):
+            if ut.confirmar_informacion(info):
                 if opcion == 1:
                     registrar_gasto()
                 elif opcion == 2:

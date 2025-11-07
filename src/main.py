@@ -5,6 +5,7 @@ import clientes as cl
 import vehiculos_reestructurado as vh
 import ordenes as ot
 import empleados as emp
+import gastos as gs
 
 
 def main():
@@ -16,6 +17,7 @@ def main():
     "4. Empleados",
     "5. Facturación",
     "6. Reportes",
+    "7. Gastos",
     "0. Salir"
 )
     while True:
@@ -36,6 +38,8 @@ def main():
             fac.menu_facturacion()
         elif opcion == "6":
             reportes.menu_reportes()
+        elif opcion == "7":
+            gs.menu_gastos()
         elif opcion == "0":
             print("Saliendo del sistema...")
             sys.exit()
