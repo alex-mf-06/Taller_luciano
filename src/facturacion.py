@@ -169,30 +169,40 @@ def menu_facturacion() -> None:
     )
 
     while True:
-        opcion = ut.opciones_menu("MENÚ DE FACTURACIÓN", opciones)
-
-        if opcion == "0":
-            print("Volviendo al menú principal...")
-            break
-
-        elif opcion == "1":
-            print("\n--- Agregar factura ---")
-            agregar_factura(lista_facturas, lista_clientes, lista_vehiculos, lista_ordenes)
+        try: 
+            ut.opciones_menu("MENÚ DE FACTURACIÓN", opciones)
+            opcion = input("Ingrese una opción: ").strip()
 
             if opcion == "1":
+                print("Volviendo al menú principal...")
+                break
+
+            elif opcion == "2":
                 print("\n--- Agregar factura ---")
-                agregar_factura(lista_facturas, lista_clientes, lista_vehiculos,lista_ordenes)
+                agregar_factura(lista_facturas, lista_clientes, lista_vehiculos, lista_ordenes)
 
-        elif opcion == "3":
-            print("\n--- Listado de facturas ---")
-            ut.listar_datos(lista_facturas, "factura")
+                if opcion == "2":
+                    print("\n--- Agregar factura ---")
+                    agregar_factura(lista_facturas, lista_clientes, lista_vehiculos, lista_ordenes) # esto esta mal? 
 
-        elif opcion == "4":
-            print("\n--- Eliminar factura ---")
-            eliminar_factura(lista_facturas)
+            elif opcion == "3":
+                print("\n--- Buscar factura ---")
+                buscar_factura(lista_facturas)
 
-        else:
-            print("Opción no válida. Intente nuevamente.\n")
+            elif opcion == "4":
+                print("\n--- Listado de facturas ---")
+                ut.listar_datos(lista_facturas, "factura")
+
+            elif opcion == "5":
+                print("\n--- Eliminar factura ---")
+                eliminar_factura(lista_facturas)
+
+            else:
+                print("Opción no válida. Intente nuevamente.\n")
+        except KeyboardInterrupt:
+            print("\nOperación cancelada por el usuario.")
+            break
+
 
 if __name__ == "__main__":
     menu_facturacion()

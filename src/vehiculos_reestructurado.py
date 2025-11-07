@@ -1,11 +1,9 @@
-from typing import List, Dict
+from typing import List, Dict,Tuple
 import os
 import utils as ut
+from config import RUTA_VEHICULOS, RUTA_CLIENTES
 
 
-
-RUTA_VEHICULOS = os.path.join("datos","vehiculos.json")
-RUTA_CLIENTES = os.path.join("datos","clientes.json")
 
 
 lista_vehiculos = ut.cargar_datos(RUTA_VEHICULOS)
@@ -23,36 +21,46 @@ def agregar_vehiculo(lista_vehiculos: List[Dict])-> List[Dict]:
     Post: - Se agrega un nuevo diccionario conteniendo los datos del vehiculo a la lista
           - Se actualiza el archivo Json de vehículos
           - Retorna la lista actualizada """
-    
-    patente = ut.Validar_patente()
-    marca = ut.validar_marca()
-    modelo = ut.validar_modelo()
-    anio = ut.validar_año()
-    tipo = ut.validar_tipo()
-    
-
     while True:
-        dni = ut.validar_dni()
-        dni_clientes = [c["dni"] for c in lista_clientes] #lista por comprensión de todos los dni cargados en el json de clientes
-        if dni in dni_clientes: 
-            break
-        else:
-            print("El DNI no está registrado. Debe registrar primero el cliente")
-    vehiculo = {
-    "patente": patente,
-    "marca": marca,
-    "modelo": modelo,
-    "anio": anio,
-    "tipo": tipo,
-    "dni_cliente": dni
-    }
-    lista_vehiculos.append(vehiculo)
-    ut.guardar_json(lista_vehiculos,RUTA_VEHICULOS) 
-    
-    print("\nVehículo cargado correctamente:\n")
-    for clave, valor in vehiculo.items():
-        print(f"{clave.capitalize()}: {valor}")
-    return lista_vehiculos
+        patentes= cargar_patentes(RUTA_VEHICULOS)
+        while True :
+            patente = ut.Validar_patente()
+            if patente in patentes:
+                print("Esa matricula ya esta registrada en un auto")
+            else:
+                break
+        marca = ut.validar_marca()
+        modelo = ut.validar_modelo()
+        anio = ut.validar_año()
+        tipo = ut.validar_tipo()
+        dni_clientes =ut.cargar_dni_(RUTA_CLIENTES)
+        
+
+        while True:
+            
+            dni = ut.validar_dni()
+            
+            if dni in dni_clientes: 
+                break
+            else:
+                print("El DNI no está registrado. Debe registrar primero el cliente")
+        vehiculo = {
+            "patente": patente,
+            "marca": marca,
+            "modelo": modelo,
+            "anio": anio,
+            "tipo": tipo,
+            "dni_cliente": dni
+        }
+        if ut.confirmar_informacion(vehiculo):
+
+            lista_vehiculos.append(vehiculo)
+            ut.agregar_dato(vehiculo,RUTA_VEHICULOS) 
+            
+            print("\nVehículo cargado correctamente:\n")
+            for clave, valor in vehiculo.items():
+                print(f"{clave.capitalize()}: {valor}")
+            return lista_vehiculos
 
 
 
@@ -89,6 +97,34 @@ def buscar_vehiculos_por_dni(lista_vehiculos: List[Dict])-> None:
         - No altera archivos ni estructuras."""
     ut.mostrar_x_dni(lista_vehiculos, "dni_cliente", "vehículos")
 
+def cargar_patentes(RUTA_VEHICULOS: str) -> Tuple[str]:
+    """
+    
+   Esta funcion se encarga de que ingresen la ruta de vehivulos para sacar las patentes 
+   precondiciones: La ruta de vehiculos debe ser un string .
+   postcondiciones devuelve una tupla con las patentes de los vehiculos.
+    
+    """
+    try:
+        # 1. CORRECCIÓN: Guardamos el resultado de la carga
+        lista_vehiculos = ut.cargar_datos(RUTA_VEHICULOS)
+
+        
+        if not isinstance(lista_vehiculos, list):
+            print(f"Error: los datos en {RUTA_VEHICULOS} no son una lista.")
+            return ()
+
+        
+        patentes = tuple(v.get("patente") for v in lista_vehiculos if v.get("patente"))
+        
+        return patentes
+
+    
+    except Exception as e:
+        print(f"Ocurrió un error inesperado al procesar las patentes: {e}")
+        return () # Siempre devolvemos una tupla vacía en caso de error
+    
+
 
 def eliminar_vehiculo(lista_vehiculos: List[Dict])-> None:
     """Elimina un vehículo de la lista según su patente.
@@ -106,7 +142,8 @@ def eliminar_vehiculo(lista_vehiculos: List[Dict])-> None:
             if vehiculo["patente"] == patente:
                 lista_vehiculos.remove(vehiculo)
                 print(f"El vehículo con patente {patente} fue eliminado correctamente")
-                ut.guardar_json(lista_vehiculos,RUTA_VEHICULOS)  
+                ut.actualizar_datos(lista_vehiculos,RUTA_VEHICULOS) 
+                return 
         else:
             print("No se encontró un vehículo con esa patente")
     
@@ -185,25 +222,32 @@ def menu_vehiculos() -> None:
     )
 
     while True:
-        opcion = ut.opciones_menu("MENÚ DE VEHÍCULOS", opciones)
+        try:
+            ut.opciones_menu("MENÚ DE VEHÍCULOS", opciones)
+            opcion = input("Ingrese una opción: ").strip()
 
-        if opcion == "0":
-            print("Volviendo al menú principal...")
+            if opcion == "1":
+                print("Volviendo al menú principal...")
+                break
+            elif opcion == "2":
+                agregar_vehiculo(lista_vehiculos)
+            elif opcion == "3":
+                buscar_x_patente(lista_vehiculos)
+            elif opcion == "4":
+                buscar_vehiculos_por_dni(lista_vehiculos)
+            elif opcion == "5":
+                eliminar_vehiculo(lista_vehiculos)
+            elif opcion == "6":
+                modificar_vehiculo(lista_vehiculos)
+            elif opcion == "7":
+                ut.listar_datos(lista_vehiculos, "vehiculo")
+            else:
+                print("Opción no válida. Intente nuevamente.\n")
+        except KeyboardInterrupt:
+            print("\nOperación cancelada por el usuario.")
             break
-        elif opcion == "1":
-            agregar_vehiculo(lista_vehiculos)
-        elif opcion == "2":
-            buscar_x_patente(lista_vehiculos)
-        elif opcion == "3":
-            buscar_vehiculos_por_dni(lista_vehiculos)
-        elif opcion == "4":
-            eliminar_vehiculo(lista_vehiculos)
-        elif opcion == "5":
-            modificar_vehiculo(lista_vehiculos)
-        elif opcion == "6":
-            ut.listar_datos(lista_vehiculos, "vehiculo")
-        else:
-            print("Opción no válida. Intente nuevamente.\n")
+
+
 
 if __name__ == "__main__":
     menu_vehiculos()

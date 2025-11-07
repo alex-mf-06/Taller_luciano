@@ -38,5 +38,21 @@
         "anio": "2023",
         "tipo": "furgon",
         "dni_cliente": "40215896"
+    },
+    {
+        "patente": "AS123SA",
+        "marca": "ford",
+        "modelo": "fiesta",
+        "anio": "2022",
+        "tipo": "auto",
+        "dni_cliente": "42789563"
+    },
+    {
+        "patente": "LA765LA",
+        "marca": "nose",
+        "modelo": "sksk",
+        "anio": "2032",
+        "tipo": "auto",
+        "dni_cliente": "50123698"
     }
 ]

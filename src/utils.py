@@ -150,11 +150,12 @@ def confirmar_informacion(informacion: Dict) -> bool:
             for clave, valor in informacion.items():
                 print(f"{clave}: {valor}\n")
             
-                confirmacion = (
+            confirmacion = (
                     input(f"¿Confirma que la informacion es correcta? (s/n): ").strip().lower()
                 )
-                if confirmacion in ("s", "n"):
-                    return confirmacion == "s"
+            if confirmacion in ("s", "n"):
+                return confirmacion == "s"
+            else:
                 print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
     except KeyboardInterrupt:
         print("\nOperación cancelada por el usuario.")
@@ -695,7 +696,7 @@ def crear_ruta_carpeta(ruta: str) -> None:
 #las funciones CRUD terminadas de la linea 391 a 679.
 #Funciones que se encargan de mostrar o retornar algo de.
 #---LINEA 681 a   ---
-def mostrar_info_diccionario(diccionario: List[dict]) -> None:
+def mostrar_info_diccionario(diccionario: List[Dict]) -> None:
     """
     Muestra la información de una lista de diccionarios de manera legible.
     - diccionario: dict con los datos a mostrar
@@ -736,7 +737,7 @@ def opciones_menu(titulo: str, opciones: Tuple[str]) -> None:
         print(f"Ocurrió un error al mostrar el menú: {e}")
 
 
-def listar_datos(lista_datos, nombre_tipo="dato")-> None:
+def listar_datos(lista_datos: List[Dict], nombre_tipo="dato")-> None:
     """
     Lista cualquier tipo de datos cargados de manera legible.
     - lista_datos: lista de diccionarios con los datos a mostrar
@@ -749,9 +750,11 @@ def listar_datos(lista_datos, nombre_tipo="dato")-> None:
 
         print(f"\nListado de {len(lista_datos)} {nombre_tipo}(s):")
         for i, item in enumerate(lista_datos, start=1):
+            print("="*30)
             print(f"\n{nombre_tipo.capitalize()} {i}:")
             for clave, valor in item.items():
                 print(f"{clave.capitalize()}: {valor}")
+                print("="*30)
     except (TypeError, KeyError):
         print(f"Error al listar los {nombre_tipo}s")
     except Exception as e:
@@ -796,7 +799,7 @@ def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
     try:
         lista_datos = cargar_datos(ruta_archivo)
         for item in lista_datos:
-            if item["dni"] == dni:
+            if item.get("dni") == dni:
                 return True
         return False
     except FileNotFoundError:
@@ -914,7 +917,7 @@ def obtener_mes_anio(fecha_str: str) -> str:
 
     except ValueError:
         return "Fecha Inválida"    
-    
+
     
     
 if __name__ == "__main__":
