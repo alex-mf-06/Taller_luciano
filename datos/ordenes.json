@@ -5,7 +5,7 @@
         "patente": "ABC122",
         "empleado": "pepe gonzalez",
         "descripcion": "tiene una mancha en el vidrio",
-        "estado": "EN PROCESO",
+        "estado": "PENDIENTE",
         "costo_estimado": 13000.0
     }
 ]

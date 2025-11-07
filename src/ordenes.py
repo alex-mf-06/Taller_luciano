@@ -126,7 +126,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
     print(f"{"-"*20} La orden N°{nuevo_id} a sido creado con exito {"-"*20} ")
 
     # Se trata de guardar la orden creada en el archivo ordenes.json
-    if guardar_ordenes(ordenes, ruta_ordenes):
+    if ut.guardar_json(ordenes, ruta_ordenes):
         return ordenes
 
     else:
@@ -244,7 +244,7 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
     print(
         f"\nEstado de la Orden N°{orden_encontrada['id']} actualizado a: {nuevo_estado}")
 
-    if guardar_ordenes(ordenes, ruta_ordenes):
+    if ut.guardar_json(ordenes, ruta_ordenes):
         pass
 
     else:
