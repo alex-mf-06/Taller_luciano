@@ -4,8 +4,10 @@ import re
 import json
 import os
 
+#---Funciones creadas para distintos validar y confirmar varios tipos de cosas---
+#DE LINEA 10 a 387.
 
-def validar_iterable(lista: List) -> bool:
+def validar_iterable(iterable: List|Tuple) -> bool:
     """
     Pre:
         - lista: cualquier objeto.
@@ -14,11 +16,11 @@ def validar_iterable(lista: List) -> bool:
         - Devuelve False si no se puede iterar o si está vacía.
     """
     try:
-        if len(lista) == 0:
+        if len(iterable) == 0:
             return False
 
         # Intenta iterar (si falla, no es una secuencia válida)
-        for _ in lista:
+        for _ in iterable:
             pass
 
         return True
@@ -30,8 +32,8 @@ def validar_iterable(lista: List) -> bool:
         # Cualquier otro error inesperado
         print("Error al validar la lista:", e)
         return False
-
-
+    
+    
 def confirmar_dato(etiqueta: str, valor: str) -> bool:
     """
     Solicita al usuario que confirme si un dato ingresado es correcto.
@@ -69,147 +71,6 @@ def validar_dni() -> str:
             )
 
 
-def agregar_dato(dato: Dict, ruta_archivo: str) -> bool:
-    """
-    Guarda una lista de datos en un archivo JSON de forma segura.
-    Devuelve True si se guardó con éxito, False si hubo un error.
-    precondiciones:
-        - dato: debe ser un diccionario que represente un único registro.
-        - ruta_archivo: debe ser una ruta válida donde se pueda escribir un archivo.
-    postcondiciones:
-        - Si la operación es exitosa, el dato se agrega al archivo JSON especificado.
-        - Si ocurre un error, se informa al usuario y no se modifica el archivo 
-        retorna True si se guardo exitosamente y False si hubo un error.
-    """
-    try:
-        # --- PREVENCIÓN DE ERRORES ---
-        # 1. Obtenemos el directorio y lo creamos si no existe para
-        #    evitar un FileNotFoundError.
-        directorio = os.path.dirname(ruta_archivo)
-        os.makedirs(directorio, exist_ok=True)
-        lista = cargar_datos(ruta_archivo)
-        lista.append(dato)
-
-        with open(ruta_archivo, "wt", encoding="utf-8") as file:
-            # 3. Esta línea puede lanzar un TypeError si los datos no son serializables.
-            json.dump(lista, file, indent=4, ensure_ascii=False)
-
-        print(
-            f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
-        return True  # La operación fue exitosa
-
-    # --- MANEJO DE EXCEPCIONES ---
-    except PermissionError:
-        print(
-            f"Error: No se tienen los permisos para escribir en la ruta '{ruta_archivo}'."
-        )
-        return False
-    except TypeError:
-        print(
-            "Error: Los datos contienen un tipo de objeto que no se puede convertir a JSON (como un objeto datetime)."
-        )
-        return False
-    except Exception as e:
-        # Captura cualquier otro error inesperado
-        print(f"Ocurrió un error inesperado al guardar el archivo: {e}")
-        return False
-
-
-def eliminar_datos(dni: str, RUTA_archivos: str) -> bool:
-    """
-    Pre:
-        - dni: str no vacío, representa el documento del cliente.
-    Post:
-        - Elimina al cliente si está en la base de datos.
-        - Retorna True si se eliminó, False si no se encontró.
-    """
-    try:
-        # Se intenta cargar los datos. La función cargar_datos podría fallar
-        # si el archivo no existe o está corrupto.
-        datos = cargar_datos(RUTA_archivos)
-
-        # Tu lógica original, que es muy buena y eficiente.
-        datos_actualizados = [dato for dato in datos if dato.get("dni") != dni]
-
-        if len(datos) > len(datos_actualizados):
-            with open(RUTA_archivos, "w", encoding="utf-8") as file:
-                json.dump(datos_actualizados, file,
-                          indent=4, ensure_ascii=False)
-            return True  # Eliminación exitosa
-        else:
-            return False  # No se encontró el DNI, no se eliminó nada
-
-    except FileNotFoundError:
-        # Error específico si 'cargar_datos' no encuentra el archivo.
-        print(
-            f"Error: No se pudo encontrar el archivo en la ruta '{RUTA_archivos}'.")
-        return False
-
-    except Exception as e:
-        # Se captura cualquier otro error inesperado durante la carga o el guardado.
-        print(
-            f"Ocurrió un error inesperado durante la operación de eliminación: {e}")
-        return False
-
-
-def modificar_datos(dni: str, RUTA_archivo) -> None:
-    """
-    Esta funcion se encarga de modificar los datos de un cliente segun su dni.
-    Pre:
-        - dni: str no vacío, representa el documento del cliente ya registrado.
-        - debe tener la ruta de archivo que quiere nodificar
-    Post:
-        - guarda los datos modificado si se encuentra a la persona segun su dni
-        retorna true si la persona si se encuentra y la modifican y false si no
-    """
-    try:
-        datos = cargar_datos(RUTA_archivo)
-        encontrado = False
-        for dato in datos:
-            if dato.get("dni") == dni:
-                while True:
-                    print(
-                        "Ingrese los nuevos datos del cliente. Deje vacío para no modificar.")
-                    nuevo_nombre = confirmar_nombre()
-                    nuevo_telefono = validar_numero()
-                    nuevo_email = validar_email()
-                    nueva_direccion = confirmar_direccion()
-                    info_actualizada = {
-                        "nombre": nuevo_nombre if nuevo_nombre else dato["nombre"],
-                        "telefono": nuevo_telefono if nuevo_telefono else dato["telefono"],
-                        "email": nuevo_email if nuevo_email else dato["email"],
-                        "direccion": nueva_direccion if nueva_direccion else dato["direccion"],
-                        "fecha_registro": dato["fecha_registro"],
-                    }
-                    if confirmar_informacion(info_actualizada):
-                        break
-                # estamos actualizando los datos del diccionario original
-                dato.update(info_actualizada)
-
-                print("Datos actualizados.")
-                encontrado = True
-                break
-        if encontrado:
-            actualizar_datos(datos, RUTA_archivo)
-        else:
-            print("No se encontró el cliente con el DNI proporcionado.")
-    except FileNotFoundError:
-        print(f"Error: El archivo no se encontró en {RUTA_archivo}")
-        return False
-
-    except json.JSONDecodeError:
-        print(f"Error: El archivo {RUTA_archivo} está corrupto o vacío.")
-        return False
-
-    except IOError as e:
-        print(f"Error de E/S (lectura/escritura) al {RUTA_archivo}: {e}")
-        return False
-
-    except Exception as e:
-        print(f"Ocurrió un error inesperado: {e}")
-        return False
-
-
 def validar_numero() -> str:
     """
     Solicita, valida y confirma un número de teléfono.
@@ -227,82 +88,6 @@ def validar_numero() -> str:
             print(
                 "Teléfono inválido. Debe contener solo números y tener entre 7 y 15 dígitos."
             )
-
-
-def cargar_datos(ruta_archivo: str) -> List[dict] | List[None]:
-    """
-    Carga los clientes desde un archivo JSON de forma segura.
-    - Si el archivo existe y es válido, devuelve la lista de clientes.
-    - Si el archivo NO existe, está vacío o corrupto, devuelve una lista vacía [].
-    """
-    try:
-        # Intenta abrir y leer el archivo en modo lectura ('r').
-        with open(ruta_archivo, "r", encoding="utf-8") as file:
-            return json.load(file)
-
-    except FileNotFoundError:
-        # Si el archivo no existe, esta sección se ejecuta.
-        print(
-            f"Advertencia: El archivo '{ruta_archivo}' no se encontró. Se creará uno nuevo."
-        )
-        try:
-            # Aseguramos que el directorio exista (igual que en guardar_datos).
-            directorio = os.path.dirname(ruta_archivo)
-            os.makedirs(directorio, exist_ok=True)
-
-            # Creamos el archivo nuevo escribiendo una lista vacía en él.
-            with open(ruta_archivo, "w", encoding="utf-8") as file:
-                json.dump([], file)
-
-            # Devolvemos una lista vacía, que es el contenido del archivo recién creado.
-            return []
-
-        except Exception as e:
-            # Si hay un error al intentar crear el archivo (ej: permisos).
-            print(
-                f"Error crítico: No se pudo crear el archivo '{ruta_archivo}'. Razón: {e}"
-            )
-            return []
-
-    except json.JSONDecodeError:
-        # Se ejecuta si el archivo existe pero está vacío o corrupto.
-        print(
-            f"Advertencia: El archivo '{ruta_archivo}' tiene un formato inválido.")
-        return []
-
-    except Exception as e:
-        # Captura cualquier otro error inesperado.
-        print(f"Ocurrió un error inesperado al leer el archivo: {e}")
-        return []
-
-
-def actualizar_datos(datos: List[dict], ruta_archivo: str) -> None:
-    """
-    Esta funcion se va a encargar de que se se actulice los datos que le envien y
-    se sobrescriba en un archivo JSON .
-    precondiciones: el parametro datos debe ser una lista de diccionarios y debe
-    recibir una ruta de archivo que va a ser donde se va a guardar la
-    informacion
-
-    """
-    ruta_archivo
-    try:
-        # Asegura que el directorio de destino exista
-        directorio = os.path.dirname(ruta_archivo)
-        os.makedirs(directorio, exist_ok=True)
-
-        # 1. Escribe toda la información en el archivo temporal
-        with open(ruta_archivo, "w", encoding="utf-8") as file:
-            json.dump(datos, file, indent=4, ensure_ascii=False)
-        print(
-            f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
-        return
-
-    except (TypeError, OSError) as e:
-        # Si ocurre cualquier error de tipo de dato o del sistema de archivos...
-        print(f"Ocurrió un error al guardar el archivo: {e}")
-
-        return
 
 
 def validar_email() -> str:
@@ -347,37 +132,7 @@ def confirmar_nombre() -> str:
             print("Nombre inválido. No puede estar vacío.")
 
 
-def obtener_mes_anio(fecha_str: str) -> str:
-    """
-    Recibe una fecha en formato string (YYYY-MM-DD) y devuelve
-    un string con el mes y el año en español (ej: "Octubre 2025").
-    """
-    try:
-        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
-
-        meses = {
-            1: "Enero",
-            2: "Febrero",
-            3: "Marzo",
-            4: "Abril",
-            5: "Mayo",
-            6: "Junio",
-            7: "Julio",
-            8: "Agosto",
-            9: "Septiembre",
-            10: "Octubre",
-            11: "Noviembre",
-            12: "Diciembre",
-        }
-
-        nombre_mes = meses.get(fecha.month, "Mes Desconocido")
-        return f"{nombre_mes} {fecha.year}"
-
-    except ValueError:
-        return "Fecha Inválida"
-
-
-def confirmar_informacion(informacion: dict) -> bool:
+def confirmar_informacion(informacion: Dict) -> bool:
     """
     Esta funcion se encarga de que la persona vea la imformacion que paso
     como parametro para que la persona verifique si esta bien su ingormacion
@@ -387,11 +142,11 @@ def confirmar_informacion(informacion: dict) -> bool:
     y False si no lo hace.
 
     """
-
+    
     while True:
         for clave, valor in informacion.items():
             print(f"{clave}: {valor}\n")
-
+        
         confirmacion = (
             input(f"¿Confirma que la informacion es correcta? (s/n): ").strip().lower()
         )
@@ -399,75 +154,6 @@ def confirmar_informacion(informacion: dict) -> bool:
             return confirmacion == "s"
         print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
 
-
-def registrar_datos(RUTA_ARCHIVO: str) -> None:
-    """
-    Permite registrar clientes validados con expresiones regulares y guardar los datos en un archivo JSON.
-    Precondiciones:
-        - El usuario debe ingresar correctamente los siguientes datos:
-            * DNI: numérico, de 7 u 8 dígitos.
-            * Nombre: no vacío.
-            * Teléfono: de 7 a 15 dígitos (puede comenzar con '+').
-            * Email: formato válido (opcional, puede dejarse vacío).
-        - El archivo 'clientes.json' puede existir o no.
-    Postcondiciones:
-        - Si el archivo no existe, se crea automáticamente.
-        - Si el archivo existe, se actualiza agregando el nuevo cliente.
-        - Si el DNI ya está registrado, no se agrega un nuevo cliente.
-        - Los datos se almacenan en formato JSON con indentación y codificación UTF-8.
-        - Se imprime un mensaje informando el resultado de la operación.
-    """
-    clientes = cargar_dni_(RUTA_ARCHIVO)
-    while True:
-        # solicitud de datos
-        dni = validar_dni()
-        if dni in clientes:
-            print("El DNI ya está registrado.")
-            return
-
-        nombre = confirmar_nombre()
-
-        telefono = validar_numero()
-
-        email = validar_email()
-
-        direccion = confirmar_direccion()
-
-        cliente = {
-            "dni": dni,
-            "nombre": nombre,
-            "telefono": telefono,
-            "email": email,
-            "direccion": direccion,
-            "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        }
-        if confirmar_informacion(cliente):
-            break
-    if validar_Ruta_archivo(RUTA_ARCHIVO):
-        agregar_dato(cliente, RUTA_ARCHIVO)
-        print(f"la persona {nombre} esta registrado exitosamente \n")
-    else:
-        crear_ruta_carpeta(os.path.dirname(RUTA_ARCHIVO))
-        agregar_dato(cliente, RUTA_ARCHIVO)
-
-
-def crear_ruta_carpeta(ruta: str) -> None:
-    """
-    Esta funcion se encarga de crear la ruta de una carpeta si no exite o si una persona lo elimino intencionalmente.
-    debe crear el archivo si no exite en formato json . 
-    precondiciones : se debe mandar una ruta en str
-    postcondiciones : no devuelve nada solo crea la ruta de la carpeta si no existe.
-
-    """
-    try:
-        if not os.path.exists(ruta):
-            os.makedirs(ruta)
-            print(f"La carpeta '{ruta}' ha sido creada.")
-
-        else:
-            print(f"La carpeta '{ruta}' ya existe.")
-    except TypeError:
-        print("La ruta proporcionada no es válida.")
 
 
 def validar_Ruta_archivo(ruta: str) -> bool:
@@ -492,20 +178,13 @@ def confirmar_direccion() -> str:
     esta funcion  se encarga de que el usuario ingrese la direccion de su  domicilio y que solo salga de la funcion si ingresa la direccion y confirma que si es correcta.
     """
     while True:
-        direccion = input("ingrese la direccion : ").strip()
-        if confirmar_dato("direccion", direccion):
-            return direccion
+        try:
+            direccion = input("ingrese la direccion : ").strip()
+            if confirmar_dato("direccion", direccion):
+                return direccion
+        except KeyboardInterrupt:
+            continue
 
-
-def mostrar_opciones(opciones: tuple) -> None:
-    """
-    no retorna nada solo muestra un menu de opciones .
-    """
-    if validar_iterable(opciones):
-        for i, opcion in enumerate(opciones, start=1):
-            print(f"{i} - {opcion}\n")
-    else:
-        print("las opciones no se pueden mostrar por que hubo un fallo")
 
 
 def Validar_patente() -> str:
@@ -524,37 +203,9 @@ def Validar_patente() -> str:
             print("Patente inválida. Debe ser ABC123 o 12ABC34")
 
 
-def cargar_dni_(RUTA_archivo: str) -> tuple:
-    """
-
-    Esta funcion se encarga de que le manden una ruta de archivo que ademas dentro
-    de esta funcion se va a usar la de cargar datos para luego solo tener los dnis
-    para funciones que se necesiten .
-    precondiciones : se debe mandar una ruta que exista .
-    postcondiciones : devuelve una tupla que solo va a tener los dnis del json
-    que se necesite.
-
-    """
-    try:
-        # 1. Se cargan los datos desde el archivo JSON
-        datos = cargar_datos(RUTA_archivo)
-
-        # 2. Se crea una tupla con los DNI usando una expresión generadora.
-        #    Usar dato.get("dni") es más seguro que dato["dni"], ya que si un
-        #    diccionario no tiene la clave "dni", no romperá el programa.
-        #    El 'if dato.get("dni")' asegura que no se agreguen valores nulos.
-        return tuple(dato.get("dni") for dato in datos if dato.get("dni"))
-
-    except FileNotFoundError:
-        # Se ejecuta si la función cargar_datos no encuentra el archivo
-        print(
-            f"Error: El archivo en la ruta '{RUTA_archivo}' no fue encontrado.")
-        return ()  # Devuelve una tupla vacía
-
-
 def validar_marca() -> str:
     """
-    valida que si ponga la marca de un auto y ademas que confirme su eleccion solo asi sale de la funcion .
+    valida que si ponga la marca de un auto y ademas que confirme su eleccion solo asi sale de la funcion ejemplo : ford , toyota .
     """
     while True:
         marca = input("Ingrese la marca del vehículo : ").strip()
@@ -566,7 +217,7 @@ def validar_marca() -> str:
 
 def validar_modelo() -> str:
     """
-    Se encarga de que ingrese un modelo del auto ejemplo : marca : ford , modelo : fiesta . solo sake de la funcion si confirma su eleccion .
+    Se encarga de que ingrese un modelo del auto ejemplo : marca : ford , modelo : fiesta . solo sale de la funcion si confirma su eleccion .
     """
     while True:
         modelo = input("Ingrese el modelo del vehículo : ").strip()
@@ -644,21 +295,11 @@ def validar_tipo() -> str:
             print("tipo invalido")
 
 
-def validar_n_factura():
-    """pre: Solicita al usuario el número de factura a ingresar
-    post: En caso de ser válido se carga en el json, de no ser así vuelve a pedir el dato"""
-    patron_n_factura = r"^\d{4}-\d{8}$"
-    while True:
-        n_factura = input(
-            "Ingrese el número de factura (ej: 0001-00001234): ").strip()
-        if re.match(patron_n_factura, n_factura):
-            if confirmar_dato("número de factura", n_factura):
-                return n_factura
-        else:
-            print("Número de factura inválido. Formato correcto: 0001-00001234")
-
-
 def validar_tipo_factura():
+    """
+    Esta funcion se encarga de que el usuario ingrese el tipo de factura (A, B o C) y solo se retorna cuando ponga un tipo valido y confirme la
+    respuesta del usuario.
+    """
     patron_tipo_factura = r"^[ABC]$"
     while True:
         tipo = input("Ingrese tipo de factura (A/B/C): ").strip().upper()
@@ -670,6 +311,12 @@ def validar_tipo_factura():
 
 
 def validar_fecha():
+    """
+
+    Esta función se encarga de que el usuario ingrese una fecha válida y confirme su elección.
+    retorna la fecha en string.
+
+    """
     patron_fecha = r"^\d{4}-\d{2}-\d{2}$"
     while True:
         fecha = input("Ingrese la fecha de emisión (YYYY-MM-DD): ").strip()
@@ -681,6 +328,11 @@ def validar_fecha():
 
 
 def validar_items_factura():
+    """
+    Esta función se encarga de que el usuario ingrese las cantidades de los items
+    y confirme su elección.
+    retorna una lista con las cantidades de los items.
+    """
     patron_item = r"^\d+$"
     items = []
     while True:
@@ -698,6 +350,12 @@ def validar_items_factura():
 
 
 def validar_forma_pago():
+    """
+    
+    Esta función se encarga de que el usuario ingrese la forma de pago y confirme su elección.
+    retorna la forma de pago en string.
+    
+    """
     opciones_pago = ["Efectivo", "Transferencia", "Tarjeta"]
     while True:
         mostrar_opciones(opciones_pago)
@@ -710,6 +368,12 @@ def validar_forma_pago():
 
 
 def validar_origen():
+    """
+    
+    Esta función se encarga de que el usuario ingrese el origen de la factura y confirme su elección.
+    retorna el origen en string.
+    
+    """
     opciones_origen = ["manual", "Arca"]
     while True:
         mostrar_opciones(opciones_origen)
@@ -720,6 +384,388 @@ def validar_origen():
                 return origen
         else:
             print("Opción inválida. Debe elegir 'manual' o 'Arca'")
+#---Termino las funciones de validaciones--- De linea 10 a 387
+    
+    
+    
+#empiezan las funciones CRUD de ---LINEA 391 a 679 ---.        
+def agregar_dato(dato: Dict, ruta_archivo: str) -> bool:
+    """
+    Guarda una lista de datos en un archivo JSON de forma segura.
+    Devuelve True si se guardó con éxito, False si hubo un error.
+    precondiciones:
+        - dato: debe ser un diccionario que represente un único registro.
+        - ruta_archivo: debe ser una ruta válida donde se pueda escribir un archivo.
+    postcondiciones:
+        - Si la operación es exitosa, el dato se agrega al archivo JSON especificado.
+        - Si ocurre un error, se informa al usuario y no se modifica el archivo 
+        retorna True si se guardo exitosamente y False si hubo un error.
+    """
+    try:
+        # --- PREVENCIÓN DE ERRORES ---
+        # 1. Obtenemos el directorio y lo creamos si no existe para
+        #    evitar un FileNotFoundError.
+        directorio = os.path.dirname(ruta_archivo)
+        os.makedirs(directorio, exist_ok=True)
+        lista = cargar_datos(ruta_archivo)
+        lista.append(dato)
+
+        with open(ruta_archivo, "wt", encoding="utf-8") as file:
+            # 3. Esta línea puede lanzar un TypeError si los datos no son serializables.
+            json.dump(lista, file, indent=4, ensure_ascii=False)
+
+        print(
+            f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
+        return True  # La operación fue exitosa
+
+    # --- MANEJO DE EXCEPCIONES ---
+    except PermissionError:
+        print(
+            f"Error: No se tienen los permisos para escribir en la ruta '{ruta_archivo}'."
+        )
+        return False
+    except TypeError:
+        print(
+            "Error: Los datos contienen un tipo de objeto que no se puede convertir a JSON (como un objeto datetime)."
+        )
+        return False
+    except Exception as e:
+        # Captura cualquier otro error inesperado
+        print(f"Ocurrió un error inesperado al guardar el archivo: {e}")
+        return False
+
+
+def eliminar_datos(dni: str, RUTA_archivos: str) -> bool:
+    """
+    Pre:
+        - dni: str no vacío, representa el documento del cliente.
+    Post:
+        - Elimina al cliente si está en la base de datos.
+        - Retorna True si se eliminó, False si no se encontró.
+    """
+    try:
+        # Se intenta cargar los datos. La función cargar_datos podría fallar
+        # si el archivo no existe o está corrupto.
+        datos = cargar_datos(RUTA_archivos)
+
+        # Tu lógica original, que es muy buena y eficiente.
+        datos_actualizados = [dato for dato in datos if dato.get("dni") != dni]
+
+        if len(datos) > len(datos_actualizados):
+            with open(RUTA_archivos, "wt", encoding="utf-8") as file:
+                json.dump(datos_actualizados, file,
+                          indent=4, ensure_ascii=False)
+            return True  # Eliminación exitosa
+        else:
+            return False  # No se encontró el DNI, no se eliminó nada
+
+    except FileNotFoundError:
+        # Error específico si 'cargar_datos' no encuentra el archivo.
+        print(
+            f"Error: No se pudo encontrar el archivo en la ruta '{RUTA_archivos}'.")
+        return False
+
+    except Exception as e:
+        # Se captura cualquier otro error inesperado durante la carga o el guardado.
+        print(
+            f"Ocurrió un error inesperado durante la operación de eliminación: {e}")
+        return False
+
+
+def modificar_datos(dni: str, RUTA_archivo) -> bool|None:
+    """
+    Esta funcion se encarga de modificar los datos de un cliente segun su dni.
+    Pre:
+        - dni: str no vacío, representa el documento del cliente ya registrado.
+        - debe tener la ruta de archivo que quiere nodificar
+    Post:
+        - guarda los datos modificado si se encuentra a la persona segun su dni
+        retorna true si la persona si se encuentra y la modifican y false si no
+    """
+    try:
+        datos = cargar_datos(RUTA_archivo)
+        encontrado = False
+        for dato in datos:
+            if dato.get("dni") == dni:
+                while True:
+                    print(
+                        "Ingrese los nuevos datos del cliente. Deje vacío para no modificar.")
+                    nuevo_nombre = confirmar_nombre()
+                    nuevo_telefono = validar_numero()
+                    nuevo_email = validar_email()
+                    nueva_direccion = confirmar_direccion()
+                    info_actualizada = {
+                        "nombre": nuevo_nombre if nuevo_nombre else dato["nombre"],
+                        "telefono": nuevo_telefono if nuevo_telefono else dato["telefono"],
+                        "email": nuevo_email if nuevo_email else dato["email"],
+                        "direccion": nueva_direccion if nueva_direccion else dato["direccion"],
+                        "fecha_registro": dato["fecha_registro"],
+                    }
+                    if confirmar_informacion(info_actualizada):
+                        break
+                # estamos actualizando los datos del diccionario original
+                dato.update(info_actualizada)
+
+                print("Datos actualizados.")
+                encontrado = True
+                break
+        if encontrado:
+            actualizar_datos(datos, RUTA_archivo)
+        else:
+            print("No se encontró el cliente con el DNI proporcionado.")
+    except FileNotFoundError:
+        print(f"Error: El archivo no se encontró en {RUTA_archivo}")
+        return False
+
+    except json.JSONDecodeError:
+        print(f"Error: El archivo {RUTA_archivo} está corrupto o vacío.")
+        return False
+
+    except IOError as e:
+        print(f"Error de E/S (lectura/escritura) al {RUTA_archivo}: {e}")
+        return False
+
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return False
+            
+            
+def cargar_datos(ruta_archivo: str) -> List[dict] | List[None]:
+    """
+    Carga los clientes desde un archivo JSON de forma segura.
+    - Si el archivo existe y es válido, devuelve la lista de clientes.
+    - Si el archivo NO existe, está vacío o corrupto, devuelve una lista vacía [].
+    """
+    try:
+        # Intenta abrir y leer el archivo en modo lectura ('r').
+        with open(ruta_archivo, "r", encoding="utf-8") as file:
+            return json.load(file)
+
+    except FileNotFoundError:
+        # Si el archivo no existe, esta sección se ejecuta.
+        print(
+            f"Advertencia: El archivo '{ruta_archivo}' no se encontró. Se creará uno nuevo."
+        )
+        try:
+            # Aseguramos que el directorio exista (igual que en guardar_datos).
+            directorio = os.path.dirname(ruta_archivo)
+            os.makedirs(directorio, exist_ok=True)
+
+            # Creamos el archivo nuevo escribiendo una lista vacía en él.
+            with open(ruta_archivo, "w", encoding="utf-8") as file:
+                json.dump([], file)
+
+            # Devolvemos una lista vacía, que es el contenido del archivo recién creado.
+            return []
+
+        except Exception as e:
+            # Si hay un error al intentar crear el archivo (ej: permisos).
+            print(
+                f"Error crítico: No se pudo crear el archivo '{ruta_archivo}'. Razón: {e}"
+            )
+            return []
+
+    except json.JSONDecodeError:
+        # Se ejecuta si el archivo existe pero está vacío o corrupto.
+        print(
+            f"Advertencia: El archivo '{ruta_archivo}' tiene un formato inválido.")
+        return []
+
+    except Exception as e:
+        # Captura cualquier otro error inesperado.
+        print(f"Ocurrió un error inesperado al leer el archivo: {e}")
+        return []
+
+
+def actualizar_datos(datos: List[dict], ruta_archivo: str) -> None:
+    """
+    Esta funcion se va a encargar de que se se actulice los datos que le envien y
+    se sobrescriba en un archivo JSON .
+    precondiciones: el parametro datos debe ser una lista de diccionarios y debe
+    recibir una ruta de archivo que va a ser donde se va a guardar la
+    informacion
+
+    """
+    ruta_archivo
+    try:
+        # Asegura que el directorio de destino exista
+        directorio = os.path.dirname(ruta_archivo)
+        os.makedirs(directorio, exist_ok=True)
+
+        # 1. Escribe toda la información en el archivo temporal
+        with open(ruta_archivo, "wt", encoding="utf-8") as file:
+            json.dump(datos, file, indent=4, ensure_ascii=False)
+        print(
+            f"Datos guardados exitosamente en {os.path.abspath(ruta_archivo)}")
+        return
+
+    except (TypeError, OSError) as e:
+        # Si ocurre cualquier error de tipo de dato o del sistema de archivos...
+        print(f"Ocurrió un error al guardar el archivo: {e}")
+
+        return            
+
+
+
+def registrar_datos(RUTA_ARCHIVO: str) -> None:
+    """
+    Permite registrar clientes validados con expresiones regulares y guardar los datos en un archivo JSON.
+    Precondiciones:
+        - El usuario debe ingresar correctamente los siguientes datos:
+            * DNI: numérico, de 7 u 8 dígitos.
+            * Nombre: no vacío.
+            * Teléfono: de 7 a 15 dígitos (puede comenzar con '+').
+            * Email: formato válido (opcional, puede dejarse vacío).
+        - El archivo 'clientes.json' puede existir o no.
+    Postcondiciones:
+        - Si el archivo no existe, se crea automáticamente.
+        - Si el archivo existe, se actualiza agregando el nuevo cliente.
+        - Si el DNI ya está registrado, no se agrega un nuevo cliente.
+        - Los datos se almacenan en formato JSON con indentación y codificación UTF-8.
+        - Se imprime un mensaje informando el resultado de la operación.
+    """
+    clientes = cargar_dni_(RUTA_ARCHIVO)
+    while True:
+        # solicitud de datos
+        dni = validar_dni()
+        if dni in clientes:
+            print("El DNI ya está registrado.")
+            return
+
+        nombre = confirmar_nombre()
+
+        telefono = validar_numero()
+
+        email = validar_email()
+
+        direccion = confirmar_direccion()
+
+        cliente = {
+            "dni": dni,
+            "nombre": nombre,
+            "telefono": telefono,
+            "email": email,
+            "direccion": direccion,
+            "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        if confirmar_informacion(cliente):
+            break
+    if validar_Ruta_archivo(RUTA_ARCHIVO):
+        agregar_dato(cliente, RUTA_ARCHIVO)
+        print(f"la persona {nombre} esta registrado exitosamente \n")
+    else:
+        crear_ruta_carpeta(os.path.dirname(RUTA_ARCHIVO))
+        agregar_dato(cliente, RUTA_ARCHIVO)
+
+
+def crear_ruta_carpeta(ruta: str) -> None:
+    """
+    Esta funcion se encarga de crear la ruta de una carpeta si no exite o si una persona lo elimino intencionalmente.
+    debe crear el archivo si no exite en formato json . 
+    precondiciones : se debe mandar una ruta en str
+    postcondiciones : no devuelve nada solo crea la ruta de la carpeta si no existe.
+
+    """
+    try:
+        if not os.path.exists(ruta):
+            os.makedirs(ruta)
+            print(f"La carpeta '{ruta}' ha sido creada.")
+
+        else:
+            print(f"La carpeta '{ruta}' ya existe.")
+    except TypeError:
+        print("La ruta proporcionada no es válida.")
+#las funciones CRUD terminadas de la linea 391 a 679.
+#Funciones que se encargan de mostrar o retornar algo de.
+#---LINEA 681 a   ---
+def mostrar_info_diccionario(diccionario: List[dict]) -> None:
+    """
+    Muestra la información de una lista de diccionarios de manera legible.
+    - diccionario: dict con los datos a mostrar
+    """
+    try:
+        for item in diccionario:
+            print("-" * 30)
+            for clave, valor in item.items():
+                print(f"{clave.capitalize()}: {valor}")
+            print("-" * 30)
+    except Exception as e:
+        print(f"Ocurrió un error al mostrar la información: {e}")
+
+
+def opciones_menu(titulo: str, opciones: Tuple[str]) -> None:
+    """
+    Muestra un menú con un título y una lista de opciones numeradas.
+    - titulo: str con el título del menú.
+    - opciones: list con las opciones del menú.
+    precondiciones: titulo no vacío, opciones no vacías.
+    postcondiciones: muestra el menú en consola.
+    """
+    try:
+        print(f"\n--- MENÚ: {titulo.upper()} ---")
+
+        for i, opcion in enumerate(opciones, start=1):
+            print(f"{i}. {opcion}")
+        print("-" * 60)
+    except TypeError:
+        print("Error: El título o las opciones no son válidos.")
+    except ValueError:
+        print("Error: No se pudieron enumerar las opciones.")
+    except KeyboardInterrupt:
+        print("\nOperación cancelada por el usuario.")
+    except Exception as e:
+        print(f"Ocurrió un error al mostrar el menú: {e}")
+
+
+def listar_datos(lista_datos, nombre_tipo="dato")-> None:
+    """
+    Lista cualquier tipo de datos cargados de manera legible.
+    - lista_datos: lista de diccionarios con los datos a mostrar
+    - nombre_tipo: string para mostrar el tipo de dato (ej: 'vehículo', 'cliente')
+    """
+    try:
+        if not lista_datos:
+            print(f"No hay {nombre_tipo} cargados.")  # revisar
+            return
+
+        print(f"\nListado de {len(lista_datos)} {nombre_tipo}(s):")
+        for i, item in enumerate(lista_datos, start=1):
+            print(f"\n{nombre_tipo.capitalize()} {i}:")
+            for clave, valor in item.items():
+                print(f"{clave.capitalize()}: {valor}")
+    except (TypeError, KeyError):
+        print(f"Error al listar los {nombre_tipo}s")
+    except Exception as e:
+        print(f"Ocurrió un error al listar los {nombre_tipo}s: {e}")
+
+
+def mostrar_x_dni(lista_datos:List[Dict], clave_dni: str, nombre_lista: str)-> None:
+    """
+    Esta funcion se encarga de mostrar los elementos en una lista según una clave de DNI.
+    precondiciones:
+        - lista_datos: lista de diccionarios con los datos a buscar.
+        - clave_dni: str, la clave en los diccionarios que contiene el DNI.
+        - nombre_lista: str, el nombre del tipo de datos (ej: 'cliente',
+            'vehículo') para mostrar en los mensajes.
+    postcondiciones:
+        - Muestra en consola los elementos encontrados o un mensaje si no se encuentran.
+        
+    """
+    try:
+        dni = validar_dni()
+        encontrados = [item for item in lista_datos if item[clave_dni] == dni]
+
+        if encontrados:
+            print(
+                f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
+            for i, item in enumerate(encontrados, start=1):
+                print(f"\n{nombre_lista.capitalize()} {i}:")
+                for clave, valor in item.items():
+                    print(f"{clave.capitalize()}: {valor}")
+        else:
+            print(f"No se encontraron {nombre_lista} para ese DNI.")
+    except Exception as e:
+        print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
 
 
 def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
@@ -755,123 +801,79 @@ def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
         return False
-
-
-def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
+    
+    
+def cargar_dni_(RUTA_archivo: str) -> tuple:
     """
-    Busca elementos en una lista según una clave de DNI.
-    """
-    try:
-        dni = validar_dni()
-        encontrados = [item for item in lista_datos if item[clave_dni] == dni]
 
-        if encontrados:
-            print(
-                f"\nSe encontraron {len(encontrados)} {nombre_lista} para el DNI {dni}:")
-            for i, item in enumerate(encontrados, start=1):
-                print(f"\n{nombre_lista.capitalize()} {i}:")
-                for clave, valor in item.items():
-                    print(f"{clave.capitalize()}: {valor}")
-        else:
-            print(f"No se encontraron {nombre_lista} para ese DNI.")
-    except Exception as e:
-        print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
-
-
-def guardar_json(lista: List[Dict], ruta: str) -> None: #####NOOOOO
-    """pre: Guarda el archivo JSON.
-    post: Si ocurre un error durante la escritura, se muestra un mensaje."""
-    with open(ruta, "w", encoding="UTF-8") as archivo:
-        try:
-            json.dump(lista, archivo, indent=4)
-        except FileNotFoundError:
-            print("No se encontró la ruta del archivo")
-        except Exception as e:
-            print(f"Error al guardar el archivo:  {e}")
-
-
-def cargar_json(ruta: str) -> List[Dict]: #####NOOOOO
-    """
-    Carga un archivo JSON de forma segura.
-    - Si el archivo existe y es válido, devuelve la lista cargada.
-    - Si el archivo NO existe, está vacío o corrupto, devuelve una lista vacía [].
-    """
-    # Si el archivo NO existe, entrega una lista vacía y termina.
-    if not os.path.exists(ruta):
-        return []
-
-    # Si el archivo SÍ existe, intenta leerlo.
-    with open(ruta, "r", encoding="utf-8") as file:
-        try:
-            # Si tiene contenido JSON válido, lo devuelve.
-            return json.load(file)
-        except json.JSONDecodeError:
-            # Si está vacío o corrupto, entrega una lista vacía.
-            return []
-
-
-def listar_datos(lista_datos, nombre_tipo="dato")-> None:
-    """
-    Lista cualquier tipo de datos cargados de manera legible.
-    - lista_datos: lista de diccionarios con los datos a mostrar
-    - nombre_tipo: string para mostrar el tipo de dato (ej: 'vehículo', 'cliente')
+    Esta funcion se encarga de que le manden una ruta de archivo que ademas dentro
+    de esta funcion se va a usar la de cargar datos para luego solo tener los dnis
+    para funciones que se necesiten .
+    precondiciones : se debe mandar una ruta que exista .
+    postcondiciones : devuelve una tupla que solo va a tener los dnis del json
+    que se necesite.
+    
+    precondiciones : la ruta donde se van a sacar los dni no debe estar vacia y debe existir.
+    postcondiciones: Devuelve una tupla con los dni del JSON que los saco.
     """
     try:
-        if not lista_datos:
-            print(f"No hay {nombre_tipo} cargados.")  # revisar
-            return
+        # 1. Se cargan los datos desde el archivo JSON
+        datos = cargar_datos(RUTA_archivo)
 
-        print(f"\nListado de {len(lista_datos)} {nombre_tipo}(s):")
-        for i, item in enumerate(lista_datos, start=1):
-            print(f"\n{nombre_tipo.capitalize()} {i}:")
-            for clave, valor in item.items():
-                print(f"{clave.capitalize()}: {valor}")
-    except (TypeError, KeyError):
-        print(f"Error al listar los {nombre_tipo}s")
-    except Exception as e:
-        print(f"Ocurrió un error al listar los {nombre_tipo}s: {e}")
+        # 2. Se crea una tupla con los DNI usando una expresión generadora.
+        #    Usar dato.get("dni") es más seguro que dato["dni"], ya que si un
+        #    diccionario no tiene la clave "dni", no romperá el programa.
+        #    El 'if dato.get("dni")' asegura que no se agreguen valores nulos.
+        return tuple(dato.get("dni") for dato in datos if dato.get("dni"))
 
-
-# MENU ----------------------------------------------------------------------------------------------------------
-
-def opciones_menu(titulo: str, opciones: Tuple[str]) -> None:
+    except FileNotFoundError:
+        # Se ejecuta si la función cargar_datos no encuentra el archivo
+        print(
+            f"Error: El archivo en la ruta '{RUTA_archivo}' no fue encontrado.")
+        return ()  # Devuelve una tupla vacía
+    
+def mostrar_opciones(opciones: Tuple[str]|List[str]) -> None:
     """
-    Muestra un menú con un título y una lista de opciones numeradas.
-    - titulo: str con el título del menú.
-    - opciones: list con las opciones del menú.
-    precondiciones: titulo no vacío, opciones no vacías.
-    postcondiciones: muestra el menú en consola.
+    no retorna nada solo muestra un menu de opciones .
     """
-    try:
-        print(f"\n--- MENÚ: {titulo.upper()} ---")
-
+    if validar_iterable(opciones):
         for i, opcion in enumerate(opciones, start=1):
-            print(f"{i}. {opcion}")
-        print("-" * 60)
-    except TypeError:
-        print("Error: El título o las opciones no son válidos.")
-    except ValueError:
-        print("Error: No se pudieron enumerar las opciones.")
-    except KeyboardInterrupt:
-        print("\nOperación cancelada por el usuario.")
-    except Exception as e:
-        print(f"Ocurrió un error al mostrar el menú: {e}")
-
-
-
-def mostrar_info_diccionario(diccionario: List[dict]) -> None:
+                print(f"{i} - {opcion}\n")
+    else:
+        print("las opciones no se pueden mostrar por que hubo un fallo")
+    
+def obtener_mes_anio(fecha_str: str) -> str:
     """
-    Muestra la información de una lista de diccionarios de manera legible.
-    - diccionario: dict con los datos a mostrar
+    Recibe una fecha en formato string (YYYY-MM-DD) y devuelve
+    un string con el mes y el año en español (ej: "Octubre 2025").
     """
     try:
-        for item in diccionario:
-            print("-" * 30)
-            for clave, valor in item.items():
-                print(f"{clave.capitalize()}: {valor}")
-            print("-" * 30)
-    except Exception as e:
-        print(f"Ocurrió un error al mostrar la información: {e}")
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
+
+        meses = {
+            1: "Enero",
+            2: "Febrero",
+            3: "Marzo",
+            4: "Abril",
+            5: "Mayo",
+            6: "Junio",
+            7: "Julio",
+            8: "Agosto",
+            9: "Septiembre",
+            10: "Octubre",
+            11: "Noviembre",
+            12: "Diciembre",
+        }
+
+        nombre_mes = meses.get(fecha.month, "Mes Desconocido")
+        return f"{nombre_mes} {fecha.year}"
+
+    except ValueError:
+        return "Fecha Inválida"    
+    
+    
+    
 if __name__ == "__main__":
-    nombre = confirmar_nombre()
-    print(nombre)
+    pass
+
+

@@ -292,7 +292,7 @@ def mostrar_ordenes_filtradas(ordenes: list) -> None:
         print(f"No se encontraron órdenes con estado '{estado_seleccionado}'.")
         return
 
-    # Encabezado con formato igual al de mostrar_ordenes()
+    # Encabezado con  formato igual al de mostrar_ordenes()
     encabezado = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
         "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO"
     )
@@ -323,7 +323,7 @@ def menu_ordenes() -> None:
     """
     Muestra el menú principal del módulo de órdenes de trabajo.
     """
-    ordenes = ut.cargar_json(RUTA_ORDENES)
+    ordenes = ut.cargar_datos(RUTA_ORDENES)
 
     opciones = (
         "Volver al menu anterior",
