@@ -29,18 +29,19 @@ def preguntar(tipo_de_dato: str):
 
 def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> bool:
     """
-    Verifica si existe el dato ingresado en el archivo json indicado en el parametro.
-
+    Verifica si existe el dato ingresado en el archivo JSON indicado en el parámetro.
+    La comparación ignora mayúsculas/minúsculas y espacios.
     """
     try:
         archivo = ut.cargar_datos(archivo_json)
 
         for dato in archivo:
-            # Verifica si el dato existe en el archivo
-            if dato.get(tipo_dato) == dato_a_buscar:
+            valor = str(dato.get(tipo_dato, "")).strip().upper()
+            if valor == dato_a_buscar:
                 return True
 
         return False
+
     except ValueError as ve:
         print(f"Error al procesar el archivo: {ve}")
         return False
@@ -50,7 +51,6 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
         return False
-
 
 # Sección ORDENES -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
                 return ordenes
 
     while True:
-        costo_est = input("Ingrese el costo estimado para dicha reparación: ")
+        costo_est = input("Ingrese el costo estimado para dicha reparación: ").strip()
         try:
             costo_estimado = float(costo_est)
             break
@@ -317,7 +317,6 @@ def mostrar_ordenes_filtradas(ordenes: list) -> None:
 
 
 # MENÚ   -----------------------------------------------------------------------
-
 def menu_ordenes() -> None:
     """
     Muestra el menú principal del módulo de órdenes de trabajo.
@@ -325,44 +324,41 @@ def menu_ordenes() -> None:
     ordenes = ut.cargar_datos(RUTA_ORDENES)
 
     opciones = (
-        "Volver al menu anterior",
+        "Volver al menú anterior",
         "Crear nueva orden de trabajo",
         "Mostrar todas las órdenes",
-        "Mostrar ordenes filtradas por estado",
+        "Mostrar órdenes filtradas por estado",
         "Modificar estado de una orden"
     )
 
     while True:
-        ut.opciones_menu("ORDENES DE TRABAJO", opciones)
+        opcion = ut.opciones_menu("ORDENES DE TRABAJO", opciones)
+        
 
-        opcion = input("Ingrese la opción (1-5): ").strip()
-
-        if opcion == "1":
-            print("\nCerrando el sistema. ¡Hasta pronto!")
+        if opcion == "0":
+            print("Volviendo al menú principal...")
             break
 
-        elif opcion == "2":
+        elif opcion == "1":
             ordenes_actualizadas = crear_orden(
                 ordenes, RUTA_VEHICULOS, RUTA_EMPLEADOS, RUTA_ORDENES)
             if ordenes_actualizadas is not None:
-                ordenes = ordenes_actualizadas   # Actualiza la lista principal en RAM
+                ordenes = ordenes_actualizadas  # Actualiza la lista principal en memoria
 
-        elif opcion == "3":
+        elif opcion == "2":
             mostrar_ordenes(ordenes)
 
-        elif opcion == "4":
+        elif opcion == "3":
             mostrar_ordenes_filtradas(ordenes)
 
-        elif opcion == "5":
+        elif opcion == "4":
             ordenes_actualizadas = modificar_estado_de_orden(
                 ordenes, RUTA_ORDENES)
-
             if ordenes_actualizadas is not None:
-                ordenes = ordenes_actualizadas  # Actualiza la lista principal en RAM
+                ordenes = ordenes_actualizadas
 
         else:
-            print("\nERROR: Opción no válida. Por favor, ingrese un número del 1 al 5.")
-
+            print("Opción no válida. Intente nuevamente.\n")
 
 if __name__ == "__main__":
     menu_ordenes()

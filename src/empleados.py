@@ -21,14 +21,14 @@ def menu_empleados() -> None:
 
 
         while True:
-            ut.opciones_menu("EMPLEADOS", opciones)
-            opcion = input("Ingrese una de las opciones que se les mostro :  \n")
-            if opcion == "1":
+            opcion = ut.opciones_menu("EMPLEADOS", opciones)
+            
+            if opcion == "0":
                 break
-            elif opcion == "2":
+            elif opcion == "1":
                 ut.registrar_datos(RUTA_EMPLEADOS)
                 
-            elif opcion == "3":
+            elif opcion == "2":
 
                 dni = ut.validar_dni()
                 encontrado = ut.buscar_x_dni(dni,RUTA_EMPLEADOS)
@@ -39,7 +39,7 @@ def menu_empleados() -> None:
                 else : 
                     print("no se encontro el cliente\n")
 
-            elif opcion == "4":
+            elif opcion == "3":
                 dni = ut.validar_dni()
                 eliminado = ut.eliminar_datos(dni,RUTA_EMPLEADOS)
                 if eliminado:
@@ -47,7 +47,7 @@ def menu_empleados() -> None:
                 else:
                     print("no se escontro a la persona en nuestro registro")
 
-            elif opcion == "5":
+            elif opcion == "4":
                 listas = ut.cargar_datos(RUTA_EMPLEADOS)
                 
                 for cliente in listas:

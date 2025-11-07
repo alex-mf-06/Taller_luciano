@@ -158,15 +158,8 @@ def buscar_factura(lista_facturas):
         print("No se encontró ninguna factura con ese número.")
 
 def menu_facturacion() -> None:
-    """
-    Muestra el menú principal del módulo de facturación.
+    """Muestra el menú del módulo de facturación."""
 
-    Pre:
-        - Deben existir archivos JSON de clientes, vehículos y facturación cargados correctamente.
-    Post:
-        - Permite al usuario interactuar con las funciones de facturación hasta seleccionar 'Salir'.
-    """
-    
     opciones = (
         "Salir",
         "Agregar factura manualmente",
@@ -176,40 +169,30 @@ def menu_facturacion() -> None:
     )
 
     while True:
-        print("\n" + "=" * 50)
-        print(" MENÚ DE FACTURACIÓN ".center(50, "="))
-        print("=" * 50)
+        opcion = ut.opciones_menu("MENÚ DE FACTURACIÓN", opciones)
 
-        ut.mostrar_opciones(opciones)
+        if opcion == "0":
+            print("Volviendo al menú principal...")
+            break
 
-        try:
-            opcion = input("Seleccione una opción: ").strip()
+        elif opcion == "1":
+            print("\n--- Agregar factura ---")
+            agregar_factura(lista_facturas, lista_clientes, lista_vehiculos, lista_ordenes)
 
             if opcion == "1":
                 print("\n--- Agregar factura ---")
                 agregar_factura(lista_facturas, lista_clientes, lista_vehiculos,lista_ordenes)
 
-            elif opcion == "2":
-                print("\n--- Buscar factura ---")
-                buscar_factura(lista_facturas)
+        elif opcion == "3":
+            print("\n--- Listado de facturas ---")
+            ut.listar_datos(lista_facturas, "factura")
 
-            elif opcion == "3":
-                print("\n--- Listado de facturas ---")
-                ut.listar_datos(lista_facturas, "facturas")
+        elif opcion == "4":
+            print("\n--- Eliminar factura ---")
+            eliminar_factura(lista_facturas)
 
-            elif opcion == "4":
-                print("\n--- Eliminar factura ---")
-                eliminar_factura(lista_facturas)
+        else:
+            print("Opción no válida. Intente nuevamente.\n")
 
-            elif opcion == "0":
-                print("\nVolviendo al menú principal...\n")
-                break
-
-            else:
-                print("Opción inválida. Intente nuevamente.\n")
-
-        except ValueError:
-            print("Error: valor inválido. Ingrese un número de opción válido.")
-            continue
 if __name__ == "__main__":
     menu_facturacion()

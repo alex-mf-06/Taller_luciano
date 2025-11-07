@@ -48,6 +48,10 @@ def agregar_vehiculo(lista_vehiculos: List[Dict])-> List[Dict]:
     }
     lista_vehiculos.append(vehiculo)
     ut.guardar_json(lista_vehiculos,RUTA_VEHICULOS) 
+    
+    print("\nVehículo cargado correctamente:\n")
+    for clave, valor in vehiculo.items():
+        print(f"{clave.capitalize()}: {valor}")
     return lista_vehiculos
 
 
@@ -157,15 +161,8 @@ def modificar_vehiculo(lista_vehiculos: List[Dict])-> None:
         if nuevo_tipo:
             vehiculo["tipo"] = nuevo_tipo
 
-        while True:
-            nuevo_dni = input(f"DNI del cliente (actual: {vehiculo['dni_cliente']}): ").strip()
-            if not nuevo_dni:
-                break
-            if ut.validar_dni(nuevo_dni):
-                vehiculo["dni_cliente"] = int(nuevo_dni)
-                break
-            else:
-                print("DNI inválido. Debe tener 7 u 8 dígitos.")
+        print(f"DNI del cliente (actual: {vehiculo['dni_cliente']}) [no modificable]")
+
 
         ut.guardar_json(lista_vehiculos, RUTA_VEHICULOS)
         print("Vehículo modificado correctamente.")
@@ -174,31 +171,39 @@ def modificar_vehiculo(lista_vehiculos: List[Dict])-> None:
         print("Estructura de datos inesperada: falta alguna clave.")
         
 
-def menu_vehiculos():
-    """ Muestra el menú del módulo de vehículos."""
-    opciones = ("Salir", "Agregar vehículo", "Buscar vehículo por patente", "Buscar vehículo por DNI", "Eliminar vehículo","Modificar vehículo", "Listar vehículos")
+def menu_vehiculos() -> None:
+    """Muestra el menú del módulo de vehículos."""
+
+    opciones = (
+        "Salir",
+        "Agregar vehículo",
+        "Buscar vehículo por patente",
+        "Buscar vehículo por DNI",
+        "Eliminar vehículo",
+        "Modificar vehículo",
+        "Listar vehículos"
+    )
+
     while True:
-        
-        ut.mostrar_opciones(opciones)
-        opcion = input("Ingrese una de las opciones: ")
-        if opcion == "1":
+        opcion = ut.opciones_menu("MENÚ DE VEHÍCULOS", opciones)
+
+        if opcion == "0":
+            print("Volviendo al menú principal...")
             break
-
-        elif opcion == "2":
+        elif opcion == "1":
             agregar_vehiculo(lista_vehiculos)
-        elif opcion == "3":
+        elif opcion == "2":
             buscar_x_patente(lista_vehiculos)
-        elif opcion == "4":
+        elif opcion == "3":
             buscar_vehiculos_por_dni(lista_vehiculos)
-        elif opcion == "5":
+        elif opcion == "4":
             eliminar_vehiculo(lista_vehiculos)
-        elif opcion == "6":
+        elif opcion == "5":
             modificar_vehiculo(lista_vehiculos)
-        elif opcion == "7":
-            ut.listar_datos(lista_vehiculos,"vehiculos")
+        elif opcion == "6":
+            ut.listar_datos(lista_vehiculos, "vehiculo")
         else:
-            print("opción no válida, intente nuevamente \n")
-
+            print("Opción no válida. Intente nuevamente.\n")
 
 if __name__ == "__main__":
     menu_vehiculos()

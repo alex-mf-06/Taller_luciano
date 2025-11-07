@@ -60,7 +60,7 @@ def validar_dni() -> str:
     regex_dni = re.compile(r"^\d{7,8}$")
     while True:
         dni = input(
-            "Ingrese el DNI del cliente (7 u 8 dígitos): "
+            "Ingrese el DNI (7 u 8 dígitos): "
         ).strip()  # Eliminar espacios en blanco al inicio y final
 
         if regex_dni.match(dni) and confirmar_dato("DNI", dni):
@@ -123,6 +123,9 @@ def confirmar_nombre() -> str:
     while True:
         nombre = input(
             "Ingrese el nombre y apellido de la persona :  ").strip()
+        
+        if nombre == "":
+            break
 
         if nombre.strip() and regex_nombre.match(nombre):
             if confirmar_dato("nombre", nombre):
@@ -193,14 +196,14 @@ def Validar_patente() -> str:
     retorna el str que seria la patente
     """
     patron_patente = re.compile(
-        r"^[A-Z]{3}\d{3}$|^\d{2}[A-Z]{3}\d{2}$"
-    )  # expresiones regulares para validación de datos
+        r"^(?:[A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$")
+    # expresiones regulares para validación de datos
     while True:
         patente = input("Ingrese la patente del vehículo :").upper()
         if patron_patente.match(patente) and confirmar_dato("patente", patente):
             return patente
         else:
-            print("Patente inválida. Debe ser ABC123 o 12ABC34")
+            print("Patente inválida. Debe ser ABC123 o AB123CD")
 
 
 def validar_marca() -> str:
@@ -272,7 +275,7 @@ def validar_año() -> str:
     """
     la funcion se encarga de de qie el usuario salga de la funcion si pone el año que sea valido y ademas que confirme la respuesta del usuario.
     """
-    patron_anio = r"^\d{4}$"
+    patron_anio = re.compile(r"^\d{4}$")
     while True:
         anio = input("Ingrese el año del vehículo : ").strip()
         if patron_anio.match(anio) and confirmar_dato("año", anio):
