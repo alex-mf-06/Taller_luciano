@@ -8,6 +8,8 @@ import ordenes as ot
 import empleados as emp
 import facturacion as fa
 import reportes as rep
+import gastos as gs
+
 
 menu = {
     "1": ("Gestión de clientes", cl.menu_clientes),
@@ -28,22 +30,17 @@ def main():
         "3. Órdenes de trabajo",
         "4. Empleados",
         "5. Facturación",
-        "6. Stock",
-        "7. Reportes",
-        "8. Compras",
-        "9. Pagos",
-        "10. Gastos",
+        "6. Reportes",
+        "7. Compras",
+        "8. Gastos",
         "0. Salir"
     )
+
     while True:
         print("\n=== SISTEMA DE GESTIÓN DEL TALLER ===")
-
+        print()
         for opcion in menu_principal:
             print(opcion)
-
-        # Mostrar todas las opciones del diccionario
-        # for key, (descripcion, _) in sorted(menu.items()):
-        #     print(f"{key}. {descripcion}")
 
         opcion = input("Seleccione una opción: ")
 
@@ -57,8 +54,12 @@ def main():
             emp.menu_empleados()
         elif opcion == "5":
             fa.menu_facturacion()
+        elif opcion == "6":
+            rep.menu_reportes()
         elif opcion == "7":
             rep.menu_reportes()
+        elif opcion == "8":
+            gs.menu_gastos()
         elif opcion == "0":
             print("Saliendo del sistema...")
             sys.exit()
@@ -72,9 +73,9 @@ if __name__ == "__main__":
 
 def mostrar_menu():
     for key, valor in sorted(menu.items()):
-        print(f"{key}. {valor['descripcion']}")
+        print(f"{key}. {valor[0]}")
     opcion = input("Seleccione una opción: ")
-    if opcion in menu and menu[opcion]["funcion"]:
-        menu[opcion]["funcion"]()
+    if opcion in menu and menu[opcion][1]:
+        menu[opcion][1]()
     else:
         print("Opción inválida o no implementada")
