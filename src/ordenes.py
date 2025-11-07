@@ -64,7 +64,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
     else:
         nuevo_id = 1
 
-    print(f"\n {"-"*20} Nueva orden de trabajo {"-"*20}")
+    print(f"\n {'-'*20} Nueva orden de trabajo {'-'*20}")
 
     # Solicita y valida la existencia de la patente ingresada
     while True:
