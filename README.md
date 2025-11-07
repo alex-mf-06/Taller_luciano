@@ -63,7 +63,9 @@ Clientes.Json
         "direccion": "sdasafd",
         "fecha_registro": "2025-11-01 21:29:35"
     }
+
 Vehículos.Json
+
     [
     {
         "patente": "ABC122",
@@ -74,7 +76,9 @@ Vehículos.Json
         "dni_cliente": "47683255"
     }
       ]
+
 Facturación.Json
+
 [
   {
     "numero": "0001-00001234",
@@ -104,7 +108,9 @@ Facturación.Json
     "total": 30000
   }
 ]
+
 Empleados
+
   [ 
   {
         "dni": "45145974",
@@ -114,8 +120,10 @@ Empleados
         "direccion": "Shaw 65, entre Constitución y Jason",
         "fecha_registro": "2025-10-09 14:46:33"
     } 
-      ]    
+      ]
+
 Gastos
+
   [
     {
         "id": 1,
