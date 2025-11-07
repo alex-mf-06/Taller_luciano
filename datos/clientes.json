@@ -1,10 +1,42 @@
 [
     {
-        "dni": "93865822",
-        "nombre": "pepe gonzales",
-        "telefono": "1231231231",
-        "email": "",
-        "direccion": "sdasafd",
-        "fecha_registro": "2025-11-01 21:29:35"
+        "dni": "45782145",
+        "nombre": "Maria Lopez",
+        "telefono": "1123456789",
+        "email": "maria.lopez@example.com",
+        "direccion": "Av. Bunge 1200, Pinamar",
+        "fecha_registro": "2025-11-03 10:15:22"
+    },
+    {
+        "dni": "38965214",
+        "nombre": "Jorge Ramirez",
+        "telefono": "1139876543",
+        "email": "jorge.ramirez@example.com",
+        "direccion": "De las Artes 450, Pinamar",
+        "fecha_registro": "2025-11-04 16:42:09"
+    },
+    {
+        "dni": "50123698",
+        "nombre": "Lucia Fernandez",
+        "telefono": "1147653210",
+        "email": "lucia.fernandez@example.com",
+        "direccion": "Jason 2100, Pinamar",
+        "fecha_registro": "2025-11-05 09:55:44"
+    },
+    {
+        "dni": "42789563",
+        "nombre": "Carlos Pereyra",
+        "telefono": "1156782345",
+        "email": "carlos.pereyra@example.com",
+        "direccion": "Del Tuyú 1550, Pinamar",
+        "fecha_registro": "2025-11-05 18:22:11"
+    },
+    {
+        "dni": "48231659",
+        "nombre": "Ana Quiroga",
+        "telefono": "1165427811",
+        "email": "ana.quiroga@example.com",
+        "direccion": "De las Medusas 600, Pinamar",
+        "fecha_registro": "2025-11-06 11:47:33"
     }
 ]
