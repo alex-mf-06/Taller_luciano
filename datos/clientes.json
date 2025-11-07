@@ -38,5 +38,13 @@
         "email": "ana.quiroga@example.com",
         "direccion": "De las Medusas 600, Pinamar",
         "fecha_registro": "2025-11-06 11:47:33"
+    },
+    {
+        "dni": "4566757",
+        "nombre": "lalo garza",
+        "telefono": "32423423424",
+        "email": "",
+        "direccion": "apolo 1232",
+        "fecha_registro": "2025-11-07 08:05:14"
     }
 ]

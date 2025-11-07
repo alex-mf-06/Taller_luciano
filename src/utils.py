@@ -145,17 +145,21 @@ def confirmar_informacion(informacion: Dict) -> bool:
     y False si no lo hace.
 
     """
-    
-    while True:
-        for clave, valor in informacion.items():
-            print(f"{clave}: {valor}\n")
-        
-        confirmacion = (
-            input(f"¿Confirma que la informacion es correcta? (s/n): ").strip().lower()
-        )
-        if confirmacion in ("s", "n"):
-            return confirmacion == "s"
-        print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
+    try:
+        while True:
+            for clave, valor in informacion.items():
+                print(f"{clave}: {valor}\n")
+            
+                confirmacion = (
+                    input(f"¿Confirma que la informacion es correcta? (s/n): ").strip().lower()
+                )
+                if confirmacion in ("s", "n"):
+                    return confirmacion == "s"
+                print("Respuesta inválida. Por favor ingrese 's' o 'n'.")
+    except KeyboardInterrupt:
+        print("\nOperación cancelada por el usuario.")
+        return False
+
 
 
 
@@ -198,24 +202,35 @@ def Validar_patente() -> str:
     patron_patente = re.compile(
         r"^(?:[A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$")
     # expresiones regulares para validación de datos
+
     while True:
-        patente = input("Ingrese la patente del vehículo :").upper()
-        if patron_patente.match(patente) and confirmar_dato("patente", patente):
-            return patente
-        else:
-            print("Patente inválida. Debe ser ABC123 o AB123CD")
+        try:
+            patente = input("Ingrese la patente del vehículo :").upper()
+            if patron_patente.match(patente) and confirmar_dato("patente", patente):
+                return patente
+            else:
+                print("Patente inválida. Debe ser ABC123 o AB123CD")
+        except KeyboardInterrupt:
+            continue
 
 
 def validar_marca() -> str:
     """
     valida que si ponga la marca de un auto y ademas que confirme su eleccion solo asi sale de la funcion ejemplo : ford , toyota .
     """
-    while True:
-        marca = input("Ingrese la marca del vehículo : ").strip()
-        if marca and confirmar_dato("marca", marca):
-            return marca
-        else:
-            print("marca invalida")
+    try:
+        while True:
+            try:
+                marca = input("Ingrese la marca del vehículo : ").strip()
+                if marca and confirmar_dato("marca", marca):
+                    return marca
+                else:
+                    print("marca invalida")
+            except KeyboardInterrupt:
+                continue
+    except KeyboardInterrupt:
+        print("\nOperación cancelada por el usuario.")
+        return ""
 
 
 def validar_modelo() -> str:
@@ -690,7 +705,9 @@ def mostrar_info_diccionario(diccionario: List[dict]) -> None:
             print("-" * 30)
             for clave, valor in item.items():
                 print(f"{clave.capitalize()}: {valor}")
-            print("-" * 30)
+            print("-" * 30, end="\n")
+            print()
+
     except Exception as e:
         print(f"Ocurrió un error al mostrar la información: {e}")
 

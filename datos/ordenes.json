@@ -34,5 +34,23 @@
         "descripcion": "cambio de cubiertas delanteras",
         "estado": "FINALIZADA",
         "costo_estimado": 145000.0
+    },
+    {
+        "id": 5,
+        "fecha_de_creacion": "2025-11-07 08:31:15",
+        "patente": "BBF231",
+        "empleado": "Martin Acosta",
+        "descripcion": "problemas en el carburador",
+        "estado": "PENDIENTE",
+        "costo_estimado": 65856478.89
+    },
+    {
+        "id": 6,
+        "fecha_de_creacion": "2025-11-07 08:35:49",
+        "patente": "GHT775",
+        "empleado": "pepito el mago",
+        "descripcion": "bujias y problemas del motor",
+        "estado": "PENDIENTE",
+        "costo_estimado": 450000.0
     }
 ]

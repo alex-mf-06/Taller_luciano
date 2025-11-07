@@ -36,7 +36,8 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
         archivo = ut.cargar_datos(archivo_json)
 
         for dato in archivo:
-            valor = str(dato.get(tipo_dato, "")).strip().upper()
+            valor = str(dato.get(tipo_dato, "")).strip().upper() # Normaliza el valor para comparación ejemplo: " Juan Perez " -> "JUAN PEREZ"
+            dato_a_buscar = dato_a_buscar.strip().upper()
             if valor == dato_a_buscar:
                 return True
 
@@ -330,6 +331,7 @@ def menu_ordenes() -> None:
     )
 
     while True:
+        ordenes = ut.cargar_datos(RUTA_ORDENES)
         ut.opciones_menu("ORDENES DE TRABAJO", opciones)
 
         opcion = input("Ingrese una opción del menú (del 1 al 5): ")
