@@ -53,6 +53,7 @@ Los reportes pueden imprimirse por pantalla o exportarse a archivos
 -------------------------------------------------------------------------------------
 #Estructura de los archivos Json:
 
+```
 Clientes.Json
     {
         "dni": "93865822",
@@ -123,7 +124,7 @@ Gastos
         "categoria": "Se seleccionó: Repuestos"
     }
       ]
-
+```
 
 #Tecnologías utilizadas
 
