@@ -14,24 +14,6 @@ project_root = os.path.dirname(script_dir)
 RUTA_GASTOS = os.path.join(project_root, 'datos', 'gastos.json')
 
 
-def cargar_gastos():
-    """
-    """
-    
-    if not os.path.exists(RUTA_GASTOS):
-        print("El archvio no existe. Se creara uno nuevo")
-        return []   
-    
-    try:
-        with open(RUTA_GASTOS, 'r', encoding='utf-8') as file:
-            return json.load(file)
-    except json.JSONDecodeError:
-        print("Ups!. Archivo vacio")
-        return []
-    except FileNotFoundError:
-        print("Ups. Archivo no encontrado")
-        return []
-
 def guardar_gastos(gastos: list):
     """
     Guarda una lista actualiada de gastos en el archivo JSON
@@ -58,7 +40,7 @@ def registrar_gasto():
     """
     Registra un nuevo gasto en el archivo JSON
     """
-    gastos = cargar_gastos()
+    gastos = ut.cargar_datos(RUTA_GASTOS)
 
     if gastos:  
         nuevo_id = max(gasto['id'] for gasto in gastos) + 1
@@ -70,12 +52,12 @@ def registrar_gasto():
 
     n_gasto = {
         "id" : nuevo_id,
-        "fecha" : fecha, 
+        "fecha" : fecha,
         "monto" : monto,
         "categoria" : categoria
     }
     gastos.append(n_gasto)
-    guardar_gastos(gastos)
+    ut.actualizar_datos(gastos, RUTA_GASTOS)
     print("El gasto de guardo con exito.")
     return n_gasto
 
