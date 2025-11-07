@@ -778,7 +778,7 @@ def mostrar_x_dni(lista_datos, clave_dni, nombre_lista):
         print(f"Ocurrió un error al buscar {nombre_lista} por DNI: {e}")
 
 
-def guardar_json(lista: List[Dict], ruta: str) -> None:
+def guardar_json(lista: List[Dict], ruta: str) -> None: #####NOOOOO
     """pre: Guarda el archivo JSON.
     post: Si ocurre un error durante la escritura, se muestra un mensaje."""
     with open(ruta, "w", encoding="UTF-8") as archivo:
@@ -790,7 +790,7 @@ def guardar_json(lista: List[Dict], ruta: str) -> None:
             print(f"Error al guardar el archivo:  {e}")
 
 
-def cargar_json(ruta: str) -> List[Dict]:
+def cargar_json(ruta: str) -> List[Dict]: #####NOOOOO
     """
     Carga un archivo JSON de forma segura.
     - Si el archivo existe y es válido, devuelve la lista cargada.
@@ -834,12 +834,30 @@ def listar_datos(lista_datos, nombre_tipo="dato")-> None:
 
 # MENU ----------------------------------------------------------------------------------------------------------
 
-def opciones_menu(titulo: str, opciones: list) -> None:
-    print(f"\n--- MENÚ: {titulo.upper()} ---")
+def opciones_menu(titulo: str, opciones: Tuple[str]) -> None:
+    """
+    Muestra un menú con un título y una lista de opciones numeradas.
+    - titulo: str con el título del menú.
+    - opciones: list con las opciones del menú.
+    precondiciones: titulo no vacío, opciones no vacías.
+    postcondiciones: muestra el menú en consola.
+    """
+    try:
+        print(f"\n--- MENÚ: {titulo.upper()} ---")
 
-    for i, opcion in enumerate(opciones, start=1):
-        print(f"{i}. {opcion}")
-    print("-" * 60)
+        for i, opcion in enumerate(opciones, start=1):
+            print(f"{i}. {opcion}")
+        print("-" * 60)
+    except TypeError:
+        print("Error: El título o las opciones no son válidos.")
+    except ValueError:
+        print("Error: No se pudieron enumerar las opciones.")
+    except KeyboardInterrupt:
+        print("\nOperación cancelada por el usuario.")
+    except Exception as e:
+        print(f"Ocurrió un error al mostrar el menú: {e}")
+
+
 
 def mostrar_info_diccionario(diccionario: List[dict]) -> None:
     """
