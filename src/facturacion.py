@@ -2,14 +2,15 @@ import os
 import utils as ut
 from datetime import datetime
 from typing import List, Dict
-from config import RUTA_FACTURACION, RUTA_CLIENTES, RUTA_VEHICULOS
+from config import RUTA_FACTURACION, RUTA_CLIENTES, RUTA_VEHICULOS , RUTA_ORDENES
 
 lista_clientes = ut.cargar_json(RUTA_CLIENTES)  
 lista_vehiculos = ut.cargar_json(RUTA_VEHICULOS)
 lista_facturas = ut.cargar_json(RUTA_FACTURACION)
+lista_ordenes = ut.cargar_json(RUTA_ORDENES)
 
 
-def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], lista_vehiculos: List[Dict]) -> List[Dict]:
+def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], lista_vehiculos: List[Dict], lista_ordenes: List[Dict]) -> List[Dict]:
     """
     Crea una nueva factura validando cliente, vehículo y datos de ítems.
 

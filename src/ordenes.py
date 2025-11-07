@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import utils as ut
 from config import RUTA_ORDENES, RUTA_EMPLEADOS, RUTA_VEHICULOS
+from typing import List, Dict
 
 # Pregunta si resgistro anteriormente vehiculo o empleado -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -31,14 +32,25 @@ def existe_en_archivo(archivo_json: str, dato_a_buscar: str, tipo_dato: str) -> 
     Verifica si existe el dato ingresado en el archivo json indicado en el parametro.
 
     """
+    try:
+        archivo = ut.cargar_json(archivo_json)
 
-    archivo = ut.cargar_json(archivo_json)
+        for dato in archivo:
+            if dato.get(tipo_dato) == dato_a_buscar: # Verifica si el dato existe en el archivo
+                return True
 
-    for dato in archivo:
-        if dato.get(tipo_dato) == dato_a_buscar:
-            return True
+        return False
+    except ValueError as ve:
+        print(f"Error al procesar el archivo: {ve}")
+        return False
+    except TypeError:
+        print("Error de tipo al procesar el archivo.")
+        return False
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return False
 
-    return False
+
 
 
 # Sección ORDENES -------------------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +85,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
 
     # Genera un id automaticamente a la orden
     if ordenes:
-        nuevo_id = ordenes[-1]["id"] + 1
+        nuevo_id = ordenes[-1]["id"] + 1 # Toma el ultimo id y le suma 1
     else:
         nuevo_id = 1
 
@@ -333,15 +345,18 @@ def mostrar_ordenes_filtradas(ordenes: list) -> None:
 
 
 def menu_ordenes() -> None:
+    """
+    Muestra el menú principal del módulo de órdenes de trabajo.
+    """
     ordenes = ut.cargar_json(RUTA_ORDENES)
 
-    opciones = [
+    opciones =(
         "Salir del sistema",
         "Crear nueva orden de trabajo",
         "Mostrar todas las órdenes",
         "Mostrar ordenes filtradas por estado",
         "Modificar estado de una orden"
-    ]
+    )
 
     while True:
         ut.opciones_menu("ORDENES DE TRABAJO", opciones)
