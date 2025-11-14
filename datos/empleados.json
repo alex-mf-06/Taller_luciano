@@ -30,5 +30,13 @@
         "email": "santiago.perez@example.com",
         "direccion": "Del Olimpo 870, Pinamar",
         "fecha_registro": "2025-11-05 15:48:57"
+    },
+    {
+        "dni": "31783272",
+        "nombre": "dante porco",
+        "telefono": "2434433411",
+        "email": "",
+        "direccion": "urquiza",
+        "fecha_registro": "2025-11-08 23:07:36"
     }
 ]

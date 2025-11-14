@@ -73,7 +73,7 @@ def listar_gasto():
     Lista todos los gastos registrados de manera legibile.
     """
 
-    gastos = cargar_gastos()
+    gastos = ut.cargar_gastos()
     if not gastos:
         print("No hay registro de gastos disponibles")
         return[]

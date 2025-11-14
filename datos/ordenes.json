@@ -61,5 +61,14 @@
         "descripcion": "fuga de aceite y problema en la bateria",
         "estado": "PENDIENTE",
         "costo_estimado": 250000.0
+    },
+    {
+        "id": 8,
+        "fecha_de_creacion": "2025-11-08 23:11:35",
+        "patente": "AS123SA",
+        "empleado": "dante porco",
+        "descripcion": "cambiio de motor y bujias",
+        "estado": "PENDIENTE",
+        "costo_estimado": 500000.0
     }
 ]

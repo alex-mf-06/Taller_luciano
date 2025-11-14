@@ -77,10 +77,11 @@ def buscar_x_patente(lista_vehiculos: List[Dict])-> None:
 
         for vehiculo in lista_vehiculos:
             if vehiculo["patente"] == patente:
-                print("vehículo encontrado:")
+                print("vehículo encontrado:\n")
                 for clave, valor in vehiculo.items():
                     print(f"{clave.capitalize()}: {valor}")
-                break
+                    print("="*30)
+                return
 
         else:
             print("Vehiculo no encontrado")

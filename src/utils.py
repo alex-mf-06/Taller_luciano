@@ -222,8 +222,9 @@ def validar_marca() -> str:
     """
     try:
         while True:
+            
             try:
-                marca = input("Ingrese la marca del vehículo : ").strip()
+                marca = input("Ingrese la marca del vehículo : ").strip().lower()
                 if marca and confirmar_dato("marca", marca):
                     return marca
                 else:
@@ -307,9 +308,10 @@ def validar_tipo() -> str:
     respuesta del usuario.
     """
     while True:
+        tipos = ("auto", "camioneta", "camion")
         tipo = input(
-            "Ingrese el tipo del vehículo (auto, camioneta, camión): ").strip()
-        if confirmar_dato("tipo", tipo):
+            "Ingrese el tipo del vehículo (auto, camioneta, camion): ").strip().lower()
+        if confirmar_dato("tipo", tipo) and tipo in tipos:
             return tipo
         else:
             print("tipo invalido")
@@ -330,7 +332,7 @@ def validar_tipo_factura():
             print("Tipo de factura inválido. Debe ser A, B o C")
 
 
-def validar_fecha():
+def validar_fecha()-> str:
     """
 
     Esta función se encarga de que el usuario ingrese una fecha válida y confirme su elección.
@@ -550,7 +552,7 @@ def modificar_datos(dni: str, RUTA_archivo) -> bool|None:
         return False
             
             
-def cargar_datos(ruta_archivo: str) -> List[dict] | List[None]:
+def cargar_datos(ruta_archivo: str) -> List[Dict] | List[None]:
     """
     Carga los clientes desde un archivo JSON de forma segura.
     - Si el archivo existe y es válido, devuelve la lista de clientes.
@@ -785,6 +787,7 @@ def mostrar_x_dni(lista_datos:List[Dict], clave_dni: str, nombre_lista: str)-> N
             for i, item in enumerate(encontrados, start=1):
                 print(f"\n{nombre_lista.capitalize()} {i}:")
                 for clave, valor in item.items():
+                    print("="*30)
                     print(f"{clave.capitalize()}: {valor}")
         else:
             print(f"No se encontraron {nombre_lista} para ese DNI.")

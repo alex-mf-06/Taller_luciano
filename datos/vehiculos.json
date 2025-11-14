@@ -54,5 +54,21 @@
         "anio": 2000,
         "tipo": "auto",
         "dni_cliente": "50123698"
+    },
+    {
+        "patente": "AA686EE",
+        "marca": "ford",
+        "modelo": "fiesta",
+        "anio": "3002",
+        "tipo": "pepe",
+        "dni_cliente": "4566757"
+    },
+    {
+        "patente": "EE543QQ",
+        "marca": "ford",
+        "modelo": "fiesta",
+        "anio": "2010",
+        "tipo": "pepe",
+        "dni_cliente": "4566757"
     }
 ]
