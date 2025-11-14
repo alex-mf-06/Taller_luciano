@@ -165,7 +165,7 @@ def mostrar_ordenes(ordenes: list):
         print("=" * 100)
 
 
-def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
+def modificar_estado_de_orden(ordenes: List[Dict], ruta_ordenes: str) -> List:
     """
     Permite modificar el estado de una orden en: PENDIENTE, EN PROCESO o FINALIZADA.
 
@@ -218,7 +218,7 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
             "Seleccione el número del nuevo estado (1, 2 o 3): ").strip()
 
         if opcion_estado_str in ["1", "2", "3"]:
-            indice = int(opcion_estado_str) - 1
+            indice = int(opcion_estado_str) - 1 #
             nuevo_estado = estados_validos[indice]
             break
         else:
@@ -230,8 +230,8 @@ def modificar_estado_de_orden(ordenes: list, ruta_ordenes: str) -> list:
     print(
         f"\nEstado de la Orden N°{orden_encontrada['id']} actualizado a: {nuevo_estado}")
 
-    if ut.agregar_dato(orden_encontrada, ruta_ordenes):
-        pass
+    if orden_encontrada:
+        ut.actualizar_datos(ordenes, ruta_ordenes)
 
     else:
         print("Advertencia: La modificación de la orden se realizó en memoria, pero no se pudo guardar en el disco.")
@@ -320,8 +320,6 @@ def menu_ordenes() -> None:
     """
     Muestra el menú principal del módulo de órdenes de trabajo.
     """
-    ordenes = ut.cargar_datos(RUTA_ORDENES)
-
     opciones = (
         "Volver al menú anterior",
         "Crear nueva orden de trabajo",
@@ -343,9 +341,7 @@ def menu_ordenes() -> None:
         elif opcion == "2":
             ordenes_actualizadas = crear_orden(
                 ordenes, RUTA_VEHICULOS, RUTA_EMPLEADOS, RUTA_ORDENES)
-            if ordenes_actualizadas is not None:
-                ordenes = ordenes_actualizadas  # Actualiza la lista principal en memoria
-
+            
         elif opcion == "3":
             mostrar_ordenes(ordenes)
 

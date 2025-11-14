@@ -5,7 +5,7 @@
         "patente": "ABC122",
         "empleado": "Pepe Gonzalez",
         "descripcion": "tiene una mancha en el vidrio",
-        "estado": "PENDIENTE",
+        "estado": "EN PROCESO",
         "costo_estimado": 13000.0
     },
     {
@@ -68,7 +68,7 @@
         "patente": "AS123SA",
         "empleado": "dante porco",
         "descripcion": "cambiio de motor y bujias",
-        "estado": "PENDIENTE",
+        "estado": "FINALIZADA",
         "costo_estimado": 500000.0
     }
 ]

@@ -15,7 +15,7 @@ def menu_clientes() ->None:
     
     """
     try : 
-        opciones = ("Salir","Registrar cliente","Modificar datos del cliente","Eliminar cliente","Mostrar clientes ",)
+        opciones = ("Salir","Registrar cliente","Modificar datos del cliente","Eliminar cliente","Mostrar clientes ","Mostrar cliente por DNI")
         while True:
 
             ut.opciones_menu("CLIENTES", opciones)
@@ -47,6 +47,9 @@ def menu_clientes() ->None:
             elif opcion == "5":
                 listas = ut.cargar_datos(RUTA_CLIENTES)
                 ut.mostrar_info_diccionario(listas)
+            
+            elif opcion == "6" :
+                ut.mostrar_persona_x_dni(RUTA_CLIENTES)
 
             else : 
                 print("Opción no válida, intente nuevamente.")     

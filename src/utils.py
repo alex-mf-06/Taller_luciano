@@ -729,6 +729,7 @@ def opciones_menu(titulo: str, opciones: Tuple[str]) -> None:
         print(f"\n--- MENÚ: {titulo.upper()} ---")
 
         for i, opcion in enumerate(opciones, start=1):
+            print("-"*30)
             print(f"{i}. {opcion}")
         print("-" * 60)
     except TypeError:
@@ -927,6 +928,36 @@ def encontrar_n_factura(ruta_archivo:str) -> int|None:
     except ValueError:
         print("error, ingrese un numero valido")
         return None
+
+def mostrar_persona_x_dni(ruta_archivo) -> None :
+    """
+    
+    
+    """
+    try :
+        dnis = cargar_dni_(ruta_archivo)
+        informacion_personas = cargar_datos(ruta_archivo)
+        dni = validar_dni()
+        if dni not in dnis:
+            print("El DNI no esta en nuestros registros")
+            return None
+        else:
+            for info in informacion_personas:
+                if info.get("dni") == dni:
+                    for clave, valor in info.items():
+                        print()
+                        print(f"{clave.capitalize()}: {valor}")
+                        print("-" * 30, end="\n")
+                    break
+
+
+
+    except Exception as e :
+        print(f"Ocurrio un error inesperado : {e}")
+
+
+
+
 
 
 def obtener_mes_anio(fecha_str: str) -> str:

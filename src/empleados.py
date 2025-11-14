@@ -17,6 +17,7 @@ def menu_empleados() -> None:
             "Modificar empleado",
             "Eliminar empleado",
             "Mostrar empleados",
+            "Mostrar empleado por DNI"
         )
 
 
@@ -51,6 +52,8 @@ def menu_empleados() -> None:
                 listas = ut.cargar_datos(RUTA_EMPLEADOS)
                 
                 ut.mostrar_info_diccionario(listas)
+            elif opcion == "6":
+                ut.mostrar_persona_x_dni(RUTA_EMPLEADOS)
             else:
                 print("opcion invalida ingrese una de las que se les mostro \n")
     except KeyboardInterrupt:
