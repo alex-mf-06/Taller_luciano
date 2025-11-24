@@ -2,7 +2,8 @@ import json
 import os 
 import utils as ut
 from config import RUTA_GASTOS, RUTA_CLIENTES, RUTA_ORDENES, RUTA_FACTURACION, RUTA_EMPLEADOS
-
+from datetime import datetime
+from typing import List,Dict
 ruta_gastos = RUTA_GASTOS
 ruta_ordenes = RUTA_ORDENES
 ruta_facturacion = RUTA_FACTURACION
@@ -55,44 +56,113 @@ def gastos_x_categoria(ruta_gastos: str):
     print(f"{'SUMA TOTAL DE GASTOS':<25} | ${total_general:10,.2f}")
 
 
-def vehiculos_atendidos_x_mes(ruta_ordenes: str):
+def solicitar_fecha(mensaje: str) -> datetime:
     """
-    Genera un reporte de los vehiculos que se atendieron por mes
+    Solicita al usuario una fecha por teclado y valida su formato y coherencia.
 
-    Pre:El archivo JSON debe cumplir lo siguiente:
-        . Debe ser un archivo existente
-        . Debe contener 'estado' y 'fecha de finalizacion'
-    Post: Devuelve la cantidad de ordenes con estado 'finalizada agrupados por meso y año
+    Pre:
+        - Recibe un mensaje (str) para mostrar al usuario.
+    
+    Post:
+        - Devuelve un objeto datetime válido (con hora 00:00:00).
+        - Garantiza que la fecha no sea futura (mayor a la fecha actual).
+        - Garantiza que la fecha exista en el calendario (ej: no permite 30 de febrero).
     """
+    while True:
+        fecha_str = input(mensaje)
+        try:
+            # Intentamos convertir el string. Esto valida formato y existencia real de la fecha.
+            fecha_dt = datetime.strptime(fecha_str, "%Y-%m-%d")
+            
+            # Validamos que no sea una fecha futura
+            if fecha_dt > datetime.now():
+                print("❌ Error: La fecha no puede ser posterior al día de hoy.")
+                continue 
+            
+            return fecha_dt
 
-    lista_ordenes = ut.cargar_datos(ruta_ordenes)
+        except ValueError:
+            print("❌ Error: Formato incorrecto o fecha inexistente. Use AAAA-MM-DD (ej: 2024-05-20).")
 
-    if not lista_ordenes:
-        print("No hay datos en ordenes para gener el reporte.")
+def generar_reporte_por_rango(ruta_ordenes: str) -> None:
+    """
+    Muestra las órdenes FINALIZADAS comprendidas en un rango de fechas definido por el usuario.
+
+    Pre:
+        - 'ruta_ordenes' debe ser una ruta válida a un archivo JSON existente.
+        - El JSON debe contener una lista de diccionarios con las claves:
+          'estado', 'fecha_de_creacion' (o fecha_finalizacion), 'id', 'patente', 'costo_estimado'.
+        - El formato de fecha en el JSON debe ser "AAAA-MM-DD HH:MM:SS" o "AAAA-MM-DD".
+
+    Post:
+        - Solicita al usuario fecha de inicio y fin.
+        - Imprime en pantalla una tabla con las órdenes que cumplan:
+          1. Estado es "FINALIZADA".
+          2. La fecha está dentro del rango (inclusive).
+        - Muestra el total de vehículos encontrados o un mensaje si no hay datos.
+    """
+    
+    # 1. Carga de datos
+    ordenes = ut.cargar_datos(ruta_ordenes)
+
+    # 2. Solicitar fechas con la función auxiliar
+    print("\n--- FILTRO DE ÓRDENES FINALIZADAS ---")
+    fecha_inicio = solicitar_fecha("Ingrese fecha de inicio (AAAA-MM-DD): ")
+    fecha_fin = solicitar_fecha("Ingrese fecha de fin    (AAAA-MM-DD): ")
+
+    # 3. Validar coherencia del rango
+    if fecha_inicio > fecha_fin:
+        print("\n❌ Error Lógico: La fecha de inicio es mayor a la fecha de fin.")
         return
 
-    resumen = {}
-    total = 0
+    print(f"\nBuscando reportes desde {fecha_inicio.date()} hasta {fecha_fin.date()}...")
+    print("=" * 80)
+    print("{:<5} {:<15} {:<15} {:<25} {:<12}".format("ID", "FECHA", "PATENTE", "DESCRIPCIÓN", "COSTO"))
+    print("-" * 80)
 
-    for orden in lista_ordenes:
-        estado = orden.get("estado")
-        f_fin = orden.get("fecha_finalizacion")
-        if estado == "Finalizada" and f_fin:
-            periodo = ut.obtener_mes_anio(f_fin)
-            if periodo in resumen:
-                resumen[periodo] += 1
-            else:
-                resumen[periodo] = 1
-            total += 1
-    print("--- REPORTE: GASTOS VEHICULOS ATENDIDOS POR MES/AÑO ---")
-    print("=======================================================")
-    for periodo, cantidad in sorted(resumen.items()):
-        print(f"{periodo:<25} | {cantidad:15} vehiculos")
-    
-    print(f"{'TOTAL GENERAL':<25} | {total:15} vehiculos")
+    cantidad_encontrada = 0
 
+    for orden in ordenes:
+        # Usamos .get() para evitar errores si falta una clave
+        estado = orden.get("estado", "")
+        
+        # NOTA: Aquí uso 'fecha_de_creacion' basado en tu JSON. 
+        # Si agregas 'fecha_finalizacion' al JSON, cambia esta clave.
+        fecha_str_completa = orden.get("fecha_de_creacion", "") 
 
-def facturacion_mensual(ruta_facturacion: str):
+        if estado == "FINALIZADA" and fecha_str_completa:
+            try:
+                # El JSON viene con hora "2025-11-08 23:11:35", hacemos split para quedarnos con la fecha
+                fecha_solo_dia = fecha_str_completa.split(" ")[0]
+                fecha_orden_dt = datetime.strptime(fecha_solo_dia, "%Y-%m-%d")
+
+                # Comparamos si está dentro del rango (inclusive)
+                if fecha_inicio <= fecha_orden_dt and fecha_orden_dt <= fecha_fin:
+                    
+                    costo = f"${orden.get('costo_estimado', 0):.2f}"
+                    
+                    print("{:<5} {:<15} {:<15} {:<25} {:<12}".format(
+                        orden.get("id"),
+                        fecha_solo_dia,
+                        orden.get("patente", "S/P"),
+                        orden.get("descripcion", "")[:22] + "...", # Recorta descripciones largas
+                        costo
+                    ))
+                    cantidad_encontrada += 1
+
+            except ValueError:
+                # Si una fecha en el JSON está mal formateada, la saltamos pero no rompemos el programa
+                continue
+
+    print("=" * 80)
+    if cantidad_encontrada == 0:
+        print("No se encontraron vehículos finalizados en ese rango de fechas.")
+    else:
+        print(f"TOTAL VEHÍCULOS ENCONTRADOS: {cantidad_encontrada}")
+
+# Ejemplo de uso:
+# generar_reporte_por_rango("ordenes.json")
+def facturacion_por_rangos(ruta_facturacion: str) ->None:
     """
     Genera un reporte de la facturación total agrupada por mes y año.
 
@@ -101,36 +171,61 @@ def facturacion_mensual(ruta_facturacion: str):
         . Debe contener 'monto_total' y 'fecha_emision'
     Post: Muestra la suma total de dinero facturado, agrupada por mes/año.
     """
-    lista = ut.cargar_datos(ruta_facturacion)
+    lista_facturas = ut.cargar_datos(ruta_facturacion)
 
-    if not lista:
+    if not lista_facturas:
         print("No hay datos cargados para generar el reporte")
         return
 
-    r_x_mes = {}
-    total_general = 0
-    for factura in lista:
-        try:
-            monto = float(factura.get("monto_total", 0.0))
-            fecha_emision = factura.get("fecha_emision")
-            if fecha_emision:
-                periodo = ut.obtener_mes_anio(fecha_emision)
-                if periodo in r_x_mes:
-                    r_x_mes[periodo] += monto
-                else:
-                    r_x_mes[periodo] = monto
-                total_general += monto
-        except ValueError:
-            print(f"El monto '{factura.get('monto_total')}' no es numerico")
-        except Exception as e:
-            print(f"No se puedo procesar la factura: {e}")
+    print("\n--- REPORTE DE FACTURACION POR RANGO DE FECHAS ---")
+    Fecha_inicio = solicitar_fecha("Ingrese fecha de inicio (AAAA-MM-DD): ")
+    fecha_fin = solicitar_fecha("Ingrese fecha de fin    (AAAA-MM-DD): ")
+    if Fecha_inicio > fecha_fin:
+        print( "La fecha de inicio no puede ser mayor a la fecha de fin.")
+        return
     
-    print("=== REPORTE: FACTURACION TOTAL POR MES/AÑO ===")
-    print("==============================================")
-    for periodo, total in sorted(r_x_mes.items()):
-        print(f"{periodo:<25} | ${total:15,.2f}")
-    
-    print(f"{'TOTAL POR MES FACTURADO': <25} | ${total_general:15,.2f}")
+    otal_rango = 0
+    cantidad_facturas = 0
+
+    print("\n" + "="*60)
+    print(f"FACTURACIÓN DEL {Fecha_inicio.date()} AL {fecha_fin.date()}")
+    print("="*60)
+    print("{:<10} {:<20} {:<15}".format("ID", "FECHA EMISIÓN", "MONTO"))
+    print("-" * 60)
+
+    for factura in lista_facturas:
+        fecha_str = factura.get("fecha_emision")
+        monto = factura.get("monto_total")
+
+        if fecha_str and monto is not None:
+            try:
+                # Limpiamos la fecha (quitamos la hora si existe) para comparar
+                # Ejemplo: "2025-11-08 15:30:00" -> "2025-11-08"
+                fecha_solo_dia = fecha_str.split(" ")[0]
+                fecha_dt = datetime.strptime(fecha_solo_dia, "%Y-%m-%d")
+
+                # 2. Lógica de filtrado: ¿Está la fecha dentro del rango?
+                if Fecha_inicio <= fecha_dt and fecha_dt <= fecha_fin:
+                    monto_float = float(monto)
+                    total_rango += monto_float
+                    cantidad_facturas += 1
+
+                    # Mostramos la linea
+                    print("{:<10} {:<20} ${:<15,.2f}".format(
+                        factura.get("id", "N/A"), 
+                        fecha_solo_dia, 
+                        monto_float
+                    ))
+
+            except ValueError:
+                continue # Si la fecha o el monto están mal, saltamos esta factura
+
+    print("=" * 60)
+    if cantidad_facturas > 0:
+        print(f"CANTIDAD DE FACTURAS: {cantidad_facturas}")
+        print(f"TOTAL RECAUDADO:      ${total_rango:,.2f}")
+    else:
+        print("No se encontraron facturas en este rango de fechas.")
 
 
 def productos_mas_usados(ruta_ordenes: str):
@@ -181,8 +276,8 @@ def menu_reportes():
     opciones = (
         "Volver al menu principal",
         "Reporte de gastos por categoria",
-        "Reporte de vehiculos atendidos por mes",
-        "Reporte de facturacion mensual",
+        "Reporte de vehiculos atendidos por el rango que desees de fecha",
+        "Reporte de facturacion por fecha ingresada por el usuario",
         "Reporte de productos mas usados",
     )
 
@@ -195,9 +290,9 @@ def menu_reportes():
         elif opcion == "2":
             gastos_x_categoria(ruta_gastos)
         elif opcion == "3": 
-            vehiculos_atendidos_x_mes(ruta_ordenes)
+            generar_reporte_por_rango(ruta_ordenes)
         elif opcion == "4":
-            facturacion_mensual(ruta_facturacion)
+            facturacion_por_rangos(ruta_facturacion)
         elif opcion == "5":
             productos_mas_usados(ruta_ordenes)
         else:

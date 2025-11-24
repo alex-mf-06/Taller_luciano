@@ -119,7 +119,7 @@ def crear_orden(ordenes: list, ruta_vehiculos: str, ruta_empleados: str, ruta_or
         print("Error - La orden no pudo ser guardada en el disco duro.")
 
 
-def mostrar_ordenes(ordenes: list):
+def mostrar_ordenes(ordenes: List[Dict]) ->None:
     """
     Esta función muestra al usuario una lista con las ordenes existentes en el archivo ordenes.json.
 
@@ -141,28 +141,30 @@ def mostrar_ordenes(ordenes: list):
         print("RESUMEN DE ÓRDENES DE TRABAJO")
         print("="*100)
 
-        encabezado = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
-            "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO")
+        encabezado = "{:<5} {:<20} {:<10} {:<17} {:<12} {:<13} {:<25}".format(
+            "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO","Descripción")
         print(encabezado)
         print("-" * 100)
 
         for orden in ordenes:
+            if orden.get("estado") != "FINALIZADA":
 
-            # El costo se castea a un dato string y si el mismo no se ingreso se muestra (N/A).
-            costo_str = f"${orden.get('costo_estimado', 0):.2f}" if orden.get(
-                'costo_estimado') is not None else "N/A"
+                # El costo se castea a un dato string y si el mismo no se ingreso se muestra (N/A).
+                costo_str = f"${orden.get('costo_estimado', 0):.2f}" if orden.get(
+                    'costo_estimado') is not None else "N/A"
 
-            linea_orden = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
-                orden.get('id', ''),
-                orden.get('fecha_de_creacion', 'N/D'),
-                orden.get('patente', 'N/D'),
-                orden.get('empleado', 'N/D'),
-                orden.get('estado', 'N/D'),
-                costo_str
-            )
+                linea_orden = "{:<5} {:<20} {:<10} {:<17} {:<12} {:<13} {:<25}".format(
+                    orden.get('id', ''),
+                    orden.get('fecha_de_creacion', 'N/D'),
+                    orden.get('patente', 'N/D'),
+                    orden.get('empleado', 'N/D'),
+                    orden.get('estado', 'N/D'),
+                    costo_str,
+                    orden.get('descripcion', 'N/D')
+                )
 
-            print(linea_orden)
-        print("=" * 100)
+                print(linea_orden)
+                print("=" * 100)
 
 
 def modificar_estado_de_orden(ordenes: List[Dict], ruta_ordenes: str) -> List:
@@ -291,8 +293,8 @@ def mostrar_ordenes_filtradas(ordenes: list) -> None:
         return
 
     # Encabezado con  formato igual al de mostrar_ordenes()
-    encabezado = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
-        "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO"
+    encabezado = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<15} {:<20}".format(
+        "ID", "FECHA INGRESO", "PATENTE", "EMPLEADO", "ESTADO", "COSTO" , "DESCRIPCIÓN"
     )
     print(encabezado)
     print("-" * 100)
@@ -302,13 +304,14 @@ def mostrar_ordenes_filtradas(ordenes: list) -> None:
         costo_str = f"${orden.get('costo_estimado', 0):.2f}" if orden.get(
             'costo_estimado') is not None else "N/A"
 
-        linea_orden = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<10}".format(
+        linea_orden = "{:<5} {:<25} {:<10} {:<20} {:<12} {:<15} {:<20}".format(
             orden.get('id', ''),
             orden.get('fecha_de_creacion', 'N/D'),
             orden.get('patente', 'N/D'),
             orden.get('empleado', 'N/D'),
             orden.get('estado', 'N/D'),
-            costo_str
+            costo_str,
+            orden.get('descripcion', 'N/D')
         )
         print(linea_orden)
 
@@ -358,6 +361,6 @@ def menu_ordenes() -> None:
             print(
                 "Opción no válida. Intente nuevamente con un valor que este entre 1 y 5.\n")
 
-
+#falta mejorar
 if __name__ == "__main__":
     menu_ordenes()
