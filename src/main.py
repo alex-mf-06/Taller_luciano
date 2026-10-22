@@ -44,7 +44,7 @@ def main():
                 sys.exit()
             else:
                 print("Opción no válida, intente de nuevo.")
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print("Saliendo del sistema...")
             return
 

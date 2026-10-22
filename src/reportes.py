@@ -168,7 +168,7 @@ def facturacion_por_rangos(ruta_facturacion: str) ->None:
 
     Pre: El archivo JSON debe cumplir lo siguiente:
         . Debe ser un archivo existente 
-        . Debe contener 'monto_total' y 'fecha_emision'
+        . Debe contener 'total' y 'fecha'
     Post: Muestra la suma total de dinero facturado, agrupada por mes/año.
     """
     lista_facturas = ut.cargar_datos(ruta_facturacion)
@@ -190,12 +190,12 @@ def facturacion_por_rangos(ruta_facturacion: str) ->None:
     print("\n" + "="*60)
     print(f"FACTURACIÓN DEL {Fecha_inicio.date()} AL {fecha_fin.date()}")
     print("="*60)
-    print("{:<10} {:<20} {:<15}".format("ID", "FECHA EMISIÓN", "MONTO"))
+    print("{:<16} {:<20} {:<15}".format("NÚMERO", "FECHA EMISIÓN", "MONTO"))
     print("-" * 60)
 
     for factura in lista_facturas:
-        fecha_str = factura.get("fecha_emision")
-        monto = factura.get("monto_total")
+        fecha_str = factura.get("fecha")
+        monto = factura.get("total")
 
         if fecha_str and monto is not None:
             try:
@@ -211,8 +211,8 @@ def facturacion_por_rangos(ruta_facturacion: str) ->None:
                     cantidad_facturas += 1
 
                     # Mostramos la linea
-                    print("{:<10} {:<20} ${:<15,.2f}".format(
-                        factura.get("id", "N/A"), 
+                    print("{:<16} {:<20} ${:<15,.2f}".format(
+                        factura.get("numero", "N/A"), 
                         fecha_solo_dia, 
                         monto_float
                     ))
@@ -228,57 +228,12 @@ def facturacion_por_rangos(ruta_facturacion: str) ->None:
         print("No se encontraron facturas en este rango de fechas.")
 
 
-def productos_mas_usados(ruta_ordenes: str):
-    """
-    Genera un reporte que muesyttra los productos mas usados en ordenes de trabajo
-    
-    Pre: El archivo JSON debe contener lo siguiente:
-        . Lista en el campo 'items_usados'
-        . Con los campos 'nombre_producto'
-        . Y 'cantidad_usada'
-    Post: Muestra un listado de total de productos utilizados 
-    """
-
-    lista_ordenes = ut.cargar_datos(ruta_ordenes)
-    if not lista_ordenes:
-        print("No hay datos cargados para logar generar el reporte")
-        return
-
-    resumen = {}
-
-    for orden in lista_ordenes:
-        items = orden.get("items_usados", [])
-        for valor in items:
-            try:
-                nombre = valor.get("nombre_producto", "Producto Desconocido")
-                cantidad = float(valor.get("cantidad_usada", 0))
-                if nombre in resumen:
-                    resumen[nombre] += cantidad
-                else:
-                    resumen[nombre] = cantidad
-            except ValueError:
-                print(f"Cantidad '{valor.get('cantidad_usada')}' no es numerica")
-            except Exception as e:
-                print(f"No se logro procesar el: {e}")
-
-    print("=== REPORTE: PRODUCTOS MAS USADOR ===")
-    print("=====================================")
-    ordenados = sorted(resumen.items(), key= lambda valor: valor[1], reverse= True)
-    if not ordenados:
-        print("No se encontro productos en las ordenes")
-        return
-
-    for nombre, cantidad in ordenados:
-        print(f"{nombre:<25} | {cantidad:15.0f} unidades") 
-
-
 def menu_reportes():
     opciones = (
         "Volver al menu principal",
         "Reporte de gastos por categoria",
         "Reporte de vehiculos atendidos por el rango que desees de fecha",
         "Reporte de facturacion por fecha ingresada por el usuario",
-        "Reporte de productos mas usados",
     )
 
     while True:
@@ -293,8 +248,6 @@ def menu_reportes():
             generar_reporte_por_rango(ruta_ordenes)
         elif opcion == "4":
             facturacion_por_rangos(ruta_facturacion)
-        elif opcion == "5":
-            productos_mas_usados(ruta_ordenes)
         else:
             print("Opcion invalida. Vuelva a intentarlo")
 #aca esta mal algo 

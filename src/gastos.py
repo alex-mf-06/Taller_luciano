@@ -73,7 +73,7 @@ def listar_gasto():
     Lista todos los gastos registrados de manera legibile.
     """
 
-    gastos = ut.cargar_gastos()
+    gastos = ut.cargar_datos(RUTA_GASTOS)
     if not gastos:
         print("No hay registro de gastos disponibles")
         return[]
@@ -83,9 +83,7 @@ def listar_gasto():
         fecha = gasto.get("fecha", "N/A")
         categoria = gasto.get("categoria", "N/A")
         monto = gasto.get("monto", 0.0)
-        descripcion = gasto.get("descripcion", "N/A")
-        
-        print(f"{id_gasto} | {fecha} | {categoria} | ${monto:,.2f} | {descripcion}")
+        print(f"{id_gasto} | {fecha} | {categoria} | ${monto:,.2f}")
 
 
 def menu_gastos():
@@ -118,6 +116,8 @@ def menu_gastos():
             print("Tipo de dato no compatible. Vuelva a intentarlo")
         except KeyboardInterrupt:
             print("Comando no valido")
+        except EOFError:
+            break
         except Exception as e:
             print(f"Ocurrio un error inesperado: {e}")
 

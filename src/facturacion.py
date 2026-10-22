@@ -30,10 +30,10 @@ def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], list
             forma_pago = ut.validar_forma_pago()
             origen = ut.validar_origen()
             dni = ut.validar_dni()
-            cliente_encontrado_vehiculo = ut.buscar_x_dni_ruta_vehiculos(dni,RUTA_VEHICULOS)
-            cliente_encontrado=ut.buscar_x_dni(dni,RUTA_CLIENTES)
-            
-            if not cliente_encontrado_vehiculo:
+            cliente_encontrado = next(
+                (cliente for cliente in lista_clientes if cliente.get("dni") == dni), None)
+
+            if not cliente_encontrado:
                 print("El cliente no está registrado. Debe cargarlo antes de facturar.")
                 return lista_facturas
 
@@ -78,7 +78,7 @@ def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], list
                 item["subtotal"] for item in items
             )  # lista por comprension en caso de que haya mas de un item
             factura = {
-                "numero": n_factura,
+                "numero": f"0001-{n_factura:08d}",
                 "tipo": tipo_factura,
                 "fecha": fecha,
                 "forma_pago": forma_pago,
@@ -100,6 +100,7 @@ def agregar_factura(lista_facturas: List[Dict], lista_clientes: List[Dict], list
 
             
             ut.agregar_dato(factura, RUTA_FACTURACION)
+            lista_facturas.append(factura)
 
             print("\nFactura creada correctamente.")
             return lista_facturas

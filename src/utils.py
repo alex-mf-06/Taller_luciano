@@ -71,16 +71,20 @@ def validar_dni() -> str:
             )
 
 
-def validar_numero() -> str:
+def validar_numero(opcional: bool = False) -> str:
     """
     Solicita, valida y confirma un número de teléfono.
     El número debe tener entre 7 y 15 dígitos y puede comenzar con '+'. En caso de no ser así vuelve a pedir el dato
+    Si opcional es True, acepta un valor vacío y devuelve "".
     """
     regex_telefono = re.compile(r"^\+?\d{7,15}$")
     while True:
         telefono = input(
             "Ingrese el teléfono de la persona (7 a 15 dígitos): "
         ).strip()  # Eliminar espacios en blanco al inicio y final
+
+        if opcional and telefono == "":
+            return telefono
 
         if regex_telefono.match(telefono) and confirmar_dato("teléfono", telefono):
             return telefono  # Si el usuario confirma el teléfono, salir del bucle principal
@@ -276,13 +280,12 @@ def validar_categoria() -> str:  # Funcion agregada para gastos.py
         print("---- SELECCIONE LA CATEGORIA DE GASTO DESEADA ----")
         # se muestra las opciones con mediante una funcion
         mostrar_opciones(categorias)
-        opcion = int(input("Ingrese la opcion deseada: "))
-        dato = opcion - 1
         try:
+            opcion = int(input("Ingrese la opcion deseada: "))
             if 0 <= opcion - 1 < len(categorias):
-                elegido = categorias[dato]
+                elegido = categorias[opcion - 1]
                 if confirmar_dato("Categoria:", elegido):
-                    return f"Se seleccionó: {elegido}"
+                    return elegido
             else:
                 print("Numero fuera del rango de opciones, vuelva a intentarlo")
         except ValueError:
@@ -513,7 +516,7 @@ def modificar_datos(dni: str, RUTA_archivo) -> bool|None:
                     print(
                         "Ingrese los nuevos datos del cliente. Deje vacío para no modificar.")
                     nuevo_nombre = confirmar_nombre()
-                    nuevo_telefono = validar_numero()
+                    nuevo_telefono = validar_numero(opcional=True)
                     nuevo_email = validar_email()
                     nueva_direccion = confirmar_direccion()
                     info_actualizada = {

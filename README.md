@@ -25,7 +25,7 @@ python main.py
 | Empleados | `empleados.py` | Alta, modificación, baja, listado y búsqueda por DNI |
 | Facturación | `facturacion.py` | Alta con ítems, búsqueda, listado y baja |
 | Gastos | `gastos.py` | Registro por categoría y listado |
-| Reportes | `reportes.py` | Gastos por categoría, vehículos atendidos y facturación por rango de fechas, productos más usados |
+| Reportes | `reportes.py` | Gastos por categoría, órdenes finalizadas y facturación por rango de fechas |
 
 `utils.py` reúne las validaciones de entrada (DNI, teléfono, email, patente, montos y fechas,
 con expresiones regulares) y las operaciones de lectura y escritura sobre los archivos.
