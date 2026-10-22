@@ -184,7 +184,7 @@ def facturacion_por_rangos(ruta_facturacion: str) ->None:
         print( "La fecha de inicio no puede ser mayor a la fecha de fin.")
         return
     
-    otal_rango = 0
+    total_rango = 0
     cantidad_facturas = 0
 
     print("\n" + "="*60)

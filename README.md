@@ -1,159 +1,59 @@
-### Sistema de Gestión para Taller de chapa y pintura
-Proyecto Final – Algoritmos y Estructura de Datos I – UADE (2025)
+# Sistema de gestión para un taller de chapa y pintura
 
-Este proyecto es un sistema de gestión integral para talleres de chapa y pintura, desarrollado en Python como trabajo grupal para la materia Algoritmos y Estructuras de Datos I.
-Su objetivo es facilitar el registro, control y consulta de la información más importante del negocio: clientes, vehículos, empleados, gastos, facturación y reportes generales.
+Trabajo final de **Algoritmos y Estructuras de Datos I** — UADE, 2025.
 
-El sistema utiliza archivos JSON para guardar los datos, lo que lo hace liviano, fácil de mantener y sin necesidad de instalar bases de datos externas.
+Aplicación de consola en Python para administrar la operación de un taller: clientes, vehículos,
+órdenes de trabajo, empleados, facturación, gastos y reportes. Los datos se guardan en archivos
+JSON.
 
+## Ejecución
 
-### Módulos del sistema
+Requiere Python 3.12 o superior. No usa dependencias externas.
 
-# -Clientes
-
-Permite registrar nuevos clientes con validaciones (DNI, teléfono, correo, dirección).
-Guarda los datos en clientes.json.
-Incluye funciones de alta, baja, modificación y búsqueda por DNI o nombre.
-
-# -Vehículos
-
-Relaciona cada vehículo con su cliente.
-Permite registrar marca, modelo, patente, año y observaciones.
-Guarda los datos en vehiculos.json.
-
-# -Facturación
-
-Genera facturas con número automático o manual, tipo (A, B o C), fecha, ítems, forma de pago y origen (manual o ARCA).
-Guarda la información en facturacion.json.
-Incluye validaciones mediante expresiones regulares y puede integrarse con sistemas externos.
-
-# -Empleados
-
-Registra empleados con sus datos básicos, cargo, sueldo y fecha de ingreso.
-Permite calcular salarios totales o listar empleados activos.
-
-# -Gastos
-
-Permite registrar y clasificar gastos del taller (insumos, mantenimiento, servicios, etc.) con fecha y monto.
-Se guarda en gastos.json.
-
-# -Reportes
-
-Genera reportes consolidados a partir de la información de los distintos módulos:
-
-Facturación total por mes
-
-Gastos vs. ingresos
-
-Clientes activos
-
-Vehículos por cliente
-Los reportes pueden imprimirse por pantalla o exportarse a archivos
-
--------------------------------------------------------------------------------------
-#Estructura de los archivos Json:
-
-```
-Clientes.Json
-    {
-        "dni": "93865822",
-        "nombre": "pepe gonzales",
-        "telefono": "1231231231",
-        "email": "",
-        "direccion": "sdasafd",
-        "fecha_registro": "2025-11-01 21:29:35"
-    }
-
-Vehículos.Json
-
-    [
-    {
-        "patente": "ABC122",
-        "marca": "Ford",
-        "modelo": "Fiesta",
-        "anio": "2022",
-        "tipo": "auto",
-        "dni_cliente": "47683255"
-    }
-      ]
-
-Facturación.Json
-
-[
-  {
-    "numero": "0001-00001234",
-    "tipo": "B",
-    "fecha": "2025-05-01 14:23:00",
-    "forma_pago": "Efectivo",
-    "origen": "Manual",
-    "cliente": {
-      "dni": 45892761,
-      "nombre": "Juan",
-      "apellido": "Pérez"
-    },
-    "vehiculo": {
-      "patente": "AB123CD",
-      "marca": "Ford",
-      "modelo": "Focus",
-      "anio": 2018
-    },
-    "items": [
-      {
-        "descripcion": "Cambio de parabrisas",
-        "cantidad": 1,
-        "precio_unitario": 30000,
-        "subtotal": 30000
-      }
-    ],
-    "total": 30000
-  }
-]
-
-Empleados
-
-  [ 
-  {
-        "dni": "45145974",
-        "nombre": "pepe gonzalez",
-        "telefono": "2254923745",
-        "email": "elpepe123@gamil.com",
-        "direccion": "Shaw 65, entre Constitución y Jason",
-        "fecha_registro": "2025-10-09 14:46:33"
-    } 
-      ]
-
-Gastos
-
-  [
-    {
-        "id": 1,
-        "fecha": "2025-11-06",
-        "monto": 5000.0,
-        "categoria": "Se seleccionó: Repuestos"
-    }
-      ]
+```bash
+cd src
+python main.py
 ```
 
-#Tecnologías utilizadas
+## Módulos
 
-Python 3.10+
+| Módulo | Archivo | Funciones |
+|---|---|---|
+| Clientes | `clientes.py` | Alta, modificación, baja, listado y búsqueda por DNI |
+| Vehículos | `vehiculos_reestructurado.py` | Alta, modificación, baja, listado y búsqueda por patente o por DNI del titular |
+| Órdenes de trabajo | `ordenes.py` | Alta, listado, filtro por estado y cambio de estado (pendiente, en proceso, finalizada) |
+| Empleados | `empleados.py` | Alta, modificación, baja, listado y búsqueda por DNI |
+| Facturación | `facturacion.py` | Alta con ítems, búsqueda, listado y baja |
+| Gastos | `gastos.py` | Registro por categoría y listado |
+| Reportes | `reportes.py` | Gastos por categoría, vehículos atendidos y facturación por rango de fechas, productos más usados |
 
-JSON (para persistencia)
+`utils.py` reúne las validaciones de entrada (DNI, teléfono, email, patente, montos y fechas,
+con expresiones regulares) y las operaciones de lectura y escritura sobre los archivos.
+`config.py` define las rutas de datos.
 
-Regex (re) (para validaciones)
+## Estructura
 
-os / datetime (manejo de rutas y fechas)
+```
+src/      código fuente
+datos/    archivos JSON de persistencia, con datos de prueba
+```
 
------------------------------------------------------------------------------------------
+## Datos
 
-Desarrollado por:
+| Archivo | Contenido | Relación |
+|---|---|---|
+| `clientes.json` | DNI, nombre, teléfono, email, dirección | — |
+| `vehiculos.json` | Patente, marca, modelo, año, tipo | Cliente, por DNI |
+| `ordenes.json` | Fecha, descripción, estado, costo estimado | Vehículo, por patente; empleado, por nombre |
+| `empleados.json` | DNI, nombre, teléfono, email, dirección | — |
+| `facturacion.json` | Número, tipo (A, B o C), fecha, forma de pago, ítems, total | Cliente y vehículo |
+| `gastos.json` | Fecha, monto, categoría | — |
 
-Alex Flores
+## Contenidos de la materia aplicados
 
-Elisa Correa
+Listas, tuplas y diccionarios; listas por comprensión; funciones con precondiciones y
+postcondiciones; expresiones regulares; manejo de excepciones; persistencia en archivos.
 
-David Rocha
+## Autores
 
-Luciano Dominguez
-
-
+Alex Flores · Elisa Correa · David Rocha · Luciano Dominguez

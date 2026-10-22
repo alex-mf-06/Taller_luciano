@@ -831,7 +831,7 @@ def buscar_x_dni(dni: str, ruta_archivo: str) -> bool:
         return False
     
 
-def buscar_x_dni_ruta_vehiculos(dni: str, ruta_archivo: str) -> Dict[str]|Dict[None]:
+def buscar_x_dni_ruta_vehiculos(dni: str, ruta_archivo: str) -> Dict[str, str]:
     """Devuelve el primer elemento que coincide con el DNI, o None si no existe
     precondiciones: dni es un str no vacío, ruta_archivo es la ruta del archivo JSON
     postcondiciones: devuelve True si el DNI existe en los datos, False si no
